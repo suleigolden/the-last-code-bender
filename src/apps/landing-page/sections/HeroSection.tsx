@@ -1,6 +1,6 @@
 import { ArrowDown, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import portraitImage from "@/assets/portrait-placeholder.jpg";
+import portraitImage from "@/assets/the-last-code-bender-1.png";
 
 type HeroSectionProps = {
   onNavigate: (section: string) => void;

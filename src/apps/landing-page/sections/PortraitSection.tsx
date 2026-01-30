@@ -1,4 +1,4 @@
-import portraitImage from "@/assets/portrait-placeholder.jpg";
+import portraitImage from "@/assets/the-last-code-bender-2.png";
 
 export const PortraitSection = () => {
   return (
