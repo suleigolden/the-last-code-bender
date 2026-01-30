@@ -5,7 +5,7 @@ export const PortraitSection = () => {
     <section className="py-12 px-4" id="portrait">
       {/* Header */}
       <div className="font-mono text-sm text-syntax-comment mb-6">
-        {"// assets/portrait.png — Image Preview"}
+        {"// assets/the-last-code-bender.png — Image Preview"}
       </div>
 
       {/* Image Preview Panel */}
@@ -16,7 +16,7 @@ export const PortraitSection = () => {
             <div className="w-3 h-3 rounded-full bg-destructive/60" />
             <div className="w-3 h-3 rounded-full bg-syntax-function/60" />
             <div className="w-3 h-3 rounded-full bg-syntax-string/60" />
-            <span className="ml-2 text-xs font-mono text-muted-foreground">portrait.png</span>
+            <span className="ml-2 text-xs font-mono text-muted-foreground">the-last-code-bender.png</span>
           </div>
           <span className="text-xs font-mono text-syntax-comment">768 × 1024 • PNG</span>
         </div>

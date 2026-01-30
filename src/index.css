@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TheLastCodeBender - IDE Theme Design System */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    /* IDE Dark Theme - inspired by VS Code One Dark */
+    --background: 220 13% 8%;
+    --foreground: 220 14% 85%;
+
+    --card: 220 13% 10%;
+    --card-foreground: 220 14% 85%;
+
+    --popover: 220 13% 10%;
+    --popover-foreground: 220 14% 85%;
+
+    --primary: 187 100% 50%;
+    --primary-foreground: 220 13% 8%;
+
+    --secondary: 220 13% 14%;
+    --secondary-foreground: 220 14% 75%;
+
+    --muted: 220 13% 16%;
+    --muted-foreground: 220 14% 55%;
+
+    --accent: 280 60% 60%;
+    --accent-foreground: 220 14% 95%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 18%;
+    --input: 220 13% 18%;
+    --ring: 187 100% 50%;
+
+    --radius: 0.375rem;
+
+    /* IDE-specific colors */
+    --ide-sidebar: 220 13% 10%;
+    --ide-sidebar-active: 220 13% 15%;
+    --ide-tab: 220 13% 12%;
+    --ide-tab-active: 220 13% 8%;
+    --ide-statusbar: 220 13% 12%;
+    --ide-gutter: 220 14% 35%;
+    --ide-line-highlight: 220 13% 12%;
+    
+    /* Syntax highlighting colors */
+    --syntax-keyword: 280 60% 65%;
+    --syntax-string: 95 60% 55%;
+    --syntax-function: 35 90% 65%;
+    --syntax-comment: 220 14% 45%;
+    --syntax-number: 187 100% 60%;
+    --syntax-variable: 0 80% 70%;
+    --syntax-type: 187 80% 55%;
+
+    /* Glow effects */
+    --glow-primary: 187 100% 50%;
+    --glow-accent: 280 60% 60%;
+    --glow-success: 140 70% 50%;
+
+    /* Sidebar tokens */
+    --sidebar-background: 220 13% 10%;
+    --sidebar-foreground: 220 14% 70%;
+    --sidebar-primary: 187 100% 50%;
+    --sidebar-primary-foreground: 220 13% 8%;
+    --sidebar-accent: 220 13% 15%;
+    --sidebar-accent-foreground: 220 14% 85%;
+    --sidebar-border: 220 13% 18%;
+    --sidebar-ring: 187 100% 50%;
+  }
+
+  .dark {
+    --background: 220 13% 8%;
+    --foreground: 220 14% 85%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom scrollbar for IDE feel */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer components {
+  /* IDE Glow effects */
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.3),
+                0 0 40px hsl(var(--glow-primary) / 0.15),
+                0 0 60px hsl(var(--glow-primary) / 0.05);
+  }
+
+  .glow-text {
+    text-shadow: 0 0 10px hsl(var(--glow-primary) / 0.5),
+                 0 0 20px hsl(var(--glow-primary) / 0.3),
+                 0 0 30px hsl(var(--glow-primary) / 0.2);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 15px hsl(var(--glow-accent) / 0.4),
+                0 0 30px hsl(var(--glow-accent) / 0.2);
+  }
+
+  /* Cursor blink animation */
+  .cursor-blink::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    color: hsl(var(--primary));
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Grid background pattern */
+  .ide-grid-bg {
+    background-image: 
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+  }
+
+  /* Syntax highlighting classes */
+  .syntax-keyword { color: hsl(var(--syntax-keyword)); }
+  .syntax-string { color: hsl(var(--syntax-string)); }
+  .syntax-function { color: hsl(var(--syntax-function)); }
+  .syntax-comment { color: hsl(var(--syntax-comment)); font-style: italic; }
+  .syntax-number { color: hsl(var(--syntax-number)); }
+  .syntax-variable { color: hsl(var(--syntax-variable)); }
+  .syntax-type { color: hsl(var(--syntax-type)); }
+
+  /* IDE Panel styles */
+  .ide-panel {
+    @apply bg-card border border-border rounded-md;
+  }
+
+  /* Tab hover effect */
+  .ide-tab {
+    @apply relative transition-all duration-200;
+  }
+
+  .ide-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: hsl(var(--primary));
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+
+  .ide-tab.active::after,
+  .ide-tab:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* File tree item */
+  .file-tree-item {
+    @apply flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer transition-colors duration-150;
+    @apply text-muted-foreground hover:text-foreground hover:bg-sidebar-accent rounded;
+  }
+
+  .file-tree-item.active {
+    @apply text-primary bg-sidebar-accent;
+  }
+}

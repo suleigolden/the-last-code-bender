@@ -81,7 +81,7 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
               <div className="w-3 h-3 rounded-full bg-destructive/60" />
               <div className="w-3 h-3 rounded-full bg-syntax-function/60" />
               <div className="w-3 h-3 rounded-full bg-syntax-string/60" />
-              <span className="ml-2 text-xs font-mono text-muted-foreground">portrait.png</span>
+              <span className="ml-2 text-xs font-mono text-muted-foreground">the-last-code-bender.png</span>
             </div>
             <img
               src={portraitImage}

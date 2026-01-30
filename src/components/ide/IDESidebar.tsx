@@ -41,7 +41,7 @@ const fileTree: FileItem[] = [
         name: "assets",
         type: "folder",
         children: [
-          { name: "portrait.png", type: "file", icon: <Image className="w-4 h-4 text-syntax-number" />, section: "portrait" },
+          { name: "the-last-code-bender.png", type: "file", icon: <Image className="w-4 h-4 text-syntax-number" />, section: "portrait" },
         ],
       },
     ],
