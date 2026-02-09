@@ -79,6 +79,9 @@ export default {
           variable: "hsl(var(--syntax-variable))",
           type: "hsl(var(--syntax-type))",
         },
+        "file-tree-bg": "hsl(var(--file-tree-bg))",
+        "file-tree-hover": "hsl(var(--file-tree-hover))",
+        "folder-icon": "hsl(var(--folder-icon))",
       },
       borderRadius: {
         lg: "var(--radius)",

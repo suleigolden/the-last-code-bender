@@ -149,7 +149,9 @@ export const IDESidebar = ({ activeSection, onSectionChange, isOpen, onToggle }:
             onSectionChange={onSectionChange}
           />
         ))}
+         {/* <GenericFileTree data={fileTree} /> */}
       </div>
+     
 
       {/* Sidebar Footer */}
       <div className="border-t border-border px-4 py-2">

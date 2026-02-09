@@ -71,6 +71,11 @@
     --sidebar-accent-foreground: 220 14% 85%;
     --sidebar-border: 220 13% 18%;
     --sidebar-ring: 187 100% 50%;
+
+    /* File tree colors */
+    --file-tree-bg: 220 13% 9%;
+    --file-tree-hover: 220 13% 14%;
+    --folder-icon: 35 90% 65%;
   }
 
   .dark {
