@@ -7,6 +7,7 @@ type IDEStatusBarProps = {
 const fileExtensions: Record<string, string> = {
   readme: "Markdown",
   story: "TypeScript",
+  stack: "Markdown",
   socials: "JSON",
   portrait: "PNG Image",
 };

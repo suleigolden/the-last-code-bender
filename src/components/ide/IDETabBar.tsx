@@ -17,6 +17,7 @@ type IDETabBarProps = {
 const tabs: Tab[] = [
   { id: "readme", name: "README.md", icon: <FileText className="w-4 h-4 text-syntax-string" /> },
   { id: "story", name: "STORY.ts", icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
+  { id: "stack", name: "STACK.md", icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
   { id: "socials", name: "SOCIALS.json", icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
 ];
 

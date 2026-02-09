@@ -6,6 +6,7 @@ import { HeroSection } from "./sections/HeroSection";
 import { StorySection } from "./sections/StorySection";
 import { SocialsSection } from "./sections/SocialsSection";
 import { PortraitSection } from "./sections/PortraitSection";
+import { StackSection } from "./sections/StackSection";
 
 export const LandingPage = () => {
   const [activeSection, setActiveSection] = useState("readme");
@@ -15,6 +16,7 @@ export const LandingPage = () => {
   const storyRef = useRef<HTMLDivElement>(null);
   const socialsRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
@@ -25,6 +27,7 @@ export const LandingPage = () => {
       story: storyRef,
       socials: socialsRef,
       portrait: portraitRef,
+      stack: stackRef,
     };
 
     const targetRef = refMap[section];
@@ -40,6 +43,7 @@ export const LandingPage = () => {
         { id: "readme", ref: readmeRef },
         { id: "story", ref: storyRef },
         { id: "portrait", ref: portraitRef },
+        { id: "stack", ref: stackRef },
         { id: "socials", ref: socialsRef },
       ];
 
@@ -123,6 +127,11 @@ export const LandingPage = () => {
             {/* Portrait Section */}
             <div ref={portraitRef} className="border-t border-border">
               <PortraitSection />
+            </div>
+
+            {/* Stack Section */}
+            <div ref={stackRef} className="border-t border-border">
+              <StackSection />
             </div>
 
             {/* Socials Section */}

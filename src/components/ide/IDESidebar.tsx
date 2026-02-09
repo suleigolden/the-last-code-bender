@@ -44,6 +44,13 @@ const fileTree: FileItem[] = [
           { name: "the-last-code-bender.png", type: "file", icon: <Image className="w-4 h-4 text-syntax-number" />, section: "portrait" },
         ],
       },
+      {
+        name: "stack",
+        type: "folder",
+        children: [
+          { name: "technologies.md", type: "file", icon: <FileCode className="w-4 h-4 text-syntax-type" />, section: "stack" },
+        ],
+      },
     ],
   },
 ];
@@ -156,7 +163,7 @@ export const IDESidebar = ({ activeSection, onSectionChange, isOpen, onToggle }:
       {/* Sidebar Footer */}
       <div className="border-t border-border px-4 py-2">
         <p className="text-xs text-muted-foreground font-mono">
-          4 files • 1 folder
+          5 files • 5 folders
         </p>
       </div>
     </aside>
