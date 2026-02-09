@@ -4,11 +4,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 const socialsData = {
-  linkedin: "https://linkedin.com/in/YOUR_LINKEDIN",
-  github: "https://github.com/YOUR_GITHUB",
-  youtube: "https://youtube.com/@YOUR_YOUTUBE",
-  twitter_x: "https://x.com/YOUR_TWITTER",
-  email: "mailto:your.email@example.com"
+  linkedin: "https://www.linkedin.com/in/suleiman-mamman-282a7b98/",
+  github: "https://github.com/suleigolden",
+  youtube: "COMMING_SOON",
+  twitter_x: "https://x.com/DLastCodeBender",
+  email: "mailto:suleimanmamman@gmail.com"
 };
 
 const jsonString = JSON.stringify(socialsData, null, 2);
