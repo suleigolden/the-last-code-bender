@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, FileCode, FileJson, FileText, Folder, FolderOpen, Image } from "lucide-react";
+import { ChevronDown, ChevronRight, FileCode, FileJson, FileText, Folder, Image } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -99,7 +99,9 @@ const FileTreeItem = ({
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             )}
             {isOpen ? (
-              <FolderOpen className="w-4 h-4 text-syntax-function" />
+              <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor" className="text-syntax-function">
+              <path d="M1.5 1C0.671573 1 0 1.67157 0 2.5V11.5C0 12.3284 0.671573 13 1.5 13H14.5C15.3284 13 16 12.3284 16 11.5V4.5C16 3.67157 15.3284 3 14.5 3H8L6.5 1H1.5Z" />
+            </svg>
             ) : (
               <Folder className="w-4 h-4 text-syntax-function" />
             )}
