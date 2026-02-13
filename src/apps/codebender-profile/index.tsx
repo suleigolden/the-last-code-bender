@@ -55,21 +55,9 @@ export const CodeBenderProfile = () => {
     }
   };
 
-  if (!codeBenderName) {
-    return (
-      <div className="h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Code Bender Not Found</h1>
-          <button
-            onClick={() => navigate("/")}
-            className="text-primary hover:underline"
-          >
-            Return to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const requestedName = codebenderId 
+    ? codebenderId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    : 'Unknown';
 
   return (
     <div className="h-screen bg-background flex flex-col noise-overlay relative overflow-hidden">
@@ -80,7 +68,7 @@ export const CodeBenderProfile = () => {
       <div className="flex flex-1 relative z-10 h-full overflow-hidden">
         {/* Sidebar */}
         <IDESidebar
-          activeSection={`codebender-${codebenderId?.toLowerCase()}-${activeSection}`}
+          activeSection={codeBenderName ? `codebender-${codebenderId?.toLowerCase()}-${activeSection}` : ""}
           onSectionChange={handleSectionChange}
           isOpen={sidebarOpen}
           onToggle={() => setSidebarOpen(!sidebarOpen)}
@@ -102,7 +90,7 @@ export const CodeBenderProfile = () => {
           `}
         >
           <IDESidebar
-            activeSection={`codebender-${codebenderId?.toLowerCase()}-${activeSection}`}
+            activeSection={codeBenderName ? `codebender-${codebenderId?.toLowerCase()}-${activeSection}` : ""}
             onSectionChange={handleSectionChange}
             isOpen={true}
             onToggle={() => setSidebarOpen(false)}
@@ -121,7 +109,30 @@ export const CodeBenderProfile = () => {
 
           {/* Editor Content - Scrollable area */}
           <main className="flex-1 overflow-y-auto scroll-smooth">
-            <CodeBenderPlaceholder codeBenderName={codeBenderName} section={activeSection} />
+            {codeBenderName ? (
+              <CodeBenderPlaceholder codeBenderName={codeBenderName} section={activeSection} />
+            ) : (
+              <section className="min-h-screen py-12 px-4 flex items-center justify-center">
+                <div className="max-w-3xl w-full">
+                  <div className="font-mono text-sm text-syntax-comment mb-6">
+                    {`// code-benders/${codebenderId}/README.md`}
+                  </div>
+                  <div className="ide-panel p-8">
+                    <h1 className="text-2xl font-bold mb-6 text-foreground">
+                      This code bender ({requestedName}) Not Found.
+                    </h1>
+                    <div className="space-y-4 text-foreground/90 font-mono text-sm leading-relaxed">
+                      <p>
+                        Be the first to fork, clone, and contribute to the {requestedName} folder.
+                      </p>
+                      <p>
+                        Add your story, stack, and journey — and claim your position in the CodeBenders legacy.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
           </main>
 
           {/* Status Bar */}
