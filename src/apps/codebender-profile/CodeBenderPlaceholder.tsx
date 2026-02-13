@@ -21,6 +21,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
     { name: "socials", file: fileNames.readme },
     { name: "assets", file: fileNames.readme },
   ];
+  const projectUrl = "https://github.com/suleigolden/the-last-code-bender";
 
   return (
     <section className="min-h-screen py-12 px-4 flex items-center justify-center">
@@ -97,6 +98,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
                 <Button
                   className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-mono"
                   size="lg"
+                  onClick={() => window.open(`${projectUrl}/fork`, "_blank", "noopener,noreferrer")}
                 >
                   <Github className="w-4 h-4 mr-2" />
                   Fork Repository
@@ -105,6 +107,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
                   variant="outline"
                   className="border-primary text-primary hover:bg-primary/10 font-mono"
                   size="lg"
+                  onClick={() => window.open(projectUrl, "_blank", "noopener,noreferrer")}
                 >
                   <GitFork className="w-4 h-4 mr-2" />
                   View on GitHub
