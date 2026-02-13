@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { IDESidebar } from "@/components/ide/IDESidebar";
 import { IDETabBar } from "@/components/ide/IDETabBar";
 import { IDEStatusBar } from "@/components/ide/IDEStatusBar";
@@ -9,6 +10,7 @@ import { PortraitSection } from "./sections/PortraitSection";
 import { StackSection } from "./sections/StackSection";
 
 export const LandingPage = () => {
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState("readme");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -35,6 +37,31 @@ export const LandingPage = () => {
       targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  // Handle navigation from Code Bender pages
+  useEffect(() => {
+    const state = location.state as { section?: string } | null;
+    if (state?.section) {
+      setActiveSection(state.section);
+      setSidebarOpen(false);
+      
+      const refMap: Record<string, React.RefObject<HTMLDivElement>> = {
+        readme: readmeRef,
+        story: storyRef,
+        socials: socialsRef,
+        portrait: portraitRef,
+        stack: stackRef,
+      };
+
+      const targetRef = refMap[state.section];
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(() => {
+        if (targetRef?.current) {
+          targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    }
+  }, [location.state]);
 
   // Update active section based on scroll position
   useEffect(() => {

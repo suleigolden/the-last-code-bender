@@ -40,6 +40,13 @@ export const CodeBenderProfile = () => {
   const handleSectionChange = (newSection: string) => {
     setSidebarOpen(false);
     
+    // Handle TheLastCodeBender sections (navigate to home page)
+    const theLastCodeBenderSections = ["readme", "story", "socials", "portrait", "stack"];
+    if (theLastCodeBenderSections.includes(newSection)) {
+      navigate("/", { state: { section: newSection } });
+      return;
+    }
+    
     if (codebenderId && newSection.startsWith(`codebender-${codebenderId.toLowerCase()}-`)) {
       const sectionPath = newSection.replace(`codebender-${codebenderId.toLowerCase()}-`, "");
       setActiveSection(sectionPath);
