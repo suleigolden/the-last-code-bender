@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight, FileCode, FileJson, FileText, Folder, Image } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 type FileItem = {
@@ -16,6 +17,73 @@ type IDESidebarProps = {
   isOpen: boolean;
   onToggle: () => void;
 }
+
+// Generate Code Bender folders
+const generateCodeBenderFolders = (): FileItem[] => {
+  const codeBenders = [
+    "TheFirstCodeBender", "TheSecondCodeBender", "TheThirdCodeBender",
+    "TheFourthCodeBender", "TheFifthCodeBender", "TheSixthCodeBender",
+    "TheSeventhCodeBender", "TheEighthCodeBender", "TheNinthCodeBender",
+    "TheTenthCodeBender", "TheEleventhCodeBender", "TheTwelfthCodeBender",
+    "TheThirteenthCodeBender", "TheFourteenthCodeBender", "TheFifteenthCodeBender"
+  ];
+
+  return codeBenders.map((benderName) => ({
+    name: benderName.toLowerCase(),
+    type: "folder" as const,
+    section: `codebender-${benderName.toLowerCase()}`,
+    children: [
+      {
+        name: "story",
+        type: "folder" as const,
+        children: [
+          { 
+            name: "README.md", 
+            type: "file" as const, 
+            icon: <FileText className="w-4 h-4 text-syntax-keyword" />, 
+            section: `codebender-${benderName.toLowerCase()}-story` 
+          },
+        ],
+      },
+      {
+        name: "stack",
+        type: "folder" as const,
+        children: [
+          { 
+            name: "README.md", 
+            type: "file" as const, 
+            icon: <FileCode className="w-4 h-4 text-syntax-type" />, 
+            section: `codebender-${benderName.toLowerCase()}-stack` 
+          },
+        ],
+      },
+      {
+        name: "assets",
+        type: "folder" as const,
+        children: [
+          { 
+            name: "README.md", 
+            type: "file" as const, 
+            icon: <Image className="w-4 h-4 text-syntax-number" />, 
+            section: `codebender-${benderName.toLowerCase()}-assets` 
+          },
+        ],
+      },
+      {
+        name: "socials",
+        type: "folder" as const,
+        children: [
+          { 
+            name: "README.md", 
+            type: "file" as const, 
+            icon: <FileJson className="w-4 h-4 text-syntax-function" />, 
+            section: `codebender-${benderName.toLowerCase()}-socials` 
+          },
+        ],
+      },
+    ],
+  }));
+};
 
 const fileTree: FileItem[] = [
   {
@@ -53,6 +121,11 @@ const fileTree: FileItem[] = [
       },
     ],
   },
+  {
+    name: "code-benders",
+    type: "folder",
+    children: generateCodeBenderFolders(),
+  },
 ];
 
 const FileTreeItem = ({
@@ -60,7 +133,7 @@ const FileTreeItem = ({
   level = 0,
   activeSection,
   onSectionChange,
-  defaultOpen = true,
+  defaultOpen = false,
 }: {
   item: FileItem;
   level?: number;
@@ -69,14 +142,31 @@ const FileTreeItem = ({
   defaultOpen?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const navigate = useNavigate();
   const isFolder = item.type === "folder";
   const isActive = item.section === activeSection;
 
   const handleClick = () => {
     if (isFolder) {
+      // Handle Code Bender folder navigation - navigate on first click
+      if (item.section && item.section.startsWith("codebender-") && !isOpen) {
+        const codebenderId = item.section.replace("codebender-", "");
+        navigate(`/codebender/${codebenderId}`);
+        return;
+      }
       setIsOpen(!isOpen);
     } else if (item.section) {
-      onSectionChange(item.section);
+      // Handle Code Bender file navigation
+      if (item.section.startsWith("codebender-")) {
+        const parts = item.section.split("-");
+        if (parts.length >= 3) {
+          const codebenderId = parts[1];
+          const section = parts.slice(2).join("-");
+          navigate(`/codebender/${codebenderId}/${section}`);
+        }
+      } else {
+        onSectionChange(item.section);
+      }
     }
   };
 
@@ -123,7 +213,7 @@ const FileTreeItem = ({
               level={level + 1}
               activeSection={activeSection}
               onSectionChange={onSectionChange}
-              defaultOpen={level < 1}
+              defaultOpen={false}
             />
           ))}
         </div>
@@ -156,6 +246,7 @@ export const IDESidebar = ({ activeSection, onSectionChange, isOpen, onToggle }:
             item={item}
             activeSection={activeSection}
             onSectionChange={onSectionChange}
+            defaultOpen={false}
           />
         ))}
          {/* <GenericFileTree data={fileTree} /> */}
@@ -165,7 +256,7 @@ export const IDESidebar = ({ activeSection, onSectionChange, isOpen, onToggle }:
       {/* Sidebar Footer */}
       <div className="border-t border-border px-4 py-2">
         <p className="text-xs text-muted-foreground font-mono">
-          5 files • 5 folders
+          5 files • 6 folders
         </p>
       </div>
     </aside>
