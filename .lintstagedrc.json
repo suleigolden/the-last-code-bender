@@ -1,0 +1,10 @@
+{
+  "*.{ts,tsx}": [
+    "eslint --fix",
+    "eslint --max-warnings=0"
+  ],
+  "*.{js,jsx}": [
+    "eslint --fix",
+    "eslint --max-warnings=0"
+  ]
+}
