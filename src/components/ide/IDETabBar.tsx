@@ -1,4 +1,4 @@
-import { FileCode, FileJson, FileText, X, Menu } from "lucide-react";
+import { FileCode, FileJson, FileText, Image, X, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Tab = {
@@ -12,16 +12,48 @@ type IDETabBarProps = {
   onTabChange: (tabId: string) => void;
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
+  isCodeBender?: boolean;
+  codeBenderName?: string;
+  codeBenderId?: string;
 }
 
-const tabs: Tab[] = [
+const landingPageTabs: Tab[] = [
   { id: "readme", name: "README.md", icon: <FileText className="w-4 h-4 text-syntax-string" /> },
   { id: "story", name: "STORY.ts", icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
   { id: "stack", name: "STACK.md", icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
   { id: "socials", name: "SOCIALS.json", icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
 ];
 
-export const IDETabBar = ({ activeTab, onTabChange, onToggleSidebar, isSidebarOpen }: IDETabBarProps) => {
+const codeBenderTabs: Tab[] = [
+  { id: "story", name: "STORY.md", icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
+  { id: "stack", name: "STACK.md", icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
+  { id: "assets", name: "ASSETS", icon: <Image className="w-4 h-4 text-syntax-number" /> },
+  { id: "socials", name: "SOCIALS.json", icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
+];
+
+
+export const IDETabBar = ({ activeTab, onTabChange, onToggleSidebar, isSidebarOpen, isCodeBender = false, codeBenderName, codeBenderId }: IDETabBarProps) => {
+  const tabs = isCodeBender ? codeBenderTabs : landingPageTabs;
+  
+  const handleTabClick = (tabId: string) => {
+    if (isCodeBender && codeBenderId) {
+      // Prefix with codebender-{id}- for Code Bender navigation
+      onTabChange(`codebender-${codeBenderId.toLowerCase()}-${tabId}`);
+    } else {
+      onTabChange(tabId);
+    }
+  };
+
+  // Extract the actual tab ID from activeTab (remove codebender prefix if present)
+  const getActiveTabId = () => {
+    if (isCodeBender && codeBenderId && activeTab.startsWith(`codebender-${codeBenderId.toLowerCase()}-`)) {
+      return activeTab.replace(`codebender-${codeBenderId.toLowerCase()}-`, "");
+    }
+    return activeTab;
+  };
+
+  const currentActiveTab = getActiveTabId();
+
   return (
     <div className="flex items-center bg-ide-tab border-b border-border">
       {/* Mobile menu button */}
@@ -33,15 +65,24 @@ export const IDETabBar = ({ activeTab, onTabChange, onToggleSidebar, isSidebarOp
         <Menu className="w-5 h-5 text-muted-foreground" />
       </button>
 
+      {/* Code Bender Name Display */}
+      {isCodeBender && codeBenderName && (
+        <div className="px-4 py-2.5 border-r border-border">
+          <span className="font-mono text-sm font-semibold text-foreground">
+            {codeBenderName}
+          </span>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex-1 flex overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => onTabChange(tab.id)}
+            onClick={() => handleTabClick(tab.id)}
             className={cn(
               "ide-tab flex items-center gap-2 px-4 py-2.5 font-mono text-sm whitespace-nowrap transition-colors group",
-              activeTab === tab.id
+              currentActiveTab === tab.id
                 ? "bg-background text-foreground active"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
             )}

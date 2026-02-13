@@ -108,10 +108,13 @@ export const CodeBenderProfile = () => {
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {/* Tab Bar */}
           <IDETabBar
-            activeTab={activeSection}
+            activeTab={`codebender-${codebenderId?.toLowerCase()}-${activeSection}`}
             onTabChange={handleSectionChange}
             onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
             isSidebarOpen={sidebarOpen}
+            isCodeBender={true}
+            codeBenderName={codeBenderName || undefined}
+            codeBenderId={codebenderId}
           />
 
           {/* Editor Content - Scrollable area */}

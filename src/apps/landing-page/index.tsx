@@ -137,6 +137,7 @@ export const LandingPage = () => {
             onTabChange={handleSectionChange}
             onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
             isSidebarOpen={sidebarOpen}
+            isCodeBender={false}
           />
 
           {/* Editor Content - Scrollable area */}
