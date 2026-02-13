@@ -1,5 +1,6 @@
 import { FileCode, FileJson, FileText, Image, X, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fileNames } from "@/lib/helper";
 
 type Tab = {
   id: string;
@@ -18,17 +19,17 @@ type IDETabBarProps = {
 }
 
 const landingPageTabs: Tab[] = [
-  { id: "readme", name: "README.md", icon: <FileText className="w-4 h-4 text-syntax-string" /> },
-  { id: "story", name: "STORY.ts", icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
-  { id: "stack", name: "STACK.md", icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
-  { id: "socials", name: "SOCIALS.json", icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
+  { id: fileNames.readme.toLowerCase(), name: fileNames.readme, icon: <FileText className="w-4 h-4 text-syntax-string" /> },
+  { id: fileNames.story.toLowerCase(), name: fileNames.story, icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
+  { id: fileNames.stack.toLowerCase(), name: fileNames.stack, icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
+  { id: fileNames.socials.toLowerCase(), name: fileNames.socials, icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
 ];
 
 const codeBenderTabs: Tab[] = [
-  { id: "story", name: "STORY.md", icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
-  { id: "stack", name: "STACK.md", icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
-  { id: "assets", name: "ASSETS", icon: <Image className="w-4 h-4 text-syntax-number" /> },
-  { id: "socials", name: "SOCIALS.json", icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
+  { id: fileNames.story.toLowerCase(), name: fileNames.story, icon: <FileCode className="w-4 h-4 text-syntax-keyword" /> },
+  { id: fileNames.stack.toLowerCase(), name: fileNames.stack, icon: <FileCode className="w-4 h-4 text-syntax-type" /> },
+  { id: fileNames.assets.toLowerCase(), name: fileNames.assets, icon: <Image className="w-4 h-4 text-syntax-number" /> },
+  { id: fileNames.socials.toLowerCase(), name: fileNames.socials, icon: <FileJson className="w-4 h-4 text-syntax-function" /> },
 ];
 
 

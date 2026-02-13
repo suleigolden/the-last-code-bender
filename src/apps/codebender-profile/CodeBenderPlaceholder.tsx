@@ -1,6 +1,7 @@
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Github, GitFork } from "lucide-react";
+import { fileNames } from "@/lib/helper";
 
 type CodeBenderPlaceholderProps = {
   codeBenderName: string;
@@ -14,6 +15,12 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
   const displayName = codeBenderName.replace(/([A-Z])/g, " $1").trim();
   const folderName = codeBenderName.toLowerCase();
   const sectionName = section.replace(`codebender-${folderName}-`, "");
+  const foldersToContribute = [
+    { name: "story", file: fileNames.readme },
+    { name: "stack", file: fileNames.readme },
+    { name: "socials", file: fileNames.readme },
+    { name: "assets", file: fileNames.readme },
+  ];
 
   return (
     <section className="min-h-screen py-12 px-4 flex items-center justify-center">
@@ -48,7 +55,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
                 <h2 className="text-lg font-semibold text-foreground mb-4">
                   Get Started
                 </h2>
-                <div className="space-y-3 text-foreground/80">
+                <div className="space-y-3 text-foreground/80 mb-6">
                   <p>
                     <span className="syntax-keyword">1.</span> Fork this repository
                   </p>
@@ -59,8 +66,26 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
                     <span className="syntax-keyword">3.</span> Navigate to <code className="syntax-string">code-benders/{folderName}/</code>
                   </p>
                   <p>
-                    <span className="syntax-keyword">4.</span> Add your content to the <code className="syntax-string">{sectionName}</code> folder
+                    <span className="syntax-keyword">4.</span> Add your content to the folders and files:
                   </p>
+                </div>
+                
+                {/* Folders and Files List */}
+                <div className="ml-4 space-y-2 text-foreground/80 font-mono text-sm">
+                  {foldersToContribute.map((folder) => (
+                    <div key={folder.name} className="flex items-start gap-2">
+                      <span className="text-syntax-keyword">-</span>
+                      <div className="flex-1">
+                        <span className="text-syntax-function">{folder.name}/</span>
+                        <div className="ml-4 mt-1">
+                          <span className="text-syntax-string">{folder.file}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 text-foreground/80">
                   <p>
                     <span className="syntax-keyword">5.</span> Submit a pull request
                   </p>
