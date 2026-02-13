@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-export interface TechCardProps {
+export type TechCardProps = {
   title: string;
   description: string;
   color: string;

@@ -148,12 +148,7 @@ const FileTreeItem = ({
 
   const handleClick = () => {
     if (isFolder) {
-      // Handle Code Bender folder navigation - navigate on first click
-      if (item.section && item.section.startsWith("codebender-") && !isOpen) {
-        const codebenderId = item.section.replace("codebender-", "");
-        navigate(`/codebender/${codebenderId}`);
-        return;
-      }
+      // Only toggle open/closed state - no navigation on folder click
       setIsOpen(!isOpen);
     } else if (item.section) {
       // Handle Code Bender file navigation

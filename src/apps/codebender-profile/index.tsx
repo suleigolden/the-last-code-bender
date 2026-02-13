@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { IDESidebar } from "@/components/ide/IDESidebar";
 import { IDETabBar } from "@/components/ide/IDETabBar";
 import { IDEStatusBar } from "@/components/ide/IDEStatusBar";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { CodeBenderPlaceholder } from "./CodeBenderPlaceholder";
 
 const codeBenderNames: Record<string, string> = {
