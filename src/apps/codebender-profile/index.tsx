@@ -6,30 +6,34 @@ import { useState, useEffect } from "react";
 import { CodeBenderPlaceholder } from "./CodeBenderPlaceholder";
 
 const codeBenderNames: Record<string, string> = {
-  "theFirstcodebender": "TheFirstCodeBender",
-  "theSecondcodebender": "TheSecondCodeBender",
-  "theThirdcodebender": "TheThirdCodeBender",
-  "theFourthcodebender": "TheFourthCodeBender",
-  "theFifthcodebender": "TheFifthCodeBender",
-  "theSixthcodebender": "TheSixthCodeBender",
-  "theSeventhcodebender": "TheSeventhCodeBender",
-  "theEighthcodebender": "TheEighthCodeBender",
-  "theNinthcodebender": "TheNinthCodeBender",
-  "theTenthcodebender": "TheTenthCodeBender",
-  "theEleventhcodebender": "TheEleventhCodeBender",
-  "theTwelfthcodebender": "TheTwelfthCodeBender",
-  "theThirteenthcodebender": "TheThirteenthCodeBender",
-  "theFourteenthcodebender": "TheFourteenthCodeBender",
-  "theFifteenthcodebender": "TheFifteenthCodeBender",
+  "thefirstcodebender": "TheFirstCodeBender",
+  "thesecondcodebender": "TheSecondCodeBender",
+  "thethirdcodebender": "TheThirdCodeBender",
+  "thefourthcodebender": "TheFourthCodeBender",
+  "thefifthcodebender": "TheFifthCodeBender",
+  "thesixthcodebender": "TheSixthCodeBender",
+  "theseventhcodebender": "TheSeventhCodeBender",
+  "theeighthcodebender": "TheEighthCodeBender",
+  "theninthcodebender": "TheNinthCodeBender",
+  "thetenthcodebender": "TheTenthCodeBender",
+  "theeleventhcodebender": "TheEleventhCodeBender",
+  "thetwelfthcodebender": "TheTwelfthCodeBender",
+  "thethirteenthcodebender": "TheThirteenthCodeBender",
+  "thefourteenthcodebender": "TheFourteenthCodeBender",
+  "thefifteenthcodebender": "TheFifteenthCodeBender",
 };
 
 export const CodeBenderProfile = () => {
   const { codebenderId, section } = useParams<{ codebenderId: string; section?: string }>();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(section || "story");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-  const codeBenderName = codebenderId ? codeBenderNames[codebenderId.toLowerCase()] : null;
+  // Normalize codebenderId: remove hyphens and convert to lowercase for lookup
+  const normalizedId = codebenderId?.toLowerCase().replace(/-/g, '') || '';
+  const codeBenderName = normalizedId ? codeBenderNames[normalizedId] || null : null;
+
+
 
   useEffect(() => {
     if (section) {
@@ -146,7 +150,7 @@ export const CodeBenderProfile = () => {
           </main>
 
           {/* Status Bar */}
-          <IDEStatusBar activeFile={activeSection} />
+          <IDEStatusBar activeFile={activeSection} codeBenderName={codeBenderName || undefined} />
         </div>
       </div>
     </div>
