@@ -19,9 +19,14 @@ export const LandingPage = () => {
   const socialsRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLElement>(null);
 
   const handleSectionChange = (section: string) => {
-    setActiveSection(section);
+    // Normalize section name: remove file extensions and convert to lowercase
+    // e.g., "readme.md" -> "readme", "STORY.ts" -> "story"
+    const normalizedSection = section.toLowerCase().replace(/\.(md|ts|tsx|js|jsx|json)$/i, '');
+    
+    setActiveSection(normalizedSection);
     setSidebarOpen(false);
     
     const refMap: Record<string, React.RefObject<HTMLDivElement>> = {
@@ -32,10 +37,35 @@ export const LandingPage = () => {
       stack: stackRef,
     };
 
-    const targetRef = refMap[section];
-    if (targetRef?.current) {
-      targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    const targetRef = refMap[normalizedSection];
+    // Use setTimeout to ensure DOM is ready and state is updated
+    setTimeout(() => {
+      if (targetRef?.current) {
+        // Use the main container ref if available, otherwise find it
+        const mainContainer = mainContainerRef.current || targetRef.current.closest('main');
+        if (mainContainer) {
+          // Get the target element's offsetTop relative to the main container
+          // offsetTop gives us the position relative to the offsetParent
+          const targetElement = targetRef.current;
+          const containerElement = mainContainer;
+          
+          // Calculate the scroll position
+          // Use a simpler approach: get the relative position
+          const targetRect = targetElement.getBoundingClientRect();
+          const containerRect = containerElement.getBoundingClientRect();
+          const currentScroll = containerElement.scrollTop;
+          const scrollTop = currentScroll + targetRect.top - containerRect.top;
+          
+          mainContainer.scrollTo({
+            top: scrollTop,
+            behavior: "smooth"
+          });
+        } else {
+          // Fallback to scrollIntoView if main container not found
+          targetRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    }, 100);
   };
 
   // Handle navigation from Code Bender pages
@@ -141,7 +171,7 @@ export const LandingPage = () => {
           />
 
           {/* Editor Content - Scrollable area */}
-          <main className="flex-1 overflow-y-auto scroll-smooth">
+          <main ref={mainContainerRef} className="flex-1 overflow-y-auto scroll-smooth">
             {/* README / Hero Section */}
             <div ref={readmeRef} className="min-h-screen">
               <HeroSection onNavigate={handleSectionChange} />

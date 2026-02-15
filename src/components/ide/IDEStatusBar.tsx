@@ -37,7 +37,7 @@ export const IDEStatusBar = ({ activeFile, codeBenderName }: IDEStatusBarProps) 
         </div>
         <div className="flex items-center gap-1.5 text-syntax-string">
           <Check className="w-3.5 h-3.5" />
-          <span>{codeBenderName ? codeBenderName : "Status: Shipping"}</span>
+          <span>{codeBenderName ? codeBenderName : "Status: TheLastCodeBender"}</span>
         </div>
         <div className="hidden sm:flex items-center gap-1.5 text-syntax-function">
           <Zap className="w-3.5 h-3.5" />
