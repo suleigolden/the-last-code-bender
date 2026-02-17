@@ -44,6 +44,10 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             <span className="syntax-comment"> * Always learning. Always building.</span>
             <br />
             <span className="syntax-comment"> */</span>
+            <br />
+            <span className="syntax-comment text-primary"> * 
+             I cannot let a single day pass without bending code — it lives in my soul.
+            </span>
           </p>
         </div>
 

@@ -1,4 +1,5 @@
-import portraitImage from "@/assets/the-last-code-bender-2.png";
+import logoImage from "@/assets/logo.png";
+
 
 export const PortraitSection = () => {
   return (
@@ -43,7 +44,7 @@ export const PortraitSection = () => {
           {/* Image with border */}
           <div className="relative glow-primary rounded-lg overflow-hidden">
             <img
-              src={portraitImage}
+              src={logoImage}
               alt="TheLastCodeBender"
               className="w-full max-w-md h-auto object-cover"
             />
@@ -55,6 +56,11 @@ export const PortraitSection = () => {
           <p className="text-center font-mono text-sm">
             <span className="text-primary">TheLastCodeBender</span>
             <span className="text-muted-foreground"> — Master of the Code Elements</span>
+          </p>
+          <p className="text-center font-mono text-sm">
+            <span className="text-primary">
+            I cannot let another day pass without writing a single line of code, because it is embedded in my soul.
+              </span>
           </p>
         </div>
       </div>
