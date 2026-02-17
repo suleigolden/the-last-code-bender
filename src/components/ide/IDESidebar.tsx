@@ -2,6 +2,7 @@ import { ChevronDown, ChevronRight, FileCode, FileJson, FileText, Folder, Image 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { codeBenderNames } from "@/lib/code-bender-names";
 
 type FileItem = {
   name: string;
@@ -21,11 +22,7 @@ type IDESidebarProps = {
 // Generate Code Bender folders
 const generateCodeBenderFolders = (): FileItem[] => {
   const codeBenders = [
-    "TheFirstCodeBender", "TheSecondCodeBender", "TheThirdCodeBender",
-    "TheFourthCodeBender", "TheFifthCodeBender", "TheSixthCodeBender",
-    "TheSeventhCodeBender", "TheEighthCodeBender", "TheNinthCodeBender",
-    "TheTenthCodeBender", "TheEleventhCodeBender", "TheTwelfthCodeBender",
-    "TheThirteenthCodeBender", "TheFourteenthCodeBender", "TheFifteenthCodeBender"
+    ...Object.values(codeBenderNames),
   ];
 
   return codeBenders.map((benderName) => ({
@@ -217,7 +214,7 @@ const FileTreeItem = ({
   );
 };
 
-export const IDESidebar = ({ activeSection, onSectionChange, isOpen, onToggle }: IDESidebarProps) => {
+export const IDESidebar = ({ activeSection, onSectionChange, isOpen }: IDESidebarProps) => {
   return (
     <aside
       className={cn(

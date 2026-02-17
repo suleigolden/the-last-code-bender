@@ -4,24 +4,9 @@ import { IDETabBar } from "@/components/ide/IDETabBar";
 import { IDEStatusBar } from "@/components/ide/IDEStatusBar";
 import { useState, useEffect } from "react";
 import { CodeBenderPlaceholder } from "./CodeBenderPlaceholder";
+import { codeBenderNames } from "@/lib/code-bender-names";
 
-const codeBenderNames: Record<string, string> = {
-  "thefirstcodebender": "TheFirstCodeBender",
-  "thesecondcodebender": "TheSecondCodeBender",
-  "thethirdcodebender": "TheThirdCodeBender",
-  "thefourthcodebender": "TheFourthCodeBender",
-  "thefifthcodebender": "TheFifthCodeBender",
-  "thesixthcodebender": "TheSixthCodeBender",
-  "theseventhcodebender": "TheSeventhCodeBender",
-  "theeighthcodebender": "TheEighthCodeBender",
-  "theninthcodebender": "TheNinthCodeBender",
-  "thetenthcodebender": "TheTenthCodeBender",
-  "theeleventhcodebender": "TheEleventhCodeBender",
-  "thetwelfthcodebender": "TheTwelfthCodeBender",
-  "thethirteenthcodebender": "TheThirteenthCodeBender",
-  "thefourteenthcodebender": "TheFourteenthCodeBender",
-  "thefifteenthcodebender": "TheFifteenthCodeBender",
-};
+
 
 export const CodeBenderProfile = () => {
   const { codebenderId, section } = useParams<{ codebenderId: string; section?: string }>();
