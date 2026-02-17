@@ -2,7 +2,7 @@
 
 > An open-source developer legacy project.
 >  
-> Clone. Contribute. Claim your rank.
+> Clone. Contribute. Claim your rank in the codebenders!!!!
 >
 > 🌐 **Live site:** [thelastcodebender.com](https://thelastcodebender.com/)
 
