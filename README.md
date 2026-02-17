@@ -3,6 +3,8 @@
 > An open-source developer legacy project.
 >  
 > Clone. Contribute. Claim your rank.
+>
+> 🌐 **Live site:** [thelastcodebender.com](https://thelastcodebender.com/)
 
 ---
 
@@ -279,4 +281,6 @@ yarn dev
 
 
 The development server will start and you can access the application at `http://localhost:5173` (or the port shown in your terminal).
+
+> 🌐 **Live site:** [thelastcodebender.com](https://thelastcodebender.com/)
 
