@@ -52,17 +52,14 @@ jobs:
             echo "No TypeScript/JavaScript files changed"
           fi
 
-      - name: Type check changed files
+      - name: Type check (when TS/TSX files changed)
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
-          if [ -n "$CHANGED_FILES" ]; then
-            TS_FILES=$(echo "$CHANGED_FILES" | tr ' ' '\n' | grep -E '\.(ts|tsx)$' || true)
-            if [ -n "$TS_FILES" ]; then
-              echo "$TS_FILES" | xargs -r npx tsc --noEmit --project tsconfig.app.json
-            else
-              echo "No TypeScript files changed"
-            fi
+          TS_FILES=$(echo "$CHANGED_FILES" | tr ' ' '\n' | grep -E '\.(ts|tsx)$' || true)
+          if [ -n "$TS_FILES" ]; then
+            # tsc does not allow --project with explicit files (TS5042); run full project type-check
+            npx tsc --noEmit --project tsconfig.app.json
           else
-            echo "No files changed"
+            echo "No TypeScript files changed, skipping type check"
           fi
