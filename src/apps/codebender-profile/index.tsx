@@ -4,7 +4,7 @@ import { IDETabBar } from "@/components/ide/IDETabBar";
 import { IDEStatusBar } from "@/components/ide/IDEStatusBar";
 import { useState, useEffect } from "react";
 import { CodeBenderPlaceholder } from "./CodeBenderPlaceholder";
-import { codeBenderNames } from "@/lib/code-bender-names";
+import { codeBenderNames, getSpecializationLabelForBender } from "@/lib/code-bender-names";
 
 
 
@@ -41,12 +41,11 @@ export const CodeBenderProfile = () => {
       setActiveSection(sectionPath);
       navigate(`/codebender/${codebenderId}/${sectionPath}`, { replace: true });
     } else if (newSection.startsWith("codebender-")) {
-      // Navigate to a different Code Bender
-      const parts = newSection.split("-");
-      if (parts.length >= 2) {
-        const targetCodebenderId = parts[1];
-        const section = parts.slice(2).join("-") || "story";
-        navigate(`/codebender/${targetCodebenderId}/${section}`);
+      // Navigate to a different Code Bender (fullId may contain hyphens)
+      const match = newSection.match(/^codebender-(.+)-(story|stack|assets|socials)$/);
+      if (match) {
+        const [, targetCodebenderId, sectionName] = match;
+        navigate(`/codebender/${targetCodebenderId}/${sectionName}`);
       }
     }
   };
@@ -109,7 +108,11 @@ export const CodeBenderProfile = () => {
           {/* Editor Content - Scrollable area */}
           <main className="flex-1 overflow-y-auto scroll-smooth">
             {codeBenderName ? (
-              <CodeBenderPlaceholder codeBenderName={codeBenderName} section={activeSection} />
+              <CodeBenderPlaceholder
+                codeBenderName={codeBenderName}
+                section={activeSection}
+                specializationLabel={getSpecializationLabelForBender(normalizedId)}
+              />
             ) : (
               <section className="min-h-screen py-12 px-4 flex items-center justify-center">
                 <div className="max-w-3xl w-full">

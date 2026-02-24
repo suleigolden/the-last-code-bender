@@ -6,15 +6,20 @@ import { fileNames } from "@/lib/helper";
 type CodeBenderPlaceholderProps = {
   codeBenderName: string;
   section: string;
+  /** e.g. "Frontend Bender" for path display: code-benders/Frontend Bender/FirstFrontendBender/... */
+  specializationLabel?: string;
 };
 
 const placeholderContent = `Be the first to fork, clone, and contribute to the {codeBenderName} folder.
 Add your story, stack, and journey — and claim your position in the CodeBenders legacy.`;
 
-export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPlaceholderProps) => {
+export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationLabel }: CodeBenderPlaceholderProps) => {
   const displayName = codeBenderName.replace(/([A-Z])/g, " $1").trim();
   const folderName = codeBenderName.toLowerCase();
-  const sectionName = section.replace(`codebender-${folderName}-`, "");
+  const sectionName = section;
+  const pathPrefix = specializationLabel
+    ? `code-benders/${specializationLabel}/${codeBenderName}`
+    : `code-benders/${folderName}`;
   const foldersToContribute = [
     { name: "story", file: fileNames.readme },
     { name: "stack", file: fileNames.readme },
@@ -28,7 +33,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
       <div className="max-w-3xl w-full">
         {/* Header */}
         <div className="font-mono text-sm text-syntax-comment mb-6">
-          {`// code-benders/${folderName}/${sectionName}/README.md`}
+          {`// ${pathPrefix}/${sectionName}/README.md`}
         </div>
 
         {/* IDE Panel */}
@@ -64,7 +69,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section }: CodeBenderPla
                     <span className="syntax-keyword">2.</span> Clone your fork
                   </p>
                   <p>
-                    <span className="syntax-keyword">3.</span> Navigate to <code className="syntax-string">code-benders/{folderName}/</code>
+                    <span className="syntax-keyword">3.</span> Navigate to <code className="syntax-string">{pathPrefix}/</code>
                   </p>
                   <p>
                     <span className="syntax-keyword">4.</span> Add your content to the folders and files:

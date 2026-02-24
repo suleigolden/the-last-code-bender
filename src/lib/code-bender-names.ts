@@ -1,191 +1,88 @@
-export const codeBenderNames: Record<string, string> = {
-    "thefirstcodebender": "TheFirstCodeBender",
-    "thesecondcodebender": "TheSecondCodeBender",
-    "thethirdcodebender": "TheThirdCodeBender",
-    "thefourthcodebender": "TheFourthCodeBender",
-    "thefifthcodebender": "TheFifthCodeBender",
-    "thesixthcodebender": "TheSixthCodeBender",
-    "theseventhcodebender": "TheSeventhCodeBender",
-    "theeighthcodebender": "TheEighthCodeBender",
-    "theninthcodebender": "TheNinthCodeBender",
-    "thetenthcodebender": "TheTenthCodeBender",
-    "theeleventhcodebender": "TheEleventhCodeBender",
-    "thetwelfthcodebender": "TheTwelfthCodeBender",
-    "thethirteenthcodebender": "TheThirteenthCodeBender",
-    "thefourteenthcodebender": "TheFourteenthCodeBender",
-    "thefifteenthcodebender": "TheFifteenthCodeBender",
-    "thesixteenthcodebender": "TheSixteenthCodeBender",
-    "theseventeenthcodebender": "TheSeventeenthCodeBender",
-    "theeighteenthcodebender": "TheEighteenthCodeBender",
-    "thenineteenthcodebender": "TheNineteenthCodeBender",
-    "thetwentiethcodebender": "TheTwentiethCodeBender",
-    "thetwentyfirstcodebender": "TheTwentyFirstCodeBender",
-    "thetwentysecondcodebender": "TheTwentySecondCodeBender",
-    "thetwentythirdcodebender": "TheTwentyThirdCodeBender",
-    "thetwentyfourthcodebender": "TheTwentyFourthCodeBender",
-    "thetwentyfifthcodebender": "TheTwentyFifthCodeBender",
-    "thetwentysixthcodebender": "TheTwentySixthCodeBender",
-    "thetwentyseventhcodebender": "TheTwentySeventhCodeBender",
-    "thetwentyeighthcodebender": "TheTwentyEighthCodeBender",
-    "thetwentyninthcodebender": "TheTwentyNinthCodeBender",
-    "thethirtycodebender": "TheThirtyCodeBender",
-    "thethirtyfirstcodebender": "TheThirtyFirstCodeBender",
-    "thethirtysecondcodebender": "TheThirtySecondCodeBender",
-    "thethirtythirdcodebender": "TheThirtyThirdCodeBender",
-    "thethirtyfourthcodebender": "TheThirtyFourthCodeBender",
-    "thethirtyfifthcodebender": "TheThirtyFifthCodeBender",
-    "thethirtysixthcodebender": "TheThirtySixthCodeBender",
-    "thethirtyseventhcodebender": "TheThirtySeventhCodeBender",
-    "thethirtyeighthcodebender": "TheThirtyEighthCodeBender",
-    "thethirtyninthcodebender": "TheThirtyNinthCodeBender",
-    "thefortycodebender": "TheFortyCodeBender",
-    "thefortyfirstcodebender": "TheFortyFirstCodeBender",
-    "thefortysecondcodebender": "TheFortySecondCodeBender",
-    "thefortythirdcodebender": "TheFortyThirdCodeBender",
-    "thefortyfourthcodebender": "TheFortyFourthCodeBender",
-    "thefortyfifthcodebender": "TheFortyFifthCodeBender",
-    "thefortysixthcodebender": "TheFortySixthCodeBender",
-    "thefortyseventhcodebender": "TheFortySeventhCodeBender",
-    "thefortyeighthcodebender": "TheFortyEighthCodeBender",
-    "thefortyninthcodebender": "TheFortyNinthCodeBender",
-    "thefiftycodebender": "TheFiftyCodeBender",
-    "thefiftyfirstcodebender": "TheFiftyFirstCodeBender",
-    "thefiftysecondcodebender": "TheFiftySecondCodeBender",
-    "thefiftythirdcodebender": "TheFiftyThirdCodeBender",
-    "thefiftyfourthcodebender": "TheFiftyFourthCodeBender",
-    "thefiftyfifthcodebender": "TheFiftyFifthCodeBender",
-    "thefiftysixthcodebender": "TheFiftySixthCodeBender",
-    "thefiftyseventhcodebender": "TheFiftySeventhCodeBender",
-    "thefiftyeighthcodebender": "TheFiftyEighthCodeBender",
-    "thefiftyninthcodebender": "TheFiftyNinthCodeBender",
-    "thesixtycodebender": "TheSixtyCodeBender",
-    "thesixtyfirstcodebender": "TheSixtyFirstCodeBender",
-    "thesixtysecondcodebender": "TheSixtySecondCodeBender",
-    "thesixtythirdcodebender": "TheSixtyThirdCodeBender",
-    "thesixtyfourthcodebender": "TheSixtyFourthCodeBender",
-    "thesixtyfifthcodebender": "TheSixtyFifthCodeBender",
-    "thesixtysixthcodebender": "TheSixtySixthCodeBender",
-    "thesixtyseventhcodebender": "TheSixtySeventhCodeBender",
-    "thesixtyeighthcodebender": "TheSixtyEighthCodeBender",
-    "thesixtyninthcodebender": "TheSixtyNinthCodeBender",
-    "theseventycodebender": "TheSeventyCodeBender",
-    "theseventyfirstcodebender": "TheSeventyFirstCodeBender",
-    "theseventysecondcodebender": "TheSeventySecondCodeBender",
-    "theseventythirdcodebender": "TheSeventyThirdCodeBender",
-    "theseventyfourthcodebender": "TheSeventyFourthCodeBender",
-    "theseventyfifthcodebender": "TheSeventyFifthCodeBender",
-    "theseventysixthcodebender": "TheSeventySixthCodeBender",
-    "theseventyseventhcodebender": "TheSeventySeventhCodeBender",
-    "theseventyeighthcodebender": "TheSeventyEighthCodeBender",
-    "theseventyninthcodebender": "TheSeventyNinthCodeBender",
-    "theeightycodebender": "TheEightyCodeBender",
-    "theeightyfirstcodebender": "TheEightyFirstCodeBender",
-    "theeightysecondcodebender": "TheEightySecondCodeBender",
-    "theeightythirdcodebender": "TheEightyThirdCodeBender",
-    "theeightyfourthcodebender": "TheEightyFourthCodeBender",
-    "theeightyfifthcodebender": "TheEightyFifthCodeBender",
-    "theeightysixthcodebender": "TheEightySixthCodeBender",
-    "theeightyseventhcodebender": "TheEightySeventhCodeBender",
-    "theeightyeighthcodebender": "TheEightyEighthCodeBender",
-    "theeightyninthcodebender": "TheEightyNinthCodeBender",
-    "theninetycodebender": "TheNinetyCodeBender",
-    "theninetyfirstcodebender": "TheNinetyFirstCodeBender",
-    "theninetysecondcodebender": "TheNinetySecondCodeBender",
-    "theninetythirdcodebender": "TheNinetyThirdCodeBender",
-    "theninetyfourthcodebender": "TheNinetyFourthCodeBender",
-    "theninetyfifthcodebender": "TheNinetyFifthCodeBender",
-    "theninetyseventhcodebender": "TheNinetySeventhCodeBender",
-    "theninetyeighthcodebender": "TheNinetyEighthCodeBender",
-    "theninetyninthcodebender": "TheNinetyNinthCodeBender",
-    "thehundredcodebender": "TheHundredCodeBender",
-    "the1001codebender": "The1001CodeBender",
-    "the1002codebender": "The1002CodeBender",
-    "the1003codebender": "The1003CodeBender",
-    "the1004codebender": "The1004CodeBender",
-    "the1005codebender": "The1005CodeBender",
-    "the1006codebender": "The1006CodeBender",
-    "the1007codebender": "The1007CodeBender",
-    "the1008codebender": "The1008CodeBender",
-    "the1009codebender": "The1009CodeBender",
-    "the1010codebender": "The1010CodeBender",
-    "the1011codebender": "The1011CodeBender",
-    "the1012codebender": "The1012CodeBender",
-    "the1013codebender": "The1013CodeBender",
-    "the1014codebender": "The1014CodeBender",
-    "the1015codebender": "The1015CodeBender",
-    "the1016codebender": "The1016CodeBender",
-    "the1017codebender": "The1017CodeBender",
-    "the1018codebender": "The1018CodeBender",
-    "the1019codebender": "The1019CodeBender",
-    "the1020codebender": "The1020CodeBender",
-    "the1021codebender": "The1021CodeBender",
-    "the1022codebender": "The1022CodeBender",
-    "the1023codebender": "The1023CodeBender",
-    "the1024codebender": "The1024CodeBender",
-    "the1025codebender": "The1025CodeBender",
-    "the1026codebender": "The1026CodeBender",
-    "the1027codebender": "The1027CodeBender",
-    "the1028codebender": "The1028CodeBender",
-    "the1029codebender": "The1029CodeBender",
-    "the1030codebender": "The1030CodeBender",
-    "the1031codebender": "The1031CodeBender",
-    "the1032codebender": "The1032CodeBender",
-    "the1033codebender": "The1033CodeBender",
-    "the1034codebender": "The1034CodeBender",
-    "the1035codebender": "The1035CodeBender",
-    "the1036codebender": "The1036CodeBender",
-    "the1037codebender": "The1037CodeBender",
-    "the1038codebender": "The1038CodeBender",
-    "the1039codebender": "The1039CodeBender",
-    "the1040codebender": "The1040CodeBender",
-    "the1041codebender": "The1041CodeBender",
-    "the1042codebender": "The1042CodeBender",
-    "the1043codebender": "The1043CodeBender",
-    "the1044codebender": "The1044CodeBender",
-    "the1045codebender": "The1045CodeBender",
-    "the1046codebender": "The1046CodeBender",
-    "the1047codebender": "The1047CodeBender",
-    "the1048codebender": "The1048CodeBender",
-    "the1049codebender": "The1049CodeBender",
-    "the1050codebender": "The1050CodeBender",
-    "the1051codebender": "The1051CodeBender",
-    "the1052codebender": "The1052CodeBender",
-    "the1053codebender": "The1053CodeBender",
-    "the1054codebender": "The1054CodeBender",
-    "the1055codebender": "The1055CodeBender",
-    "the1056codebender": "The1056CodeBender",
-    "the1057codebender": "The1057CodeBender",
-    "the1058codebender": "The1058CodeBender",
-    "the1059codebender": "The1059CodeBender",
-    "the1060codebender": "The1060CodeBender",
-    "the1061codebender": "The1061CodeBender",
-    "the1062codebender": "The1062CodeBender",
-    "the1063codebender": "The1063CodeBender",
-    "the1064codebender": "The1064CodeBender",
-    "the1065codebender": "The1065CodeBender",
-    "the1066codebender": "The1066CodeBender",
-    "the1067codebender": "The1067CodeBender",
-    "the1068codebender": "The1068CodeBender",
-    "the1069codebender": "The1069CodeBender",
-    "the1070codebender": "The1070CodeBender",
-    "the1071codebender": "The1071CodeBender",
-    "the1072codebender": "The1072CodeBender",
-    "the1073codebender": "The1073CodeBender",
-    "the1074codebender": "The1074CodeBender",
-    "the1075codebender": "The1075CodeBender",
-    "the1076codebender": "The1076CodeBender",
-    "the1077codebender": "The1077CodeBender",
-    "the1078codebender": "The1078CodeBender",
-    "the1079codebender": "The1079CodeBender",
-    "the1080codebender": "The1080CodeBender",
-    "the1081codebender": "The1081CodeBender",
-    "the1082codebender": "The1082CodeBender",
-    "the1083codebender": "The1083CodeBender",
-    "the1084codebender": "The1084CodeBender",
-    "the1085codebender": "The1085CodeBender",
-    "the1086codebender": "The1086CodeBender",
-    "the1087codebender": "The1087CodeBender",
-    "the1088codebender": "The1088CodeBender",
-    "the1089codebender": "The1089CodeBender",
-    "the1090codebender": "The1090CodeBender",
-  };
+import { getOrdinal } from "./ordinals";
+
+/** Number of rank slots per specialization (e.g. FirstFrontendBender ... 200th). */
+export const RANKS_PER_SPECIALIZATION = 200;
+
+/** Single bending specialization (e.g. Frontend Bender) with its folder label and name suffix. */
+export type BendingSpecialization = {
+  id: string;
+  label: string;
+  /** Suffix for rank names, e.g. "FrontendBender" -> FirstFrontendBender */
+  nameSuffix: string;
+};
+
+/** Bending specializations: each has 200 ranks (FirstX, SecondX, ...). */
+export const BENDING_SPECIALIZATIONS: BendingSpecialization[] = [
+  { id: "frontend-bender", label: "Frontend Bender", nameSuffix: "FrontendBender" },
+  { id: "backend-bender", label: "Backend Bender", nameSuffix: "BackendBender" },
+  { id: "fullstack-bender", label: "FullStack Bender", nameSuffix: "FullStackBender" },
+  { id: "security-bender", label: "Security Bender", nameSuffix: "SecurityBender" },
+  { id: "ai-bender", label: "AI Bender", nameSuffix: "AIBender" },
+  { id: "devops-bender", label: "DevOps Bender", nameSuffix: "DevOpsBender" },
+];
+
+export type BenderRank = {
+  /** URL segment: e.g. "frontend-bender-firstfrontendbender" */
+  fullId: string;
+  /** Normalized key for lookup (no hyphens, lowercase) */
+  normalizedId: string;
+  /** Display name: e.g. "FirstFrontendBender" */
+  displayName: string;
+};
+
+function buildCodeBenderNames(): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const spec of BENDING_SPECIALIZATIONS) {
+    for (let n = 1; n <= RANKS_PER_SPECIALIZATION; n++) {
+      const ordinal = getOrdinal(n);
+      const displayName = ordinal + spec.nameSuffix;
+      const rankId = displayName.toLowerCase();
+      const fullId = `${spec.id}-${rankId}`;
+      const normalizedId = fullId.toLowerCase().replace(/-/g, "");
+      map[normalizedId] = displayName;
+    }
+  }
+  return map;
+}
+
+/** Lookup: normalized id -> display name (e.g. "frontendbenderfirstfrontendbender" -> "FirstFrontendBender"). */
+export const codeBenderNames: Record<string, string> = buildCodeBenderNames();
+
+/** Normalized id -> specialization label for path display (e.g. "Frontend Bender"). */
+function buildSpecializationByBender(): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const spec of BENDING_SPECIALIZATIONS) {
+    for (let n = 1; n <= RANKS_PER_SPECIALIZATION; n++) {
+      const ordinal = getOrdinal(n);
+      const displayName = ordinal + spec.nameSuffix;
+      const rankId = displayName.toLowerCase();
+      const fullId = `${spec.id}-${rankId}`;
+      const normalizedId = fullId.toLowerCase().replace(/-/g, "");
+      map[normalizedId] = spec.label;
+    }
+  }
+  return map;
+}
+
+export const codeBenderSpecializationLabel: Record<string, string> = buildSpecializationByBender();
+
+/** Returns specializations with their bender ranks for the sidebar tree. */
+export function getBendingSpecializationsWithRanks(): Array<BendingSpecialization & { benders: BenderRank[] }> {
+  return BENDING_SPECIALIZATIONS.map((spec) => {
+    const benders: BenderRank[] = [];
+    for (let n = 1; n <= RANKS_PER_SPECIALIZATION; n++) {
+      const ordinal = getOrdinal(n);
+      const displayName = ordinal + spec.nameSuffix;
+      const rankId = displayName.toLowerCase();
+      const fullId = `${spec.id}-${rankId}`;
+      const normalizedId = fullId.toLowerCase().replace(/-/g, "");
+      benders.push({ fullId, normalizedId, displayName });
+    }
+    return { ...spec, benders };
+  });
+}
+
+/** Get specialization label for a bender (for path display). */
+export function getSpecializationLabelForBender(normalizedId: string): string | undefined {
+  return codeBenderSpecializationLabel[normalizedId];
+}

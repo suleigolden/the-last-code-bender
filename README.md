@@ -17,14 +17,16 @@
 - 🛠 Craft  
 - 🌐 Social Presence  
 
-Each contributor claims a unique rank in the **CodeBenders Hierarchy**:
+Each contributor claims a unique rank in the **CodeBenders Hierarchy** by **Bending Specialization**:
 
-- TheFirstCodeBender  
-- TheSecondCodeBender  
-- TheThirdCodeBender  
-- …  
+- 🔥 **Frontend Bender** — FirstFrontendBender, SecondFrontendBender, … (200 ranks)  
+- 🌊 **Backend Bender** — FirstBackendBender, SecondBackendBender, … (200 ranks)  
+- 🌪 **FullStack Bender** — FirstFullStackBender, SecondFullStackBender, … (200 ranks)  
+- ⚡ **Security Bender** — FirstSecurityBender, … (200 ranks)  
+- 🧠 **AI Bender** — FirstAIBender, … (200 ranks)  
+- 🏗 **DevOps Bender** — FirstDevOpsBender, … (200 ranks)  
 
-Only one developer can claim each rank.
+Only one developer can claim each rank within a specialization.
 
 First merged Pull Request wins the rank.
 
@@ -55,18 +57,26 @@ Navigate to:
 CodeBenders/
 ```
 
-Choose the next available folder:
+Choose a **Bending Specialization** folder, then choose the next available rank folder inside it:
 
 ```
-TheFirstCodeBender
-TheSecondCodeBender
-TheThirdCodeBender
-...
+CodeBenders/
+  Frontend Bender/
+    FirstFrontendBender/
+    SecondFrontendBender/
+    ...
+  Backend Bender/
+    FirstBackendBender/
+    ...
+  FullStack Bender/
+  Security Bender/
+  AI Bender/
+  DevOps Bender/
 ```
 
-If a folder already contains a completed profile, that rank is taken.
+Each specialization has 200 ranks (First… through 200th). If a folder already contains a completed profile, that rank is taken.
 
-Only one developer per rank.
+Only one developer per rank per specialization.
 
 ---
 

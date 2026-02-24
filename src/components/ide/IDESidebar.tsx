@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, FileCode, FileJson, FileText, Folder, Image 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { codeBenderNames } from "@/lib/code-bender-names";
+import { getBendingSpecializationsWithRanks } from "@/lib/code-bender-names";
 
 type FileItem = {
   name: string;
@@ -19,66 +19,41 @@ type IDESidebarProps = {
   onToggle: () => void;
 }
 
-// Generate Code Bender folders
-const generateCodeBenderFolders = (): FileItem[] => {
-  const codeBenders = [
-    ...Object.values(codeBenderNames),
-  ];
+// Section names for each bender (story, stack, assets, socials)
+const BENDER_SECTIONS = ["story", "stack", "assets", "socials"] as const;
 
-  return codeBenders.map((benderName) => ({
-    name: benderName.toLowerCase(),
+// Generate Code Bender tree: code-benders -> [Specialization] -> [Rank] -> story/stack/assets/socials
+const generateCodeBendersTree = (): FileItem[] => {
+  const specializations = getBendingSpecializationsWithRanks();
+  return specializations.map((spec) => ({
+    name: spec.label,
     type: "folder" as const,
-    section: `codebender-${benderName.toLowerCase()}`,
-    children: [
-      {
-        name: "story",
+    children: spec.benders.map((bender) => ({
+      name: bender.displayName,
+      type: "folder" as const,
+      section: `codebender-${bender.fullId}`,
+      children: BENDER_SECTIONS.map((sectionName) => ({
+        name: sectionName,
         type: "folder" as const,
         children: [
-          { 
-            name: "README.md", 
-            type: "file" as const, 
-            icon: <FileText className="w-4 h-4 text-syntax-keyword" />, 
-            section: `codebender-${benderName.toLowerCase()}-story` 
+          {
+            name: "README.md",
+            type: "file" as const,
+            icon:
+              sectionName === "story" ? (
+                <FileText className="w-4 h-4 text-syntax-keyword" />
+              ) : sectionName === "stack" ? (
+                <FileCode className="w-4 h-4 text-syntax-type" />
+              ) : sectionName === "assets" ? (
+                <Image className="w-4 h-4 text-syntax-number" />
+              ) : (
+                <FileJson className="w-4 h-4 text-syntax-function" />
+              ),
+            section: `codebender-${bender.fullId}-${sectionName}`,
           },
         ],
-      },
-      {
-        name: "stack",
-        type: "folder" as const,
-        children: [
-          { 
-            name: "README.md", 
-            type: "file" as const, 
-            icon: <FileCode className="w-4 h-4 text-syntax-type" />, 
-            section: `codebender-${benderName.toLowerCase()}-stack` 
-          },
-        ],
-      },
-      {
-        name: "assets",
-        type: "folder" as const,
-        children: [
-          { 
-            name: "README.md", 
-            type: "file" as const, 
-            icon: <Image className="w-4 h-4 text-syntax-number" />, 
-            section: `codebender-${benderName.toLowerCase()}-assets` 
-          },
-        ],
-      },
-      {
-        name: "socials",
-        type: "folder" as const,
-        children: [
-          { 
-            name: "README.md", 
-            type: "file" as const, 
-            icon: <FileJson className="w-4 h-4 text-syntax-function" />, 
-            section: `codebender-${benderName.toLowerCase()}-socials` 
-          },
-        ],
-      },
-    ],
+      })),
+    })),
   }));
 };
 
@@ -121,7 +96,7 @@ const fileTree: FileItem[] = [
   {
     name: "code-benders",
     type: "folder",
-    children: generateCodeBenderFolders(),
+    children: generateCodeBendersTree(),
   },
 ];
 
@@ -148,13 +123,12 @@ const FileTreeItem = ({
       // Only toggle open/closed state - no navigation on folder click
       setIsOpen(!isOpen);
     } else if (item.section) {
-      // Handle Code Bender file navigation
+      // Handle Code Bender file navigation (fullId may contain hyphens, e.g. frontend-bender-firstfrontendbender)
       if (item.section.startsWith("codebender-")) {
-        const parts = item.section.split("-");
-        if (parts.length >= 3) {
-          const codebenderId = parts[1];
-          const section = parts.slice(2).join("-");
-          navigate(`/codebender/${codebenderId}/${section}`);
+        const match = item.section.match(/^codebender-(.+)-(story|stack|assets|socials)$/);
+        if (match) {
+          const [, codebenderId, sectionName] = match;
+          navigate(`/codebender/${codebenderId}/${sectionName}`);
         }
       } else {
         onSectionChange(item.section);
