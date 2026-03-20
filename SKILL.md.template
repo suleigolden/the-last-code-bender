@@ -1,0 +1,68 @@
+# SKILL.md — Manual Template
+
+<!--
+  Fill in this file if you want to write your own SKILL.md instead of waiting
+  for the auto-generated one. Once merged, Claude Code users can invoke your
+  style with @<your-github-handle>.
+
+  Delete all comment blocks before submitting.
+-->
+
+## Identity
+
+<!--
+  One sentence: who are you as a developer?
+  Example: "Full-stack engineer who lives in the TypeScript type system and
+  treats database schemas as the source of truth for everything above them."
+-->
+
+## Primary stack
+
+<!--
+  Bulleted list of your main technologies with depth context.
+  Example:
+  - TypeScript (5 yrs) — strict mode always on, utility types over `any`
+  - React (4 yrs) — functional components, hooks, minimal state
+  - PostgreSQL (3 yrs) — raw SQL preferred over heavy ORMs
+  - Node.js / Express — REST APIs, occasional GraphQL
+-->
+
+## Coding philosophy
+
+<!--
+  3–5 bullet points describing how you approach architecture, naming,
+  errors, and testing.
+  Example:
+  - Design data models first; UI is a projection of state, not the other way around.
+  - Errors are first-class citizens — never swallow them silently.
+  - Tests should describe behaviour, not implementation details.
+-->
+
+## Style patterns
+
+<!--
+  Concrete preferences: naming conventions, file structure, patterns you favour.
+  Example:
+  - PascalCase for components, camelCase for everything else
+  - Co-locate tests next to source files (foo.test.ts beside foo.ts)
+  - Prefer named exports; avoid default exports except for pages/routes
+  - Always type API responses explicitly; never trust `any` from fetch
+-->
+
+## What to avoid
+
+<!--
+  2–3 things you actively dislike or avoid in codebases.
+  Example:
+  - Magic numbers and strings — extract to named constants
+  - Deeply nested callbacks — flatten with async/await
+  - God components — split early, split often
+-->
+
+## Invocation note
+
+<!--
+  One sentence: what does coding with your skill feel like?
+  Example: "Expect deliberate type safety, tight module boundaries, and
+  comments only where the intent isn't obvious from the code itself."
+-->
