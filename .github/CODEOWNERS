@@ -1,0 +1,14 @@
+# Default owner for everything not explicitly matched below
+* @suleigolden
+
+# .github config and workflows
+.github/ @suleigolden
+
+# ──────────────────────────────────────────────
+# Bender folder ownership
+# Entries below are auto-appended by .github/scripts/add-codeowner.sh
+# when a contributor claims a rank via PR.
+# Format: CodeBenders/<Discipline>/<RankFolder>/ @githubhandle
+# ──────────────────────────────────────────────
+# CodeBenders/Frontend\ Bender/FirstFrontendBender/ @githubhandle
+# CodeBenders/Backend\ Bender/FirstBackendBender/ @githubhandle

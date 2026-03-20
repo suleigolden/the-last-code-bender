@@ -3,6 +3,7 @@
 ## Purpose
 An open-source developer legacy project where 1,200 unique ranks (6 specializations × 200 each) are claimed via PR — one developer per rank, forever. The site is a VS Code-themed showcase of contributors.
 
+TheLastCodeBender repo at: https://github.com/suleigolden/the-last-code-bender
 Live site: https://thelastcodebender.com/
 
 ## Tech Stack
