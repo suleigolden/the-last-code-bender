@@ -191,17 +191,25 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Extract SKILL.md diff
+      - name: Install script deps
+        run: cd .github/scripts && npm install
+
+      - name: Extract SKILL.md content
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          gh pr diff "$PR_NUMBER" -- '**/SKILL.md' > /tmp/skill_diff.txt
-          echo "SKILL.md diff saved to /tmp/skill_diff.txt"
-          cat /tmp/skill_diff.txt
+          git fetch origin pull/$PR_NUMBER/head:pr-head
+          OWNED_FOLDER=$(grep -v '^#' .github/CODEOWNERS | grep "@${AUTHOR}" | awk '{print $1}' | head -1)
+          SKILL_FILE=$(git show pr-head:"${OWNED_FOLDER#/}SKILL.md" > /tmp/skill.md 2>/dev/null && echo /tmp/skill.md || echo "")
+          if [ -z "$SKILL_FILE" ]; then
+            echo "Could not extract SKILL.md from PR head" >&2
+            exit 1
+          fi
+          echo "SKILL.md extracted to /tmp/skill.md"
 
       - name: Read author stack.json
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           OWNED_FOLDER=$(grep -v '^#' .github/CODEOWNERS | grep "@${AUTHOR}" | awk '{print $1}' | head -1)
@@ -217,17 +225,9 @@ jobs:
       - name: Run AI review
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          SKILL_DIFF_PATH: /tmp/skill_diff.txt
-          STACK_PATH: /tmp/stack.json
           AI_FEEDBACK_PATH: /tmp/ai_feedback.txt
         run: |
-          # NOTE: .github/scripts/ai-review.js does not exist yet — must be created separately.
-          # The script should:
-          #   - Read SKILL_DIFF_PATH and STACK_PATH from env
-          #   - Call the Anthropic API to evaluate the SKILL.md change
-          #   - Write its decision + feedback to AI_FEEDBACK_PATH
-          #   - Exit 0 to approve, exit 1 to reject
-          node .github/scripts/ai-review.js
+          node .github/scripts/ai-review.js /tmp/skill.md /tmp/stack.json
 
       - name: Merge on approval
         if: success()
