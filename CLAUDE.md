@@ -61,3 +61,4 @@ A new contributor creates a profile under the appropriate specialization folder.
 | File | When to check |
 |------|---------------|
 | `.claude/docs/architectural_patterns.md` | IDE layout pattern, routing conventions, component hierarchy, state management, rank data flow |
+| `.claude/docs/claude_workflow.md` | After features: add/run tests (`bun test`), then draft commit messages (Conventional Commits) |
