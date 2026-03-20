@@ -1,0 +1,274 @@
+name: pr-router
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  classify:
+    name: classify
+    runs-on: ubuntu-latest
+    outputs:
+      path_type: ${{ steps.classify.outputs.path_type }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Classify PR
+        id: classify
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          # Get changed files
+          CHANGED_FILES=$(gh pr view "$PR_NUMBER" --json files --jq '.files[].path')
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Look up author's owned folder from CODEOWNERS
+          OWNED_FOLDER=$(grep -v '^#' .github/CODEOWNERS | grep "@${AUTHOR}" | awk '{print $1}' | head -1)
+          echo "Author: $AUTHOR"
+          echo "Owned folder: $OWNED_FOLDER"
+
+          # Classification logic
+          TYPE="structural"
+
+          if [ -n "$OWNED_FOLDER" ]; then
+            ALL_IN_FOLDER=true
+            HAS_SKILL_MD=false
+
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+
+              # Check if file is inside author's owned folder
+              if [[ "$file" != ${OWNED_FOLDER#/}* ]]; then
+                ALL_IN_FOLDER=false
+                break
+              fi
+
+              # Check if any file is SKILL.md
+              if [[ "$(basename "$file")" == "SKILL.md" ]]; then
+                HAS_SKILL_MD=true
+              fi
+            done <<< "$CHANGED_FILES"
+
+            if $ALL_IN_FOLDER; then
+              if $HAS_SKILL_MD; then
+                TYPE="skill"
+              else
+                TYPE="profile"
+              fi
+            fi
+          fi
+
+          # Structural override: any file outside CodeBenders/ or touching .github/, src/, public/, package.json, root config
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            if [[ "$file" == .github/* ]] || \
+               [[ "$file" == src/* ]] || \
+               [[ "$file" == public/* ]] || \
+               [[ "$file" == "package.json" ]] || \
+               [[ "$file" == "package-lock.json" ]] || \
+               [[ "$file" == "bun.lockb" ]] || \
+               [[ "$file" == "vite.config"* ]] || \
+               [[ "$file" == "tsconfig"* ]] || \
+               [[ "$file" == "tailwind.config"* ]] || \
+               [[ "$file" == "eslint.config"* ]] || \
+               [[ "$file" == "postcss.config"* ]] || \
+               [[ "$file" == "index.html" ]] || \
+               [[ "$file" != CodeBenders/* ]]; then
+              TYPE="structural"
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo "Detected type: $TYPE"
+          echo "path_type=${TYPE}" >> "$GITHUB_OUTPUT"
+
+      - name: Post classification comment
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PATH_TYPE: ${{ steps.classify.outputs.path_type }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          case "$PATH_TYPE" in
+            profile)
+              MSG="**PR Router:** Detected as \`profile\` update — all changed files are inside @${AUTHOR}'s CodeBenders folder. Auto-merge will proceed after validation."
+              ;;
+            skill)
+              MSG="**PR Router:** Detected as \`skill\` update — includes a \`SKILL.md\` change inside @${AUTHOR}'s CodeBenders folder. AI review will run."
+              ;;
+            structural)
+              MSG="**PR Router:** Detected as \`structural\` change — this PR touches files outside the contributor's CodeBenders folder and requires manual review by @suleigolden."
+              ;;
+          esac
+          gh pr comment "$PR_NUMBER" --body "$MSG"
+
+  auto-merge:
+    name: auto-merge
+    needs: classify
+    if: needs.classify.outputs.path_type == 'profile'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate and merge
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          CHANGED_FILES=$(gh pr view "$PR_NUMBER" --json files --jq '.files[].path')
+          OWNED_FOLDER=$(grep -v '^#' .github/CODEOWNERS | grep "@${AUTHOR}" | awk '{print $1}' | head -1)
+
+          FAIL_REASON=""
+
+          # Verify all files are inside author's folder
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            if [[ "$file" != ${OWNED_FOLDER#/}* ]]; then
+              FAIL_REASON="File \`$file\` is outside your CodeBenders folder (\`$OWNED_FOLDER\`)."
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          # File size and extension checks
+          if [ -z "$FAIL_REASON" ]; then
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+
+              # Extension check — reject executables/scripts
+              if [[ "$file" == *.exe ]] || [[ "$file" == *.dll ]] || [[ "$file" == *.bat ]]; then
+                FAIL_REASON="File \`$file\` has a disallowed extension (\`.exe\`, \`.dll\`, \`.bat\` are not permitted)."
+                break
+              fi
+
+              # File size check (< 5 MB)
+              SIZE=$(git show "HEAD:$file" 2>/dev/null | wc -c || echo 0)
+              if [ "$SIZE" -ge 5242880 ]; then
+                FAIL_REASON="File \`$file\` exceeds the 5 MB size limit (${SIZE} bytes)."
+                break
+              fi
+            done <<< "$CHANGED_FILES"
+          fi
+
+          if [ -n "$FAIL_REASON" ]; then
+            gh pr review "$PR_NUMBER" --request-changes --body "**Auto-merge blocked:** $FAIL_REASON Please fix the issue and push again."
+            gh pr comment "$PR_NUMBER" --body "**Auto-merge failed:** $FAIL_REASON"
+            exit 1
+          fi
+
+          gh pr merge "$PR_NUMBER" --squash --auto
+          gh pr comment "$PR_NUMBER" --body "**Profile update merged automatically ✓** — all validations passed."
+
+  ai-review:
+    name: ai-review
+    needs: classify
+    if: needs.classify.outputs.path_type == 'skill'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Extract SKILL.md diff
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr diff "$PR_NUMBER" -- '**/SKILL.md' > /tmp/skill_diff.txt
+          echo "SKILL.md diff saved to /tmp/skill_diff.txt"
+          cat /tmp/skill_diff.txt
+
+      - name: Read author stack.json
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          OWNED_FOLDER=$(grep -v '^#' .github/CODEOWNERS | grep "@${AUTHOR}" | awk '{print $1}' | head -1)
+          STACK_FILE="${OWNED_FOLDER#/}stack.json"
+          if [ -f "$STACK_FILE" ]; then
+            cp "$STACK_FILE" /tmp/stack.json
+            echo "stack.json found at $STACK_FILE"
+          else
+            echo "{}" > /tmp/stack.json
+            echo "No stack.json found at $STACK_FILE — using empty object"
+          fi
+
+      - name: Run AI review
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          SKILL_DIFF_PATH: /tmp/skill_diff.txt
+          STACK_PATH: /tmp/stack.json
+          AI_FEEDBACK_PATH: /tmp/ai_feedback.txt
+        run: |
+          # NOTE: .github/scripts/ai-review.js does not exist yet — must be created separately.
+          # The script should:
+          #   - Read SKILL_DIFF_PATH and STACK_PATH from env
+          #   - Call the Anthropic API to evaluate the SKILL.md change
+          #   - Write its decision + feedback to AI_FEEDBACK_PATH
+          #   - Exit 0 to approve, exit 1 to reject
+          node .github/scripts/ai-review.js
+
+      - name: Merge on approval
+        if: success()
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr merge "$PR_NUMBER" --squash --auto
+          gh pr comment "$PR_NUMBER" --body "**SKILL.md reviewed and approved by AI ✓** — merging automatically."
+
+      - name: Request changes on rejection
+        if: failure()
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          AI_FEEDBACK=$(cat /tmp/ai_feedback.txt 2>/dev/null || echo "The AI reviewer rejected this SKILL.md update. Please review and revise.")
+          gh pr review "$PR_NUMBER" --request-changes --body "$AI_FEEDBACK"
+
+  flag-structural:
+    name: flag-structural
+    needs: classify
+    if: needs.classify.outputs.path_type == 'structural'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Post structural review comment
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr comment "$PR_NUMBER" \
+            --body "This PR touches files outside your CodeBenders folder and needs manual review by @suleigolden."
+
+      - name: Add needs-human-review label
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr edit "$PR_NUMBER" --add-label "needs-human-review"
+
+      - name: Request review from maintainer
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr edit "$PR_NUMBER" --add-reviewer suleigolden
