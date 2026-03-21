@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-03-21T13:48:14.935Z",
+  "total_benders": 1,
+  "positions": {
+    "adopt": [],
+    "trial": [],
+    "assess": [
+      {
+        "tech": "TypeScript",
+        "category": "language",
+        "score": 0.5,
+        "bender_count": 1
+      },
+      {
+        "tech": "React",
+        "category": "framework",
+        "score": 0.5,
+        "bender_count": 1
+      },
+      {
+        "tech": "Vite",
+        "category": "other",
+        "score": 0.3,
+        "bender_count": 1
+      }
+    ],
+    "hold": []
+  }
+}
