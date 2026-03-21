@@ -60,7 +60,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
                 <h2 className="text-lg font-semibold text-foreground mb-4">
                   Get Started
                 </h2>
-                <div className="space-y-3 text-foreground/80 mb-6">
+                <div className="space-y-3 text-foreground/80 mb-6 text-left">
                   <p>
                     <span className="syntax-keyword">1.</span> Fork this repository
                   </p>
@@ -76,7 +76,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
                 </div>
                 
                 {/* Folders and Files List */}
-                <div className="ml-4 space-y-2 text-foreground/80 font-mono text-sm">
+                <div className="ml-4 space-y-2 text-foreground/80 font-mono text-sm text-left">
                   {foldersToContribute.map((folder) => (
                     <div key={folder.name} className="flex items-start gap-2">
                       <span className="text-syntax-keyword">-</span>
@@ -90,7 +90,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
                   ))}
                 </div>
 
-                <div className="mt-6 text-foreground/80">
+                <div className="mt-6 text-foreground/80 text-left">
                   <p>
                     <span className="syntax-keyword">5.</span> Submit a pull request
                   </p>
@@ -98,7 +98,7 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4 mt-8">
+              <div className="flex flex-wrap gap-4 mt-8 justify-center">
                 <ForkRepositoryButton />
                 <ViewOnGitHubButton />
               </div>

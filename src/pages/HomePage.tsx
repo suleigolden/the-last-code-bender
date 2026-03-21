@@ -3,8 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRegistryStats } from '@/hooks/useRegistry';
 import { activeChallenges } from '@/data/challenges';
-
-const GITHUB_URL = 'https://github.com/suleigolden/the-last-code-bender';
+import { CodeBenderPlaceholder } from '@/apps/codebender-profile/CodeBenderPlaceholder';
 
 export function HomePage() {
   const stats = useRegistryStats();
@@ -42,14 +41,9 @@ export function HomePage() {
           The<span className="text-cyan-400">Last</span>CodeBender
         </h1>
         <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
-          Open source developer legacy. 1,200 ranks. One per developer. Forever.
+          Open source developer legacy. One per developer. Forever.
         </p>
         <div className="flex gap-4 justify-center mt-8 flex-wrap">
-          <Button size="lg" asChild>
-            <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-              Claim Your Rank
-            </a>
-          </Button>
           <Button size="lg" variant="outline" asChild>
             <Link to="/hall-of-fame">Explore Benders</Link>
           </Button>
@@ -92,14 +86,13 @@ export function HomePage() {
       {/* CTA Banner */}
       <section className="border-t border-border py-16 text-center px-4">
         <h2 className="font-mono text-2xl md:text-3xl font-bold">Ready to bend code?</h2>
-        <p className="text-muted-foreground mt-3">
+        <p className="text-muted-foreground mt-3 mb-6">
           Fork the repo, claim your rank, and join the legacy.
         </p>
-        <Button size="lg" asChild className="mt-6">
-          <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-            Fork on GitHub →
-          </a>
-        </Button>
+        <main className="flex-1 overflow-y-auto scroll-smooth">
+          <CodeBenderPlaceholder codeBenderName="AnyCodeBender" section="README" />
+        </main>
+       {/* <ForkRepositoryButton /> */}
       </section>
     </div>
   );

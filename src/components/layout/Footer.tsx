@@ -12,7 +12,7 @@ export function Footer() {
             The<span className="text-cyan-400">Last</span>CodeBender
           </span>
           <p className="text-muted-foreground text-sm">
-            Open source developer legacy. 1,200 ranks. One per developer. Forever.
+            Open source developer legacy. Thousands of ranks. One per developer. Forever.
           </p>
         </div>
 
