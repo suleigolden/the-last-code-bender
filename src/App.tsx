@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LandingPage } from "./apps/landing-page";
 import { NotFound } from "./apps/not-found";
 import { CodeBenderProfile } from "./apps/codebender-profile";
+import { ChallengesPage } from "./pages/ChallengesPage";
 
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<LandingPage />} />
           <Route path="/codebender/:codebenderId" element={<CodeBenderProfile />} />
           <Route path="/codebender/:codebenderId/:section" element={<CodeBenderProfile />} />
+          <Route path="/challenges" element={<ChallengesPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
