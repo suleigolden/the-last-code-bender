@@ -249,11 +249,23 @@ for (const arr of Object.values(positions)) {
   arr.sort((a, b) => b.score - a.score);
 }
 
-// 6. Build and write output
+// 6. Compute movements (techs that changed quadrant since last run)
+const movements = [];
+for (const [pos, items] of Object.entries(positions)) {
+  for (const item of items) {
+    const prev = previousPositions[item.tech];
+    if (prev && prev.position !== pos) {
+      movements.push({ tech: item.tech, category: item.category, from: prev.position, to: pos });
+    }
+  }
+}
+
+// 7. Build and write output
 const output = {
   generated_at: new Date().toISOString(),
   total_benders: totalBenders,
   positions,
+  movements,
 };
 
 const outputDir = path.dirname(outputPath);

@@ -36,6 +36,13 @@ export interface RadarEntry {
   bender_count: number;
 }
 
+export interface RadarMovement {
+  tech: string;
+  category: string;
+  from: string;
+  to: string;
+}
+
 export interface Radar {
   generated_at: string;
   total_benders: number;
@@ -45,6 +52,7 @@ export interface Radar {
     assess: RadarEntry[];
     hold: RadarEntry[];
   };
+  movements?: RadarMovement[];
 }
 
 export interface RegistryStats {

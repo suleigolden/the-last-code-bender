@@ -9,6 +9,7 @@ import { CodeBenderProfile } from "./apps/codebender-profile";
 import { ChallengesPage } from "./pages/ChallengesPage";
 import { HallOfFamePage } from "./pages/HallOfFamePage";
 import { BenderProfilePage } from "./pages/BenderProfilePage";
+import { StackRadarPage } from "./pages/StackRadarPage";
 
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/codebender/:codebenderId/:section" element={<CodeBenderProfile />} />
           <Route path="/challenges" element={<ChallengesPage />} />
           <Route path="/hall-of-fame" element={<HallOfFamePage />} />
+          <Route path="/stack-radar" element={<StackRadarPage />} />
           <Route path="/benders/:discipline/:handle" element={<BenderProfilePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
