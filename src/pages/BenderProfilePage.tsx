@@ -209,23 +209,7 @@ export const BenderProfilePage = () => {
 
                   {/* Showcase */}
                   <TabsContent value="showcase">
-                    {bender.demo_url ? (
-                      <DemoFrame url={bender.demo_url} views={bender.demo_views} />
-                    ) : (
-                      <div className="font-mono text-sm text-muted-foreground space-y-3">
-                        <p>// No live demo yet</p>
-                        <Button variant="outline" size="sm" asChild className="gap-2">
-                          <a
-                            href="https://github.com/suleigolden/the-last-code-bender"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                            Add your demo via PR
-                          </a>
-                        </Button>
-                      </div>
-                    )}
+                    <DemoFrame url={bender.demo_url} views={bender.demo_views} />
                   </TabsContent>
 
                   {/* Challenges */}

@@ -99,6 +99,30 @@ if (fs.existsSync(absCodebenders)) {
         }
       }
 
+      // Detect demo_url from demo/ subfolder (fallback — deploy-showcase.js is authoritative)
+      let scannedDemoUrl = null;
+      const demoScanDir = path.join(handlePath, 'demo');
+      if (fs.existsSync(demoScanDir)) {
+        const dIndexHtml = path.join(demoScanDir, 'index.html');
+        const dDeployYml = path.join(demoScanDir, 'deploy.yaml');
+        const dIframeTxt = path.join(demoScanDir, 'iframe.txt');
+        if (fs.existsSync(dIndexHtml)) {
+          scannedDemoUrl = `/demos/${handle}/`;
+        } else if (fs.existsSync(dDeployYml)) {
+          try {
+            const raw   = fs.readFileSync(dDeployYml, 'utf8');
+            const match = raw.match(/^external_url:\s*(.+)$/m);
+            if (match) scannedDemoUrl = match[1].trim();
+          } catch (_) {}
+        } else if (fs.existsSync(dIframeTxt)) {
+          try {
+            const raw  = fs.readFileSync(dIframeTxt, 'utf8');
+            const line = raw.split('\n').map(l => l.trim()).find(l => l);
+            if (line) scannedDemoUrl = line;
+          } catch (_) {}
+        }
+      }
+
       // Merge with existing gameplay fields
       const existing = existingMap.get(handle) || {};
       const entry = {
@@ -112,7 +136,7 @@ if (fs.existsSync(absCodebenders)) {
         open_to_work: existing.open_to_work ?? false,
         challenge_wins: existing.challenge_wins ?? 0,
         community_vote: existing.community_vote ?? false,
-        demo_url: existing.demo_url ?? null,
+        demo_url: scannedDemoUrl ?? existing.demo_url ?? null,
         demo_views: existing.demo_views ?? 0,
         joined: existing.joined || today,
         last_active: today,
