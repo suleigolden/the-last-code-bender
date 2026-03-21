@@ -1,0 +1,1 @@
+export const projectUrl = "https://github.com/suleigolden/the-last-code-bender";

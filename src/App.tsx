@@ -13,6 +13,7 @@ import { RecruiterPage } from "./pages/RecruiterPage";
 import { CompatibilityPage } from "./pages/CompatibilityPage";
 import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
+import { TheLastCodeBenderProfile } from "./apps/the-last-code-bender-profile";
 
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           {/* Layout-wrapped routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/the-last-code-bender" element={<TheLastCodeBenderProfile />} />
             <Route path="/hall-of-fame" element={<HallOfFamePage />} />
             <Route path="/challenges" element={<ChallengesPage />} />
             <Route path="/stack-radar" element={<StackRadarPage />} />

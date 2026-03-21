@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Github, GitFork } from "lucide-react";
 import { fileNames } from "@/lib/helper";
+import { ForkRepositoryButton } from "../action-buttons/ ForkRepositoryButton";
+import { ViewOnGitHubButton } from "../action-buttons/ViewOnGitHubButton";
 
 type CodeBenderPlaceholderProps = {
   codeBenderName: string;
@@ -26,7 +26,6 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
     { name: "socials", file: fileNames.readme },
     { name: "assets", file: fileNames.readme },
   ];
-  const projectUrl = "https://github.com/suleigolden/the-last-code-bender";
 
   return (
     <section className="min-h-screen py-12 px-4 flex items-center justify-center">
@@ -100,23 +99,8 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 mt-8">
-                <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary font-mono"
-                  size="lg"
-                  onClick={() => window.open(`${projectUrl}/fork`, "_blank", "noopener,noreferrer")}
-                >
-                  <Github className="w-4 h-4 mr-2" />
-                  Fork Repository
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary/10 font-mono"
-                  size="lg"
-                  onClick={() => window.open(projectUrl, "_blank", "noopener,noreferrer")}
-                >
-                  <GitFork className="w-4 h-4 mr-2" />
-                  View on GitHub
-                </Button>
+                <ForkRepositoryButton />
+                <ViewOnGitHubButton />
               </div>
             </div>
           </div>

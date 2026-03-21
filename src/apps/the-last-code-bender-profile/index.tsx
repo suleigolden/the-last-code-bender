@@ -9,7 +9,7 @@ import { SocialsSection } from "./sections/SocialsSection";
 import { PortraitSection } from "./sections/PortraitSection";
 import { StackSection } from "./sections/StackSection";
 
-export const LandingPage = () => {
+export const TheLastCodeBenderProfile = () => {
   const location = useLocation();
   const [activeSection, setActiveSection] = useState("readme");
   const [sidebarOpen, setSidebarOpen] = useState(false);
