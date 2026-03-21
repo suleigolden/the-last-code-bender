@@ -11,6 +11,7 @@ import { HallOfFamePage } from "./pages/HallOfFamePage";
 import { BenderProfilePage } from "./pages/BenderProfilePage";
 import { StackRadarPage } from "./pages/StackRadarPage";
 import { RecruiterPage } from "./pages/RecruiterPage";
+import { CompatibilityPage } from "./pages/CompatibilityPage";
 
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/stack-radar" element={<StackRadarPage />} />
           <Route path="/benders/:discipline/:handle" element={<BenderProfilePage />} />
           <Route path="/recruit" element={<RecruiterPage />} />
+          <Route path="/compat" element={<CompatibilityPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
