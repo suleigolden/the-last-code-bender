@@ -1,0 +1,42 @@
+name: test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Vitest (src tests)
+        run: bun run test
+
+      - name: compute-xp unit tests
+        run: node .github/tests/test-compute-xp.js
+
+      - name: PR classifier tests
+        run: bash .github/tests/test-pr-classifier.sh
+
+      - name: Post test summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ "$JOB_STATUS" = "success" ]; then
+            ICON="✅"; MSG="All integration tests passed."
+          else
+            ICON="❌"; MSG="One or more integration tests failed — check the [test run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+          fi
+          gh pr comment "$PR_NUMBER" --body "$ICON **Test Suite:** $MSG"
