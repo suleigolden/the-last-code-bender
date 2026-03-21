@@ -7,6 +7,7 @@ import { LandingPage } from "./apps/landing-page";
 import { NotFound } from "./apps/not-found";
 import { CodeBenderProfile } from "./apps/codebender-profile";
 import { ChallengesPage } from "./pages/ChallengesPage";
+import { HallOfFamePage } from "./pages/HallOfFamePage";
 import { BenderProfilePage } from "./pages/BenderProfilePage";
 
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/codebender/:codebenderId" element={<CodeBenderProfile />} />
           <Route path="/codebender/:codebenderId/:section" element={<CodeBenderProfile />} />
           <Route path="/challenges" element={<ChallengesPage />} />
+          <Route path="/hall-of-fame" element={<HallOfFamePage />} />
           <Route path="/benders/:discipline/:handle" element={<BenderProfilePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
