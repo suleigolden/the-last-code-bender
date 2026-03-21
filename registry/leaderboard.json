@@ -1,0 +1,21 @@
+{
+  "snapshot_at": "2026-03-20T23:46:35.821Z",
+  "entries": [
+    {
+      "position": 1,
+      "handle": "FirstFrontendBender",
+      "github": "firstfrontendbender",
+      "discipline": "Frontend",
+      "rank": "Apprentice",
+      "xp": 10
+    },
+    {
+      "position": 2,
+      "handle": "FirstBackendBender",
+      "github": "firstbackendbender",
+      "discipline": "Backend",
+      "rank": "Apprentice",
+      "xp": 0
+    }
+  ]
+}
