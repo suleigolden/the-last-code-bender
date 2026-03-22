@@ -1,6 +1,7 @@
 import { FileCode, FileJson, FileText, Image, X, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fileNames } from "@/lib/helper";
+import { IDEWindowControls } from "@/components/ide/IDEWindowControls";
 
 type Tab = {
   id: string;
@@ -33,7 +34,7 @@ const codeBenderTabs: Tab[] = [
 ];
 
 
-export const IDETabBar = ({ activeTab, onTabChange, onToggleSidebar, isSidebarOpen, isCodeBender = false, codeBenderName, codeBenderId }: IDETabBarProps) => {
+export const IDETabBar = ({ activeTab, onTabChange, onToggleSidebar, isSidebarOpen: _isSidebarOpen, isCodeBender = false, codeBenderName, codeBenderId }: IDETabBarProps) => {
   const tabs = isCodeBender ? codeBenderTabs : landingPageTabs;
   
   const handleTabClick = (tabId: string) => {
@@ -100,12 +101,7 @@ export const IDETabBar = ({ activeTab, onTabChange, onToggleSidebar, isSidebarOp
         ))}
       </div>
 
-      {/* Window controls (decorative) */}
-      <div className="hidden md:flex items-center gap-2 px-4">
-        <div className="w-3 h-3 rounded-full bg-destructive/60" />
-        <div className="w-3 h-3 rounded-full bg-syntax-function/60" />
-        <div className="w-3 h-3 rounded-full bg-syntax-string/60" />
-      </div>
+      <IDEWindowControls />
     </div>
   );
 };

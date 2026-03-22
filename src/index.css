@@ -213,3 +213,33 @@
     @apply text-primary bg-sidebar-accent;
   }
 }
+
+/* Full-app “minimize to dock” when leaving IDE chrome via window controls → /hall-of-fame */
+html.ide-minimize-exit {
+  overflow: hidden;
+}
+
+html.ide-minimize-exit #root {
+  animation: ide-minimize-to-dock 0.55s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  transform-origin: 50% 92%;
+  will-change: transform, opacity;
+  border-radius: 0;
+}
+
+@keyframes ide-minimize-to-dock {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 1;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(0.14) translate3d(0, 48vh, 0);
+    opacity: 0.12;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.45);
+  }
+}

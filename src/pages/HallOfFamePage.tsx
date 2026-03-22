@@ -14,6 +14,7 @@ import { BENDER_PROFILES } from '@/codebender-profiles/registry';
 import { useRegistry, useRegistryStats } from '@/hooks/useRegistry';
 import { getBendingSpecializationsWithRanks } from '@/lib/code-bender-names';
 import type { Bender } from '@/types/registry';
+import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
 const SPEC_ID_TO_DISCIPLINE: Record<string, string> = {
   'frontend-bender': 'Frontend',
@@ -127,9 +128,7 @@ export const HallOfFamePage = () => {
         {/* IDE Tab Bar */}
         <div className="flex items-center bg-ide-tabbar border-b border-border px-2 shrink-0">
           <div className="hidden lg:flex items-center gap-1.5 mr-4 pl-2">
-            <div className="w-3 h-3 rounded-full bg-red-500/80" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-            <div className="w-3 h-3 rounded-full bg-green-500/80" />
+            <IDEWindowControls url="/" />
           </div>
           <div className="flex items-center gap-2 px-4 py-2.5 bg-background border-r border-l border-border text-syntax-function text-sm font-mono">
             <Trophy className="w-4 h-4 shrink-0" />

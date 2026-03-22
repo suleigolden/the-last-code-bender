@@ -17,6 +17,7 @@ import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 import { StoryRenderer } from '@/components/profile/StoryRenderer';
 import { BENDER_PROFILES } from '@/codebender-profiles/registry';
+import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -132,11 +133,7 @@ export const BenderProfilePage = () => {
       <div className="flex flex-1 flex-col relative z-10 h-full overflow-hidden">
         {/* Mini tab bar */}
         <div className="flex items-center bg-ide-tabbar border-b border-border px-2 shrink-0">
-          <div className="hidden lg:flex items-center gap-1.5 mr-4 pl-2">
-            <div className="w-3 h-3 rounded-full bg-red-500/80" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-            <div className="w-3 h-3 rounded-full bg-green-500/80" />
-          </div>
+          <IDEWindowControls />
           <div className="flex items-center gap-2 px-4 py-2.5 bg-background border-r border-l border-border text-syntax-function text-sm font-mono">
             <FileCode2 className="w-4 h-4 shrink-0" />
             <span>{handle ?? 'profile'}.profile.ts</span>
