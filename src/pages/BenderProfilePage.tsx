@@ -157,41 +157,52 @@ export const BenderProfilePage = () => {
                 <>
                   {/* Header */}
                   {bender && (
-                    <div className="flex items-start gap-4 mb-8">
+                    <div className="flex items-start gap-3 mb-6">
                       <div
                         className={cn(
-                          'flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0',
+                          'flex items-center justify-center w-12 h-12 rounded-full border font-mono font-bold text-lg shrink-0',
                           disciplineColor,
                         )}
                       >
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h1 className="font-mono font-bold text-2xl text-foreground truncate">
+                        <h1 className="font-mono font-bold text-xl text-foreground truncate">
                           {bender.handle}
                         </h1>
-                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                          <Badge variant="outline" className={cn('font-mono text-xs', disciplineColor)}>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <Badge
+                            variant="outline"
+                            className={cn('font-mono text-[10px] px-1.5 py-0 h-5 leading-none', disciplineColor)}
+                          >
                             {disciplineDisplay}
                           </Badge>
-                          <Badge className={cn('font-mono text-xs border-0', rankColor)}>
+                          <Badge className={cn('font-mono text-[10px] px-1.5 py-0 h-5 leading-none border-0', rankColor)}>
                             {bender.rank}
                           </Badge>
                           {bender.open_to_work && (
-                            <Badge variant="outline" className="font-mono text-xs text-syntax-string border-syntax-string">
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-[10px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-string"
+                            >
                               Open to work
                             </Badge>
                           )}
-                          <span className="font-mono text-xs text-muted-foreground">{bender.xp} XP</span>
+                          <span className="font-mono text-[10px] text-muted-foreground">{bender.xp} XP</span>
                         </div>
-                        <div className="mt-2">
-                          <Button variant="ghost" size="sm" asChild className="gap-1.5 px-0 font-mono text-xs">
+                        <div className="mt-1.5">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="gap-1 px-0 h-7 font-mono text-[10px]"
+                          >
                             <a
                               href={`https://github.com/${bender.github}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <Github className="w-3.5 h-3.5" />
+                              <Github className="w-3 h-3" />
                               @{bender.github}
                             </a>
                           </Button>
@@ -202,31 +213,39 @@ export const BenderProfilePage = () => {
 
                   {/* Founder header (when no registry entry but has component) */}
                   {!bender && hasComponent && isFounder && (
-                    <div className="flex items-start gap-4 mb-8">
-                      <div className="flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0 text-primary border-primary">
+                    <div className="flex items-start gap-3 mb-6">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full border font-mono font-bold text-lg shrink-0 text-primary border-primary">
                         T
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h1 className="font-mono font-bold text-2xl text-foreground truncate">
+                        <h1 className="font-mono font-bold text-xl text-foreground truncate">
                           {handle}
                         </h1>
-                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                          <Badge variant="outline" className="font-mono text-xs text-primary border-primary">
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <Badge
+                            variant="outline"
+                            className="font-mono text-[10px] px-1.5 py-0 h-5 leading-none text-primary border-primary"
+                          >
                             Founder
                           </Badge>
-                          <Badge className="font-mono text-xs border-0 text-primary bg-primary/15">
+                          <Badge className="font-mono text-[10px] px-1.5 py-0 h-5 leading-none border-0 text-primary bg-primary/15">
                             Master Bender
                           </Badge>
-                          <span className="font-mono text-xs text-muted-foreground">9999 XP</span>
+                          <span className="font-mono text-[10px] text-muted-foreground">9999 XP</span>
                         </div>
-                        <div className="mt-2">
-                          <Button variant="ghost" size="sm" asChild className="gap-1.5 px-0 font-mono text-xs">
+                        <div className="mt-1.5">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="gap-1 px-0 h-7 font-mono text-[10px]"
+                          >
                             <a
                               href="https://github.com/suleigolden"
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <Github className="w-3.5 h-3.5" />
+                              <Github className="w-3 h-3" />
                               @suleigolden
                             </a>
                           </Button>

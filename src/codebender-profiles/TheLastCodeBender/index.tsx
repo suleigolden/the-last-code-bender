@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { IDESidebar } from "@/components/ide/IDESidebar";
 import { IDETabBar } from "@/components/ide/IDETabBar";
-import { IDEStatusBar } from "@/components/ide/IDEStatusBar";
 import { HeroSection } from "./sections/HeroSection";
 import { StorySection } from "./sections/StorySection";
 import { SocialsSection } from "./sections/SocialsSection";
@@ -128,14 +126,6 @@ export default function TheLastCodeBenderProfile() {
 
       {/* Main Layout */}
       <div className="flex flex-1 relative z-10 h-full overflow-hidden">
-        {/* Sidebar */}
-        <IDESidebar
-          activeSection={activeSection}
-          onSectionChange={handleSectionChange}
-          isOpen={sidebarOpen}
-          onToggle={() => setSidebarOpen(!sidebarOpen)}
-        />
-
         {/* Mobile sidebar overlay */}
         {sidebarOpen && (
           <div
@@ -151,12 +141,6 @@ export default function TheLastCodeBenderProfile() {
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           `}
         >
-          <IDESidebar
-            activeSection={activeSection}
-            onSectionChange={handleSectionChange}
-            isOpen={true}
-            onToggle={() => setSidebarOpen(false)}
-          />
         </div>
 
         {/* Main Content Area */}
@@ -198,8 +182,6 @@ export default function TheLastCodeBenderProfile() {
             </div>
           </main>
 
-          {/* Status Bar */}
-          <IDEStatusBar activeFile={activeSection} />
         </div>
       </div>
     </div>
