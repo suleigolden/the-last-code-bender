@@ -144,7 +144,6 @@ export const BenderProfilePage = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-3xl mx-auto">
             {isLoading && <SkeletonLayout />}
 
             {!isLoading && !bender && !hasComponent && <NotClaimedUI handle={handle} />}
@@ -153,7 +152,7 @@ export const BenderProfilePage = () => {
               <>
                 {/* Header */}
                 {bender && (
-                  <div className="flex items-start gap-4 mb-8">
+                  <div className="flex items-start gap-4 mb-8" style={{border: '1px solid #FFF'}}>
                     <div
                       className={cn(
                         'flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0',
@@ -319,7 +318,7 @@ export const BenderProfilePage = () => {
                 )}
               </>
             )}
-          </div>
+         
         </main>
 
         <IDEStatusBar activeFile="story" codeBenderName={bender?.handle} />

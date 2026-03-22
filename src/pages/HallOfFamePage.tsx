@@ -9,6 +9,8 @@ import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { BenderCard } from '@/components/hall/BenderCard';
 import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
+import { FounderCard } from '@/components/hall/FounderCard';
+import { BENDER_PROFILES } from '@/codebender-profiles/registry';
 import { useRegistry, useRegistryStats } from '@/hooks/useRegistry';
 import { getBendingSpecializationsWithRanks } from '@/lib/code-bender-names';
 import type { Bender } from '@/types/registry';
@@ -48,6 +50,10 @@ export const HallOfFamePage = () => {
 
   const { data: registry, isLoading } = useRegistry();
   const { data: stats } = useRegistryStats();
+
+  const showFounder =
+    activeTab === 'All' &&
+    (!search.trim() || BENDER_PROFILES[0].handle.toLowerCase().includes(search.toLowerCase()));
 
   const statValues: Record<string, number | undefined> = {
     totalBenders: stats?.totalBenders,
@@ -91,22 +97,23 @@ export const HallOfFamePage = () => {
       slots = slots.filter(s => s.displayName.toLowerCase().includes(q));
     }
 
-    if (sortBy !== 'tier') {
-      const claimed = slots.filter(s => s.bender !== null);
-      const unclaimed = slots.filter(s => s.bender === null);
-      if (sortBy === 'xp') {
-        claimed.sort((a, b) => b.bender!.xp - a.bender!.xp);
-      } else if (sortBy === 'recent') {
-        claimed.sort(
-          (a, b) =>
-            new Date(b.bender!.last_active).getTime() -
-            new Date(a.bender!.last_active).getTime(),
-        );
-      } else if (sortBy === 'wins') {
-        claimed.sort((a, b) => b.bender!.challenge_wins - a.bender!.challenge_wins);
-      }
-      slots = [...claimed, ...unclaimed];
+    const claimed = slots.filter(s => s.bender !== null);
+    const unclaimed = slots.filter(s => s.bender === null);
+
+    if (sortBy === 'xp') {
+      claimed.sort((a, b) => b.bender!.xp - a.bender!.xp);
+    } else if (sortBy === 'recent') {
+      claimed.sort(
+        (a, b) =>
+          new Date(b.bender!.last_active).getTime() -
+          new Date(a.bender!.last_active).getTime(),
+      );
+    } else if (sortBy === 'wins') {
+      claimed.sort((a, b) => b.bender!.challenge_wins - a.bender!.challenge_wins);
     }
+    // 'tier' sort: no-op; preserves original tier position within each group
+
+    slots = [...claimed, ...unclaimed];
 
     return slots;
   }, [allSlots, activeTab, search, sortBy]);
@@ -221,8 +228,7 @@ export const HallOfFamePage = () => {
               </p>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {/* test bender card (use this for TheLastCodeBender Profile as the default bender) */}
-                <BenderCard bender={visibleSlots[0]?.bender ?? null} />
+                {showFounder && <FounderCard />}
                 {visibleSlots.map(slot =>
                   slot.bender ? (
                     <BenderCard key={slot.displayName} bender={slot.bender} />
