@@ -221,6 +221,8 @@ export const HallOfFamePage = () => {
               </p>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* test bender card (use this for TheLastCodeBender Profile as the default bender) */}
+                <BenderCard bender={visibleSlots[0]?.bender ?? null} />
                 {visibleSlots.map(slot =>
                   slot.bender ? (
                     <BenderCard key={slot.displayName} bender={slot.bender} />

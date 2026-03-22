@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FileCode2, Github, ExternalLink } from 'lucide-react';
+import { FileCode2, Github } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ import { StackBadges } from '@/components/profile/StackBadges';
 import { useRegistry } from '@/hooks/useRegistry';
 import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
+import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
+import { StoryRenderer } from '@/components/profile/StoryRenderer';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -49,17 +51,7 @@ const NotClaimedUI = ({ handle }: { handle: string | undefined }) => (
     <p className="text-muted-foreground text-sm mb-6">
       This handle hasn&apos;t been registered yet. Be the first to claim it.
     </p>
-    <Button asChild>
-      <a
-        href="https://github.com/suleigolden/the-last-code-bender"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="gap-2"
-      >
-        <ExternalLink className="w-4 h-4" />
-        Fork &amp; Claim
-      </a>
-    </Button>
+    <ForkRepositoryButton />
   </div>
 );
 
@@ -184,9 +176,13 @@ export const BenderProfilePage = () => {
                     {storyLoading ? (
                       <Skeleton className="h-48 w-full" />
                     ) : story ? (
-                      <pre className="font-mono text-sm text-foreground bg-ide-sidebar border border-border rounded-lg p-4 whitespace-pre-wrap overflow-x-auto">
-                        {story}
-                      </pre>
+                      <div className="bg-ide-sidebar border border-border rounded-lg p-4">
+                        <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border">
+                          <span className="text-xs font-mono text-muted-foreground">story/README.md</span>
+                          <span className="text-xs text-syntax-comment font-mono">— Preview</span>
+                        </div>
+                        <StoryRenderer markdown={story} />
+                      </div>
                     ) : (
                       <p className="font-mono text-sm text-muted-foreground">
                         // No story yet

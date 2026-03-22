@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotFound } from "./apps/not-found";
-import { CodeBenderProfile } from "./apps/codebender-profile";
+import { CodeBenderProfile } from "./apps/codebender-profiles/codebender-profile-placeholder";
 import { ChallengesPage } from "./pages/ChallengesPage";
 import { HallOfFamePage } from "./pages/HallOfFamePage";
 import { BenderProfilePage } from "./pages/BenderProfilePage";
@@ -13,7 +13,7 @@ import { RecruiterPage } from "./pages/RecruiterPage";
 import { CompatibilityPage } from "./pages/CompatibilityPage";
 import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
-import { TheLastCodeBenderProfile } from "./apps/the-last-code-bender-profile";
+import { TheLastCodeBenderProfile } from "./apps/codebender-profiles/the-last-code-bender-profile";
 
 
 const queryClient = new QueryClient();
