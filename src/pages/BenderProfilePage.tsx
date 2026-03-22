@@ -10,6 +10,7 @@ import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { SkillCard } from '@/components/profile/SkillCard';
 import { DemoFrame } from '@/components/profile/DemoFrame';
 import { StackBadges } from '@/components/profile/StackBadges';
+import { ProfileExplorer } from '@/components/profile/ProfileExplorer';
 import { useRegistry } from '@/hooks/useRegistry';
 import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
@@ -142,184 +143,189 @@ export const BenderProfilePage = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-            {isLoading && <SkeletonLayout />}
+        {/* Sidebar + Content */}
+        <div className="flex flex-1 overflow-hidden">
+          <ProfileExplorer />
 
-            {!isLoading && !bender && !hasComponent && <NotClaimedUI handle={handle} />}
+          <main className="flex-1 overflow-y-auto p-6">
+            <div className="mx-auto">
+              {isLoading && <SkeletonLayout />}
 
-            {(bender || hasComponent) && (
-              <>
-                {/* Header */}
-                {bender && (
-                  <div className="flex items-start gap-4 mb-8" style={{border: '1px solid #FFF'}}>
-                    <div
-                      className={cn(
-                        'flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0',
-                        disciplineColor,
-                      )}
-                    >
-                      {initials}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h1 className="font-mono font-bold text-2xl text-foreground truncate">
-                        {bender.handle}
-                      </h1>
-                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                        <Badge variant="outline" className={cn('font-mono text-xs', disciplineColor)}>
-                          {disciplineDisplay}
-                        </Badge>
-                        <Badge className={cn('font-mono text-xs border-0', rankColor)}>
-                          {bender.rank}
-                        </Badge>
-                        {bender.open_to_work && (
-                          <Badge variant="outline" className="font-mono text-xs text-syntax-string border-syntax-string">
-                            Open to work
-                          </Badge>
+              {!isLoading && !bender && !hasComponent && <NotClaimedUI handle={handle} />}
+
+              {(bender || hasComponent) && (
+                <>
+                  {/* Header */}
+                  {bender && (
+                    <div className="flex items-start gap-4 mb-8">
+                      <div
+                        className={cn(
+                          'flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0',
+                          disciplineColor,
                         )}
-                        <span className="font-mono text-xs text-muted-foreground">{bender.xp} XP</span>
+                      >
+                        {initials}
                       </div>
-                      <div className="mt-2">
-                        <Button variant="ghost" size="sm" asChild className="gap-1.5 px-0 font-mono text-xs">
-                          <a
-                            href={`https://github.com/${bender.github}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Github className="w-3.5 h-3.5" />
-                            @{bender.github}
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Founder header (when no registry entry but has component) */}
-                {!bender && hasComponent && isFounder && (
-                  <div className="flex items-start gap-4 mb-8">
-                    <div className="flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0 text-primary border-primary">
-                      T
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h1 className="font-mono font-bold text-2xl text-foreground truncate">
-                        {handle}
-                      </h1>
-                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                        <Badge variant="outline" className="font-mono text-xs text-primary border-primary">
-                          Founder
-                        </Badge>
-                        <Badge className="font-mono text-xs border-0 text-primary bg-primary/15">
-                          Master Bender
-                        </Badge>
-                        <span className="font-mono text-xs text-muted-foreground">9999 XP</span>
-                      </div>
-                      <div className="mt-2">
-                        <Button variant="ghost" size="sm" asChild className="gap-1.5 px-0 font-mono text-xs">
-                          <a
-                            href="https://github.com/suleigolden"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Github className="w-3.5 h-3.5" />
-                            @suleigolden
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Profile component or tabs */}
-                {ProfileComponent ? (
-                  <React.Suspense fallback={<Skeleton className="h-96 w-full" />}>
-                    <ProfileComponent />
-                  </React.Suspense>
-                ) : (
-                  <Tabs defaultValue="story">
-                    <TabsList className="font-mono mb-6">
-                      <TabsTrigger value="story">Story</TabsTrigger>
-                      <TabsTrigger value="stack">Stack</TabsTrigger>
-                      <TabsTrigger value="showcase">Showcase</TabsTrigger>
-                      <TabsTrigger value="challenges">Challenges</TabsTrigger>
-                    </TabsList>
-
-                    {/* Story */}
-                    <TabsContent value="story">
-                      {storyLoading ? (
-                        <Skeleton className="h-48 w-full" />
-                      ) : story ? (
-                        <div className="bg-ide-sidebar border border-border rounded-lg p-4">
-                          <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border">
-                            <span className="text-xs font-mono text-muted-foreground">story/README.md</span>
-                            <span className="text-xs text-syntax-comment font-mono">— Preview</span>
-                          </div>
-                          <StoryRenderer markdown={story} />
-                        </div>
-                      ) : (
-                        <p className="font-mono text-sm text-muted-foreground">
-                          // No story yet
-                        </p>
-                      )}
-                    </TabsContent>
-
-                    {/* Stack */}
-                    <TabsContent value="stack">
-                      {stackLoading ? (
-                        <Skeleton className="h-48 w-full" />
-                      ) : stackData ? (
-                        <StackBadges data={stackData} />
-                      ) : (
-                        <p className="font-mono text-sm text-muted-foreground">
-                          // Stack not yet added
-                        </p>
-                      )}
-                    </TabsContent>
-
-                    {/* Showcase */}
-                    <TabsContent value="showcase">
-                      <DemoFrame url={bender?.demo_url ?? null} views={bender?.demo_views ?? 0} />
-                    </TabsContent>
-
-                    {/* Challenges */}
-                    <TabsContent value="challenges">
-                      {(bender?.challenge_wins ?? 0) > 0 ? (
-                        <div className="font-mono text-sm">
-                          <p className="text-muted-foreground mb-4">
-                            // Challenge wins: {bender?.challenge_wins}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="default" className="text-sm px-3 py-1">
-                              🏆 {bender?.challenge_wins}{' '}
-                              {bender?.challenge_wins === 1 ? 'win' : 'wins'}
+                      <div className="flex-1 min-w-0">
+                        <h1 className="font-mono font-bold text-2xl text-foreground truncate">
+                          {bender.handle}
+                        </h1>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <Badge variant="outline" className={cn('font-mono text-xs', disciplineColor)}>
+                            {disciplineDisplay}
+                          </Badge>
+                          <Badge className={cn('font-mono text-xs border-0', rankColor)}>
+                            {bender.rank}
+                          </Badge>
+                          {bender.open_to_work && (
+                            <Badge variant="outline" className="font-mono text-xs text-syntax-string border-syntax-string">
+                              Open to work
                             </Badge>
-                          </div>
+                          )}
+                          <span className="font-mono text-xs text-muted-foreground">{bender.xp} XP</span>
                         </div>
-                      ) : (
-                        <p className="font-mono text-sm text-muted-foreground">
-                          // No challenge wins yet — check the{' '}
-                          <a href="/challenges" className="text-primary underline underline-offset-2">
-                            challenges page
-                          </a>
-                          .
-                        </p>
-                      )}
-                    </TabsContent>
-                  </Tabs>
-                )}
+                        <div className="mt-2">
+                          <Button variant="ghost" size="sm" asChild className="gap-1.5 px-0 font-mono text-xs">
+                            <a
+                              href={`https://github.com/${bender.github}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Github className="w-3.5 h-3.5" />
+                              @{bender.github}
+                            </a>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
-                {/* Skill Card */}
-                {bender && (
-                  <SkillCard
-                    handle={bender.handle}
-                    xp={bender.xp}
-                    skillLive={bender.skill_live}
-                  />
-                )}
-              </>
-            )}
-         
-        </main>
+                  {/* Founder header (when no registry entry but has component) */}
+                  {!bender && hasComponent && isFounder && (
+                    <div className="flex items-start gap-4 mb-8">
+                      <div className="flex items-center justify-center w-16 h-16 rounded-full border-2 font-mono font-bold text-xl shrink-0 text-primary border-primary">
+                        T
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h1 className="font-mono font-bold text-2xl text-foreground truncate">
+                          {handle}
+                        </h1>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <Badge variant="outline" className="font-mono text-xs text-primary border-primary">
+                            Founder
+                          </Badge>
+                          <Badge className="font-mono text-xs border-0 text-primary bg-primary/15">
+                            Master Bender
+                          </Badge>
+                          <span className="font-mono text-xs text-muted-foreground">9999 XP</span>
+                        </div>
+                        <div className="mt-2">
+                          <Button variant="ghost" size="sm" asChild className="gap-1.5 px-0 font-mono text-xs">
+                            <a
+                              href="https://github.com/suleigolden"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Github className="w-3.5 h-3.5" />
+                              @suleigolden
+                            </a>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Profile component or tabs */}
+                  {ProfileComponent ? (
+                    <React.Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                      <ProfileComponent />
+                    </React.Suspense>
+                  ) : (
+                    <Tabs defaultValue="story">
+                      <TabsList className="font-mono mb-6">
+                        <TabsTrigger value="story">Story</TabsTrigger>
+                        <TabsTrigger value="stack">Stack</TabsTrigger>
+                        <TabsTrigger value="showcase">Showcase</TabsTrigger>
+                        <TabsTrigger value="challenges">Challenges</TabsTrigger>
+                      </TabsList>
+
+                      {/* Story */}
+                      <TabsContent value="story">
+                        {storyLoading ? (
+                          <Skeleton className="h-48 w-full" />
+                        ) : story ? (
+                          <div className="bg-ide-sidebar border border-border rounded-lg p-4">
+                            <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border">
+                              <span className="text-xs font-mono text-muted-foreground">story/README.md</span>
+                              <span className="text-xs text-syntax-comment font-mono">— Preview</span>
+                            </div>
+                            <StoryRenderer markdown={story} />
+                          </div>
+                        ) : (
+                          <p className="font-mono text-sm text-muted-foreground">
+                            // No story yet
+                          </p>
+                        )}
+                      </TabsContent>
+
+                      {/* Stack */}
+                      <TabsContent value="stack">
+                        {stackLoading ? (
+                          <Skeleton className="h-48 w-full" />
+                        ) : stackData ? (
+                          <StackBadges data={stackData} />
+                        ) : (
+                          <p className="font-mono text-sm text-muted-foreground">
+                            // Stack not yet added
+                          </p>
+                        )}
+                      </TabsContent>
+
+                      {/* Showcase */}
+                      <TabsContent value="showcase">
+                        <DemoFrame url={bender?.demo_url ?? null} views={bender?.demo_views ?? 0} />
+                      </TabsContent>
+
+                      {/* Challenges */}
+                      <TabsContent value="challenges">
+                        {(bender?.challenge_wins ?? 0) > 0 ? (
+                          <div className="font-mono text-sm">
+                            <p className="text-muted-foreground mb-4">
+                              // Challenge wins: {bender?.challenge_wins}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="default" className="text-sm px-3 py-1">
+                                🏆 {bender?.challenge_wins}{' '}
+                                {bender?.challenge_wins === 1 ? 'win' : 'wins'}
+                              </Badge>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="font-mono text-sm text-muted-foreground">
+                            // No challenge wins yet — check the{' '}
+                            <a href="/challenges" className="text-primary underline underline-offset-2">
+                              challenges page
+                            </a>
+                            .
+                          </p>
+                        )}
+                      </TabsContent>
+                    </Tabs>
+                  )}
+
+                  {/* Skill Card */}
+                  {bender && (
+                    <SkillCard
+                      handle={bender.handle}
+                      xp={bender.xp}
+                      skillLive={bender.skill_live}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          </main>
+        </div>
 
         <IDEStatusBar activeFile="story" codeBenderName={bender?.handle} />
       </div>
