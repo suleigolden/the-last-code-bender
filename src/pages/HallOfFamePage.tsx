@@ -229,9 +229,11 @@ export const HallOfFamePage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {showFounder && <FounderCard />}
                 {visibleSlots.map(slot =>
+                // if the bender is available, display the BenderCard
                   slot.bender ? (
                     <BenderCard key={slot.displayName} bender={slot.bender} />
                   ) : (
+                    // if the bender is not available, display the UnclaimedCard
                     <UnclaimedCard
                       key={slot.displayName}
                       rankName={slot.displayName}
