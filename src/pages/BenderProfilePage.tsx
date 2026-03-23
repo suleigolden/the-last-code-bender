@@ -35,6 +35,32 @@ const RANK_COLORS: Record<string, string> = {
   Master: 'text-primary bg-primary/15',
 };
 
+// Build-time import map for all profile components.
+// This avoids Vite's runtime "unknown variable dynamic import" errors.
+type ProfileComponentModule = { default: React.ComponentType };
+
+const PROFILE_COMPONENT_MODULES = import.meta.glob<ProfileComponentModule>(
+  '../codebender-profiles/**/index.tsx',
+);
+
+const FOUNDER_PROFILE_MODULE_KEY: string | undefined = Object.keys(PROFILE_COMPONENT_MODULES).find((k) =>
+  k.toLowerCase().endsWith('/thelastcodebender/index.tsx'),
+);
+
+function findProfileModuleKey(disciplineFolder: string, handle: string) {
+  const targetDiscipline = disciplineFolder.toLowerCase();
+  const targetHandle = handle.toLowerCase();
+
+  return Object.keys(PROFILE_COMPONENT_MODULES).find((key) => {
+    // Expected pattern: ../codebender-profiles/<DisciplineFolder>/<Handle>/index.tsx
+    const parts = key.split('/');
+    if (parts.length < 4) return false;
+    const moduleDiscipline = parts[parts.length - 3]?.toLowerCase();
+    const moduleHandle = parts[parts.length - 2]?.toLowerCase();
+    return moduleDiscipline === targetDiscipline && moduleHandle === targetHandle;
+  });
+}
+
 const DISCIPLINE_FOLDER: Record<string, string> = {
   frontend: 'FrontendBenders',
   backend: 'BackendBenders',
@@ -102,15 +128,20 @@ export const BenderProfilePage = () => {
   const isFounder = profileEntry?.isFounder === true;
   const hasComponent = !!profileEntry && !profileEntry.isPlaceholder;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ProfileComponent = React.useMemo<React.LazyExoticComponent<any> | null>(() => {
+  const ProfileComponent = React.useMemo<React.LazyExoticComponent<React.ComponentType> | null>(() => {
     if (!hasComponent || !handle) return null;
     if (isFounder) {
-      return React.lazy(() => import('@/codebender-profiles/TheLastCodeBender'));
+      const founderKey = FOUNDER_PROFILE_MODULE_KEY;
+      if (!founderKey) return null;
+      return React.lazy(PROFILE_COMPONENT_MODULES[founderKey]);
     }
     const folder = DISCIPLINE_FOLDER[discipline?.toLowerCase() ?? ''];
     if (!folder) return null;
-    return React.lazy(() => import(`@/codebender-profiles/${folder}/${handle}/index.tsx`));
+
+    const moduleKey = findProfileModuleKey(folder, handle);
+    if (!moduleKey) return null;
+
+    return React.lazy(PROFILE_COMPONENT_MODULES[moduleKey]);
   }, [hasComponent, isFounder, discipline, handle]);
 
   const disciplineDisplay = bender
