@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { fileNames } from "@/lib/helper";
-import { ForkRepositoryButton } from "../../action-buttons/ ForkRepositoryButton";
-import { ViewOnGitHubButton } from "../../action-buttons/ViewOnGitHubButton";
+import { ForkRepositoryButton } from "../action-buttons/ ForkRepositoryButton";
+import { ViewOnGitHubButton } from "../action-buttons/ViewOnGitHubButton";
 
 type CodeBenderPlaceholderProps = {
   codeBenderName: string;

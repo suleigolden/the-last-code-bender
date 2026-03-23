@@ -1,7 +1,7 @@
 /**
  * scripts/build-registry.ts
  *
- * Collects every register-me.json found under src/codebender-profiles/
+ * Collects every register-me.json found under src/apps/codebender-profiles/
  * and writes the aggregated runtime data to registry/registry.json.
  *
  * Run automatically before `bun dev` and `bun build` via package.json scripts.
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
-const profilesDir = join(root, 'src/codebender-profiles');
+const profilesDir = join(root, 'src/apps/codebender-profiles');
 const outFile = join(root, 'registry/registry.json');
 
 interface RegisterMeJson {

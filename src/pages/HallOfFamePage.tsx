@@ -10,7 +10,7 @@ import { BenderCard } from '@/components/hall/BenderCard';
 import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
 import { FounderCard } from '@/components/hall/FounderCard';
-import { BENDER_PROFILES } from '@/codebender-profiles/registry';
+import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
 import { useRegistry, useRegistryStats } from '@/hooks/useRegistry';
 import { getBendingSpecializationsWithRanks } from '@/lib/code-bender-names';
 import type { Bender } from '@/types/registry';

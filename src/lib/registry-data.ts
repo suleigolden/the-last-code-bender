@@ -30,7 +30,7 @@ function capitalize(s: string): string {
 const today = new Date().toISOString().split('T')[0];
 
 const modules = import.meta.glob<RegisterMeJson>(
-  '../codebender-profiles/**/register-me.json',
+  '../apps/codebender-profiles/**/register-me.json',
   { eager: true, import: 'default' },
 );
 

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BENDER_PROFILES } from '@/codebender-profiles/registry';
+import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
 
 const founder = BENDER_PROFILES[0]; // always TheLastCodeBender
 

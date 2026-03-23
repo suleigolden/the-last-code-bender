@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRegistryStats } from '@/hooks/useRegistry';
 import { activeChallenges } from '@/data/challenges';
-import { CodeBenderPlaceholder } from '@/apps/codebender-profiles/codebender-profile-placeholder/CodeBenderPlaceholder';
+import { CodeBenderPlaceholder } from '@/apps/codebender-profile-placeholder/CodeBenderPlaceholder';
 
 export function HomePage() {
   const stats = useRegistryStats();

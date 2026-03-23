@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 import { StoryRenderer } from '@/components/profile/StoryRenderer';
-import { BENDER_PROFILES } from '@/codebender-profiles/registry';
+import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
@@ -40,7 +40,7 @@ const RANK_COLORS: Record<string, string> = {
 type ProfileComponentModule = { default: React.ComponentType };
 
 const PROFILE_COMPONENT_MODULES = import.meta.glob<ProfileComponentModule>(
-  '../codebender-profiles/**/index.tsx',
+  '../apps/codebender-profiles/**/index.tsx',
 );
 
 const FOUNDER_PROFILE_MODULE_KEY: string | undefined = Object.keys(PROFILE_COMPONENT_MODULES).find((k) =>
@@ -52,7 +52,7 @@ function findProfileModuleKey(disciplineFolder: string, handle: string) {
   const targetHandle = handle.toLowerCase();
 
   return Object.keys(PROFILE_COMPONENT_MODULES).find((key) => {
-    // Expected pattern: ../codebender-profiles/<DisciplineFolder>/<Handle>/index.tsx
+    // Expected pattern: ../apps/codebender-profiles/<DisciplineFolder>/<Handle>/index.tsx
     const parts = key.split('/');
     if (parts.length < 4) return false;
     const moduleDiscipline = parts[parts.length - 3]?.toLowerCase();
