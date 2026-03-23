@@ -36,12 +36,12 @@ const RANK_COLORS: Record<string, string> = {
 };
 
 const DISCIPLINE_FOLDER: Record<string, string> = {
-  frontend: 'Frontend Bender',
-  backend: 'Backend Bender',
-  fullstack: 'FullStack Bender',
-  security: 'Security Bender',
-  ai: 'AI Bender',
-  devops: 'DevOps Bender',
+  frontend: 'FrontendBenders',
+  backend: 'BackendBenders',
+  fullstack: 'FullStackBenders',
+  security: 'SecurityBenders',
+  ai: 'AIBenders',
+  devops: 'DevOpsBenders',
 };
 
 const SkeletonLayout = () => (

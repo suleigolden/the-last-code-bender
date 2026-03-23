@@ -1,0 +1,41 @@
+{
+  "handle": "TheLastCodeBender",
+  "discipline": "founder",
+  "github": "suleigolden",
+  "rank": "Master Bender",
+  "xp": 9999,
+  "portfolio": "thelastcodebender.com",
+  "tagline": "...",
+  "isFounder": true,
+  "stack": {
+    "primary": [
+      { "tech": "TypeScript", "category": "language" },
+      { "tech": "React", "category": "framework" },
+      { "tech": "Node.js", "category": "framework" },
+      { "tech": "Vite", "category": "devops" }
+    ],
+    "familiar": [
+      { "tech": "Python", "category": "language" },
+      { "tech": "PostgreSQL", "category": "db" },
+      { "tech": "Tailwind CSS", "category": "framework" }
+    ],
+    "aware": [
+      { "tech": "Rust", "category": "language" },
+      { "tech": "Go", "category": "language" },
+      { "tech": "Docker", "category": "devops" }
+    ]
+  },
+  "socials": {
+    "linkedin": "https://linkedin.com/in/suleigolden",
+    "twitter": "https://twitter.com/suleigolden"
+  },
+  "open_to_work": false,
+  "skill_live": false,
+  "skill_version": null,
+  "challenge_wins": 0,
+  "community_vote": false,
+  "demo_url": null,
+  "demo_views": 0,
+  "joined": "2025-01-01",
+  "last_active": "2026-03-23"
+}

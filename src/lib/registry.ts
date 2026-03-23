@@ -1,4 +1,5 @@
 import type { Bender, Leaderboard, Radar } from '@/types/registry';
+import { REGISTRY_DATA } from '@/lib/registry-data';
 
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -9,7 +10,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 export async function fetchRegistry(): Promise<Bender[]> {
-  return fetchJson<Bender[]>('/registry/registry.json');
+  return REGISTRY_DATA;
 }
 
 export async function fetchLeaderboard(): Promise<Leaderboard> {

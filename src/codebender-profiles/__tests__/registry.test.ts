@@ -44,10 +44,10 @@ describe('BENDER_PROFILES registry', () => {
     }
   });
 
-  it('discipline entries (non-founder) are marked isPlaceholder', () => {
-    const disciplineEntries = BENDER_PROFILES.filter((p) => !p.isFounder);
-    for (const profile of disciplineEntries) {
-      expect(profile.isPlaceholder).toBe(true);
+  it('claimed entries (non-founder, non-placeholder) have a non-empty github', () => {
+    const claimed = BENDER_PROFILES.filter((p) => !p.isFounder && !p.isPlaceholder);
+    for (const profile of claimed) {
+      expect(profile.github).toBeTruthy();
     }
   });
 });

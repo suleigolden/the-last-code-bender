@@ -1,84 +1,59 @@
 import type { BenderProfile } from './types';
 
-export const BENDER_PROFILES: BenderProfile[] = [
-  {
-    handle: 'TheLastCodeBender',
-    discipline: 'founder',
-    rank: 'Master Bender',
-    xp: 9999,
-    github: 'suleigolden',
-    portfolio: 'thelastcodebender.com',
-    tagline: '...',
-    isFounder: true,
-    stack: {
-      primary: [
-        { tech: 'TypeScript', category: 'language' },
-        { tech: 'React', category: 'framework' },
-        { tech: 'Node.js', category: 'framework' },
-        { tech: 'Vite', category: 'devops' },
-      ],
-      familiar: [
-        { tech: 'Python', category: 'language' },
-        { tech: 'PostgreSQL', category: 'db' },
-        { tech: 'Tailwind CSS', category: 'framework' },
-      ],
-      aware: [
-        { tech: 'Rust', category: 'language' },
-        { tech: 'Go', category: 'language' },
-        { tech: 'Docker', category: 'devops' },
-      ],
-    },
-    socials: {
-      linkedin: 'https://linkedin.com/in/suleigolden',
-      twitter: 'https://twitter.com/suleigolden',
-    },
-  },
-  {
-    handle: 'FirstFrontendBender',
-    discipline: 'frontend',
-    rank: 'First Frontend Bender',
-    xp: 0,
-    github: '',
-    isPlaceholder: true,
-  },
-  {
-    handle: 'FirstBackendBender',
-    discipline: 'backend',
-    rank: 'First Backend Bender',
-    xp: 0,
-    github: '',
-    isPlaceholder: true,
-  },
-  {
-    handle: 'FirstFullStackBender',
-    discipline: 'fullstack',
-    rank: 'First FullStack Bender',
-    xp: 0,
-    github: '',
-    isPlaceholder: true,
-  },
-  {
-    handle: 'FirstSecurityBender',
-    discipline: 'security',
-    rank: 'First Security Bender',
-    xp: 0,
-    github: '',
-    isPlaceholder: true,
-  },
-  {
-    handle: 'FirstAIBender',
-    discipline: 'ai',
-    rank: 'First AI Bender',
-    xp: 0,
-    github: '',
-    isPlaceholder: true,
-  },
-  {
-    handle: 'FirstDevOpsBender',
-    discipline: 'devops',
-    rank: 'First DevOps Bender',
-    xp: 0,
-    github: '',
-    isPlaceholder: true,
-  },
-];
+/**
+ * register-me.json — the only file a contributor edits.
+ * This module auto-collects every register-me.json in the profile tree
+ * at build time via Vite's import.meta.glob. No manual edits needed here.
+ */
+
+interface RegisterMeJson {
+  handle: string;
+  discipline: string;
+  github?: string;
+  rank?: string;
+  xp?: number;
+  portfolio?: string;
+  tagline?: string;
+  isFounder?: boolean;
+  isPlaceholder?: boolean;
+  socials?: {
+    linkedin?: string;
+    twitter?: string;
+    youtube?: string;
+    email?: string;
+  };
+  stack?: {
+    primary: { tech: string; category: string }[];
+    familiar: { tech: string; category: string }[];
+    aware: { tech: string; category: string }[];
+  };
+}
+
+const modules = import.meta.glob<RegisterMeJson>('./**/register-me.json', {
+  eager: true,
+  import: 'default',
+});
+
+function toProfile(reg: RegisterMeJson): BenderProfile {
+  return {
+    handle: reg.handle,
+    discipline: reg.discipline,
+    rank: reg.rank ?? 'Apprentice',
+    xp: reg.xp ?? 0,
+    github: reg.github ?? '',
+    ...(reg.portfolio !== undefined && { portfolio: reg.portfolio }),
+    ...(reg.tagline !== undefined && { tagline: reg.tagline }),
+    ...(reg.isFounder && { isFounder: true }),
+    ...(reg.isPlaceholder && { isPlaceholder: true }),
+    ...(reg.socials && { socials: reg.socials }),
+    ...(reg.stack && { stack: reg.stack }),
+  };
+}
+
+export const BENDER_PROFILES: BenderProfile[] = Object.values(modules)
+  .map(toProfile)
+  .sort((a, b) => {
+    if (a.isFounder) return -1;
+    if (b.isFounder) return 1;
+    return 0;
+  });
