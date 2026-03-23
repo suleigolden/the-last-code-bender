@@ -354,70 +354,134 @@ bun install          # or: yarn install`}</CodeBlock>
           </div>
         </Step>
 
-        <Step n={5} title="Create index.tsx — your profile component">
-          <p className="mb-2 text-muted-foreground">
-            This component renders inside the profile page below the header. Study{' '}
-            <span className="text-foreground">TheLastCodeBender/index.tsx</span> as the reference
-            implementation. Rules:
+        <Step n={5} title="Create index.tsx — your profile, your canvas">
+          {/* Recruiter callout */}
+          <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+            <p className="text-xs font-mono text-primary font-semibold mb-1">
+              👀 Tech recruiters will see this.
+            </p>
+            <p className="text-xs font-mono text-muted-foreground leading-relaxed">
+              Your profile folder is your portfolio. Recruiters browse the repo — they see your
+              folder structure, how you split components, how you name files, and how you build UI.
+              Think of it as a live coding interview you designed yourself.
+            </p>
+          </div>
+
+          {/* Creative freedom note */}
+          <div className="mb-4 space-y-2 text-xs font-mono text-muted-foreground leading-relaxed">
+            <p>
+              <Cm>{'// ✦ Build it however you want. Be creative. Be modern. Be you.'}</Cm>
+            </p>
+            <p>
+              <Cm>{'// ✦ No template required — this is your showcase, not a form to fill.'}</Cm>
+            </p>
+            <p>
+              <Cm>{'// ✦ You can create your own component library inside your folder.'}</Cm>
+            </p>
+            <p>
+              <Cm>{'// ✦ Split into sections, add animations, tabs, grids — anything React supports.'}</Cm>
+            </p>
+          </div>
+
+          {/* Folder structure example */}
+          <p className="text-xs font-mono text-muted-foreground mb-2">
+            <Cm>{'// Reference: how TheLastCodeBender structures their profile folder —'}</Cm>
+            <br />
+            <Cm>{'// your structure can look completely different. This is just one way.'}</Cm>
           </p>
-          <ul className="space-y-1 text-muted-foreground text-xs mb-3 list-none">
-            {[
-              'Export a default function — no named exports',
-              'Use font-mono for all text',
-              'Use IDE design tokens only — no hardcoded hex colors',
-              'IDE tokens: bg-ide-sidebar, bg-ide-tab, bg-ide-statusbar',
-              'Syntax tokens: text-syntax-keyword, text-syntax-string, text-syntax-function, text-syntax-comment',
-              'Do not render full-page chrome — the outer shell is provided by BenderProfilePage',
-            ].map((rule) => (
-              <li key={rule} className="flex items-start gap-2">
-                <ChevronRight className="w-3 h-3 mt-0.5 text-syntax-function shrink-0" />
-                <span>{rule}</span>
-              </li>
-            ))}
-          </ul>
+          <CodeBlock>{`ThirdFrontendBender/            ← your folder (you own everything inside)
+├── index.tsx                   ← entry point — must export a default component
+├── register-me.json            ← your registration (the only registry file)
+└── sections/                   ← optional: your own component library
+    ├── HeroSection.tsx
+    ├── StorySection.tsx
+    ├── StackSection.tsx
+    ├── PortraitSection.tsx
+    └── SocialsSection.tsx
+
+// You could also do:
+ThirdFrontendBender/
+├── index.tsx
+├── register-me.json
+├── components/
+│   ├── TerminalCard.tsx
+│   ├── TechBadge.tsx
+│   └── GlowButton.tsx
+└── hooks/
+    └── useTypingEffect.ts`}</CodeBlock>
+
+          {/* Hard rules */}
+          <div className="mt-4 mb-3">
+            <p className="text-xs font-mono text-foreground font-semibold mb-2">
+              Hard rules (non-negotiable):
+            </p>
+            <ul className="space-y-1.5 text-muted-foreground text-xs font-mono list-none">
+              {[
+                ['index.tsx must export a default function',                          'The page lazy-loads it by default export'],
+                ['All files must live inside your profile folder',                    'No imports from other contributors\' folders'],
+                ['Use IDE design tokens — no hardcoded hex colors',                   'bg-ide-sidebar, text-syntax-keyword, border-border, etc.'],
+                ['Do not render full-page chrome',                                    'The tab bar, sidebar, and status bar are provided by BenderProfilePage'],
+                ['No external npm packages',                                          'Use only what is already installed in the project'],
+              ].map(([rule, reason]) => (
+                <li key={rule} className="flex items-start gap-2">
+                  <ChevronRight className="w-3 h-3 mt-0.5 text-syntax-function shrink-0" />
+                  <span>
+                    <span className="text-foreground">{rule}</span>
+                    <span className="text-muted-foreground/60"> — {reason}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Minimal starter */}
+          <p className="text-xs font-mono text-muted-foreground mb-2">
+            <Cm>{'// Minimal starter — replace everything, go wild:'}</Cm>
+          </p>
           <CodeBlock>{`// src/apps/codebender-profiles/FrontendBenders/ThirdFrontendBender/index.tsx
+import { HeroSection }   from './sections/HeroSection';
+import { StackSection }  from './sections/StackSection';
+import { SocialsSection } from './sections/SocialsSection';
 
 export default function ThirdFrontendBenderProfile() {
   return (
     <div className="space-y-6 font-mono">
-
-      {/* Story / README */}
-      <div className="bg-ide-sidebar border border-border rounded-lg overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
-          <span className="text-xs text-muted-foreground">README.md</span>
-        </div>
-        <div className="p-4 text-sm space-y-2">
-          <p className="text-syntax-comment">// ThirdFrontendBender — Your Name</p>
-          <div>
-            <span className="text-syntax-keyword">const </span>
-            <span className="text-foreground">tagline</span>
-            <span className="text-muted-foreground"> = </span>
-            <span className="text-syntax-string">"your one-liner here"</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Socials */}
-      <div className="bg-ide-sidebar border border-border rounded-lg overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
-          <span className="text-xs text-muted-foreground">socials.json</span>
-        </div>
-        <div className="p-4 text-sm space-y-1">
-          <div>
-            <span className="text-syntax-function">"github"</span>
-            <span className="text-muted-foreground">: </span>
-            <a href="https://github.com/your-handle"
-               className="text-syntax-string hover:underline"
-               target="_blank" rel="noopener noreferrer">
-              "github.com/your-handle"
-            </a>
-          </div>
-        </div>
-      </div>
-
+      <HeroSection />
+      <StackSection />
+      <SocialsSection />
     </div>
   );
-}`}</CodeBlock>
+}
+
+// — or skip sections entirely and write it all inline —
+// — or build a full tabbed IDE layout like TheLastCodeBender —
+// — or make something nobody has seen before. Your call. —`}</CodeBlock>
+
+          {/* Design tokens reminder */}
+          <div className="mt-4 p-3 bg-ide-sidebar border border-border rounded-lg">
+            <p className="text-xs font-mono text-muted-foreground mb-2">
+              <Cm>{'// Available IDE design tokens (use these instead of hardcoded colors):'}</Cm>
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-[11px] font-mono">
+              {[
+                ['bg-ide-sidebar',           'panel / card backgrounds'],
+                ['bg-ide-tabbar',            'tab bar background'],
+                ['bg-ide-statusbar',         'bottom status strip'],
+                ['text-syntax-keyword',      'blue — const, function, import'],
+                ['text-syntax-string',       'green — string values'],
+                ['text-syntax-function',     'yellow — function names'],
+                ['text-syntax-comment',      'grey — // comments'],
+                ['text-syntax-variable',     'orange — variables'],
+                ['text-muted-foreground',    'subdued text'],
+                ['border-border',            'all borders'],
+              ].map(([token, desc]) => (
+                <div key={token} className="flex items-center gap-2 py-0.5">
+                  <span className="text-syntax-function shrink-0">{token}</span>
+                  <span className="text-muted-foreground/60">— {desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </Step>
 
         <Step n={6} title="Run the dev server to preview your profile">
