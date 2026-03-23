@@ -1,24 +1,10 @@
 {
   "handle": "SecondFrontendBender",
   "discipline": "frontend",
-  "github": "john-doe",
+  "github": "secondfrontendbender",
   "rank": "Apprentice",
-  "xp": 0,
-  "socials": {
-    "linkedin": "https://linkedin.com/in/john-doe",
-    "email": "john.doe@example.com"
-  },
-  "stack": {
-    "primary": [
-      { "tech": "React", "category": "framework" },
-      { "tech": "Node.js", "category": "framework" }
-    ],
-    "familiar": [
-      { "tech": "Express", "category": "framework" },
-      { "tech": "MongoDB", "category": "db" }
-    ],
-    "aware": []
-  },
+  "xp": 10,
+  "isPlaceholder": false,
   "open_to_work": false,
   "skill_live": false,
   "skill_version": null,
@@ -26,6 +12,6 @@
   "community_vote": false,
   "demo_url": null,
   "demo_views": 0,
-  "joined": "2026-03-22",
-  "last_active": "2026-03-22"
+  "joined": "2026-01-01",
+  "last_active": "2026-03-20"
 }
