@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { label: 'Stack Radar', href: '/stack-radar' },
   { label: 'Recruit', href: '/recruit' },
   { label: 'Compat', href: '/compat' },
+  { label: 'Docs', href: '/docs' },
 ];
 
 export function Navbar() {

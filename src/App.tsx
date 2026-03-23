@@ -10,6 +10,7 @@ import { BenderProfilePage } from "./pages/BenderProfilePage";
 import { StackRadarPage } from "./pages/StackRadarPage";
 import { RecruiterPage } from "./pages/RecruiterPage";
 import { CompatibilityPage } from "./pages/CompatibilityPage";
+import { DocsPage } from "./pages/DocsPage";
 import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/benders/:discipline/:handle" element={<BenderProfilePage />} />
             <Route path="/recruit" element={<RecruiterPage />} />
             <Route path="/compat" element={<CompatibilityPage />} />
+            <Route path="/docs" element={<DocsPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
           {/* Legacy full-screen IDE pages — no Layout */}
