@@ -1,10 +1,11 @@
 import { useDeferredValue, useEffect, useState } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react';
 import { toast } from 'sonner';
-import { Save, History } from 'lucide-react';
+import { FileCode2, History, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import {
   Dialog,
@@ -32,6 +33,9 @@ import {
   useSaveProfileWorkspace,
   useSnapshotFiles,
 } from '@/hooks/useProfileWorkspace';
+import { workspaceCodeMirrorChrome } from '@/components/profile/workspace-code-mirror-theme';
+
+const codeMirrorExtensions = [javascript({ jsx: true, typescript: true }), workspaceCodeMirrorChrome];
 
 interface ProfileWorkspaceEditorProps {
   benderId: string;
@@ -96,30 +100,48 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
      
         <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1 rounded-md border border-border">
           <ResizablePanel defaultSize={45} minSize={28}>
-            <div className="flex h-full min-h-0 flex-col bg-background/60">
-              <div className="flex shrink-0 flex-wrap gap-1 border-b border-border p-2">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[#1e293b]">
+              <div className="flex shrink-0 flex-wrap gap-1 border-b border-[#334155] bg-[#0f172a] p-2">
                 {PROFILE_WORKSPACE_PATHS.map((path) => (
                   <button
                     key={path}
                     type="button"
                     onClick={() => setActivePath(path)}
                     className={cn(
-                      'rounded px-2 py-1 font-mono text-[10px] transition-colors',
+                      'rounded px-2 py-1 font-mono text-[11px] transition-colors',
                       activePath === path
-                        ? 'bg-primary/20 text-primary'
-                        : 'text-muted-foreground hover:text-foreground',
+                        ? 'bg-sky-500/20 text-sky-300'
+                        : 'text-slate-400 hover:text-slate-200',
                     )}
                   >
                     {path === 'index.tsx' ? 'index.tsx' : path.replace('sections/', '')}
                   </button>
                 ))}
               </div>
-              <Textarea
-                value={files[activePath]}
-                onChange={(e) => setFiles((prev) => ({ ...prev, [activePath]: e.target.value }))}
-                className="min-h-0 flex-1 resize-none rounded-none border-0 font-mono text-xs focus-visible:ring-0"
-                spellCheck={false}
-              />
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <div className="flex shrink-0 items-center justify-between border-b border-[#334155] bg-[#0f172a] px-3 py-2">
+                  <span className="flex min-w-0 items-center gap-2 font-mono text-sm font-medium text-slate-200">
+                    <FileCode2 className="h-4 w-4 shrink-0 text-rose-400" aria-hidden />
+                    <span className="truncate">{activePath}</span>
+                  </span>
+                  <span className="shrink-0 rounded bg-slate-600/50 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                    TSX
+                  </span>
+                </div>
+                <div className="min-h-0 flex-1 overflow-hidden">
+                  <CodeMirror
+                    key={activePath}
+                    value={files[activePath]}
+                    height="100%"
+                    theme="dark"
+                    extensions={codeMirrorExtensions}
+                    className="h-full overflow-hidden [&_.cm-editor]:min-h-full [&_.cm-editor]:h-full [&_.cm-scroller]:min-h-[12rem]"
+                    onChange={(doc) => setFiles((prev) => ({ ...prev, [activePath]: doc }))}
+                    basicSetup={true}
+                    indentWithTab
+                  />
+                </div>
+              </div>
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle className="bg-border w-1" />
@@ -134,11 +156,11 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                   recompileMode: 'delayed',
                   recompileDelay: 350,
                 }}
-                style={{ height: '100%', minHeight: 700, padding: '0px' }}
+                style={{ height: '100%', minHeight: 200 }}
               >
                 <SandpackPreview
                   showOpenInCodeSandbox={false}
-                  style={{ height: '100%', minHeight: 700 }}
+                  style={{ height: '100%', minHeight: 200 }}
                 />
               </SandpackProvider>
             </div>
