@@ -3,8 +3,9 @@ import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react';
 import { toast } from 'sonner';
 import { Save, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import {
   Dialog,
   DialogContent,
@@ -90,65 +91,13 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
   };
 
   return (
-    <Card className="bg-ide-sidebar border-border overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="font-mono text-base">Profile workspace</CardTitle>
-        <CardDescription className="font-mono text-xs">
-          Edit TSX like CodePen: sources are stored in Supabase and shown on your public profile. Use relative
-          imports only (no <code className="text-foreground">@/</code> alias in the preview).
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 p-4 pt-0">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            size="sm"
-            className="font-mono gap-1"
-            onClick={() => setSaveOpen(true)}
-            disabled={saving}
-          >
-            <Save className="h-3.5 w-3.5" />
-            Save
-          </Button>
-          {workspaceRow?.updated_at && (
-            <span className="font-mono text-[10px] text-muted-foreground self-center">
-              Last saved {new Date(workspaceRow.updated_at).toLocaleString()}
-            </span>
-          )}
-        </div>
-
-        {snapshots.length > 0 && (
-          <div className="rounded-md border border-border bg-background/40 p-3">
-            <p className="font-mono text-[10px] text-muted-foreground flex items-center gap-1 mb-2">
-              <History className="h-3 w-3" />
-              Recent commits (restore loads into editor; save again to publish)
-            </p>
-            <ScrollArea className="h-24 pr-2">
-              <ul className="space-y-1.5 font-mono text-[10px]">
-                {snapshots.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between gap-2">
-                    <span className="text-muted-foreground truncate">{s.commit_message}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 shrink-0 font-mono text-[10px]"
-                      disabled={loadingSnap}
-                      onClick={() => restore(s.id)}
-                    >
-                      Restore
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </ScrollArea>
-          </div>
-        )}
-
-        <ResizablePanelGroup direction="horizontal" className="min-h-[480px] rounded-md border border-border">
+    <Card className="flex min-h-0 flex-1 flex-col overflow-hidden bg-ide-sidebar border-border">
+      <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-4 pt-0">
+     
+        <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1 rounded-md border border-border">
           <ResizablePanel defaultSize={45} minSize={28}>
-            <div className="flex h-full flex-col bg-background/60">
-              <div className="flex flex-wrap gap-1 border-b border-border p-2">
+            <div className="flex h-full min-h-0 flex-col bg-background/60">
+              <div className="flex shrink-0 flex-wrap gap-1 border-b border-border p-2">
                 {PROFILE_WORKSPACE_PATHS.map((path) => (
                   <button
                     key={path}
@@ -175,7 +124,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
           </ResizablePanel>
           <ResizableHandle withHandle className="bg-border w-1" />
           <ResizablePanel defaultSize={55} minSize={35}>
-            <div className="h-full min-h-[480px] bg-[#0c0e14]">
+            <div className="h-full min-h-0 bg-[#0c0e14]">
               <SandpackProvider
                 template="react-ts"
                 theme="dark"
@@ -185,15 +134,71 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                   recompileMode: 'delayed',
                   recompileDelay: 350,
                 }}
+                style={{ height: '100%', minHeight: 700, padding: '0px' }}
               >
                 <SandpackPreview
                   showOpenInCodeSandbox={false}
-                  style={{ height: '100%', minHeight: 480 }}
+                  style={{ height: '100%', minHeight: 700 }}
                 />
               </SandpackProvider>
             </div>
-          </ResizablePanel>
+          </ResizablePanel>     
         </ResizablePanelGroup>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            className="font-mono gap-1"
+            onClick={() => setSaveOpen(true)}
+            disabled={saving}
+          >
+            <Save className="h-3.5 w-3.5" />
+            Save
+          </Button>
+          {workspaceRow?.updated_at && (
+            <span className="font-mono text-[10px] text-muted-foreground self-center">
+              Last saved {new Date(workspaceRow.updated_at).toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {snapshots.length > 0 && (
+          <Accordion type="single" collapsible className="shrink-0 rounded-md border border-border bg-background/40 px-3 font-mono">
+            <AccordionItem value="commit-history" className="border-0">
+              <AccordionTrigger className="py-3 text-left font-mono text-xs text-foreground hover:no-underline [&[data-state=open]]:text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <History className="h-3.5 w-3.5 shrink-0" />
+                  View commit history
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pb-3 pt-0">
+                <p className="mb-2 font-mono text-[10px] text-muted-foreground">
+                  Restore loads into the editor locally — save again to publish.
+                </p>
+                <ScrollArea className="h-40 pr-2">
+                  <ul className="space-y-1.5 font-mono text-[10px]">
+                    {snapshots.map((s) => (
+                      <li key={s.id} className="flex items-center justify-between gap-2">
+                        <span className="text-muted-foreground truncate">{s.commit_message}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 shrink-0 font-mono text-[10px]"
+                          disabled={loadingSnap}
+                          onClick={() => restore(s.id)}
+                        >
+                          Restore
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </ScrollArea>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
+
 
         <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
           <DialogContent className="font-mono sm:max-w-md">

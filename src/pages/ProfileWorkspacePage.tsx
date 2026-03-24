@@ -15,11 +15,11 @@ export function ProfileWorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background noise-overlay">
+    <div className="flex h-dvh min-h-0 w-full flex-col overflow-hidden bg-background noise-overlay">
       <div className="fixed inset-0 ide-grid-bg pointer-events-none opacity-20" />
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <div className="flex w-full shrink-0 flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" className="font-mono text-xs gap-1" asChild>
               <Link to="/dashboard">
@@ -39,7 +39,7 @@ export function ProfileWorkspacePage() {
           </Button>
         </div>
 
-        <Card className="bg-ide-sidebar border-border">
+        <Card className="mb-4 shrink-0 bg-ide-sidebar border-border">
           <CardContent className="p-4 flex items-center gap-3">
             {avatarUrl && (
               <img src={avatarUrl} alt={githubLogin ?? ''} className="w-9 h-9 rounded-full border border-border" />
@@ -57,11 +57,15 @@ export function ProfileWorkspacePage() {
         </Card>
 
         {isLoading ? (
-          <p className="font-mono text-sm text-syntax-comment animate-pulse text-center py-16">
+          <p className="flex flex-1 items-center justify-center font-mono text-sm text-syntax-comment animate-pulse">
             // loading workspace...
           </p>
         ) : (
-          existingBender && <ProfileWorkspaceEditor benderId={existingBender.id} />
+          existingBender && (
+            <div className="flex min-h-0 flex-1 flex-col">
+              <ProfileWorkspaceEditor benderId={existingBender.id} />
+            </div>
+          )
         )}
       </div>
     </div>

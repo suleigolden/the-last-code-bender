@@ -202,10 +202,11 @@ export function DashboardPage() {
     isHandleAvailable ? 'text-green-500' : checkingHandle ? 'text-muted-foreground' : 'text-red-500';
 
   return (
-    <div className="min-h-screen bg-background noise-overlay">
+    <div className="flex min-h-dvh w-full flex-col bg-background noise-overlay">
       <div className="fixed inset-0 ide-grid-bg pointer-events-none opacity-20" />
 
-      <div className="relative z-10 mx-auto max-w-lg px-4 py-12 space-y-6">
+      <div className="relative z-10 flex w-full flex-1 flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mx-auto w-full space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -384,6 +385,7 @@ export function DashboardPage() {
             </p>
           </>
         )}
+        </div>
       </div>
     </div>
   );
