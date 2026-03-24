@@ -307,7 +307,7 @@ export const BenderProfilePage = () => {
                     </div>
                   )}
 
-                  {/* Hosted workspace (Supabase) > local profile component > tabs */}
+                  {/* Hosted workspace (Supabase) > local profile component > tabs  style={{ border: '1px solid red' }} */}
                   {showHostedProfile && hostedFiles ? (
                     <React.Suspense fallback={<Skeleton className="h-96 w-full" />}>
                       <ProfileWorkspacePreview files={hostedFiles} />

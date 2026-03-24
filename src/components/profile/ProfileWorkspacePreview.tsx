@@ -21,7 +21,7 @@ export function ProfileWorkspacePreview({ files }: ProfileWorkspacePreviewProps)
           recompileDelay: 400,
         }}
       >
-        <SandpackPreview showOpenInCodeSandbox={false} style={{ height: 480 }} />
+        <SandpackPreview showOpenInCodeSandbox={false} style={{ height: 1000 }} />
       </SandpackProvider>
     </div>
   );
