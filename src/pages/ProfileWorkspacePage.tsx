@@ -21,7 +21,7 @@ export function ProfileWorkspacePage() {
       <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex w-full shrink-0 flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="font-mono text-xs gap-1" asChild>
+            <Button variant="ghost" size="sm" className="font-mono text-[15px] gap-1" asChild>
               <Link to="/dashboard">
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Dashboard
@@ -47,7 +47,7 @@ export function ProfileWorkspacePage() {
             <div>
               <p className="font-mono text-sm font-semibold text-foreground">@{githubLogin}</p>
               {existingBender && (
-                <p className="font-mono text-xs text-muted-foreground">
+                <p className="font-mono text-[15px] text-muted-foreground">
                   {existingBender.handle} · {existingBender.discipline}
                 </p>
               )}

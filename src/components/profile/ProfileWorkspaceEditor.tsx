@@ -122,7 +122,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                     type="button"
                     onClick={() => setActivePath(path)}
                     className={cn(
-                      'rounded px-2 py-1 font-mono text-[11px] transition-colors',
+                      'rounded px-2 py-1 font-mono text-[12px] transition-colors',
                       activePath === path
                         ? 'bg-sky-500/20 text-sky-300'
                         : 'text-slate-400 hover:text-slate-200',
@@ -193,7 +193,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
             Save
           </Button>
           {workspaceRow?.updated_at && (
-            <span className="font-mono text-[10px] text-muted-foreground self-center">
+            <span className="font-mono text-[15px] text-muted-foreground self-center">
               Last saved {new Date(workspaceRow.updated_at).toLocaleString()}
             </span>
           )}
@@ -203,20 +203,20 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
           <Accordion type="single" collapsible className="shrink-0 rounded-md border border-border bg-background/40 px-3 font-mono">
             <AccordionItem value="commit-history" className="border-0">
               <AccordionTrigger className="py-3 text-left font-mono text-xs text-foreground hover:no-underline [&[data-state=open]]:text-muted-foreground">
-                <span className="flex items-center gap-2">
-                  <History className="h-3.5 w-3.5 shrink-0" />
+                <span className="flex items-center gap-2 text-[15px]">
+                  <History className="h-3.5 w-3.5 shrink-0 text-green-500" />
                   View commit history
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pb-3 pt-0">
-                <p className="mb-2 font-mono text-[10px] text-muted-foreground">
-                  Restore loads into the editor locally — save again to publish.
+                <p className="mb-2 font-mono text-[15px] text-muted-foreground">
+                  Restore loads into the editor locally <span className="text-green-500">— save again to publish.</span>
                 </p>
                 <ScrollArea className="h-40 pr-2">
                   <ul className="space-y-1.5 font-mono text-[10px]">
                     {snapshots.map((s) => (
-                      <li key={s.id} className="flex items-center justify-between gap-2">
-                        <span className="text-muted-foreground truncate">{s.commit_message}</span>
+                      <li key={s.id} className="flex items-center justify-between gap-2 border-b border-border pb-2">
+                        <span className="text-green-500 truncate text-[14px]">{s.commit_message}</span>
                         <Button
                           type="button"
                           variant="ghost"
