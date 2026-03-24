@@ -4,7 +4,12 @@ import {
   type ProfileWorkspacePath,
 } from '@/lib/profile-workspace-defaults';
 
-const MAIN_TSX = `import { StrictMode } from "react";
+/**
+ * react-ts template entry is `/index.tsx` at project root (not /src/).
+ * It imports `./App` from `/App.tsx`. We must override those paths — putting
+ * files under /src/ leaves the template default App (e.g. "Hello world") in use.
+ */
+const INDEX_ENTRY_TSX = `import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./styles.css";
@@ -37,14 +42,17 @@ export function buildWorkspaceSandpackFiles(
   files: Record<ProfileWorkspacePath, string>,
 ): SandpackFiles {
   const out: SandpackFiles = {
-    '/src/main.tsx': { code: MAIN_TSX, hidden: true },
-    '/src/styles.css': { code: STYLES_CSS, hidden: true },
+    '/index.tsx': { code: INDEX_ENTRY_TSX, hidden: true },
+    '/styles.css': { code: STYLES_CSS, hidden: true },
   };
 
   for (const path of PROFILE_WORKSPACE_PATHS) {
     const code = files[path] ?? '';
-    const sandpackPath = path === 'index.tsx' ? '/src/App.tsx' : `/src/${path}`;
-    out[sandpackPath] = { code };
+    if (path === 'index.tsx') {
+      out['/App.tsx'] = { code };
+    } else {
+      out[`/${path}`] = { code };
+    }
   }
 
   return out;

@@ -15,6 +15,7 @@ import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { ProfileWorkspacePage } from "./pages/ProfileWorkspacePage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 
@@ -33,6 +34,9 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard" element={
               <RequireAuth><DashboardPage /></RequireAuth>
+            } />
+            <Route path="/dashboard/workspace" element={
+              <RequireAuth><ProfileWorkspacePage /></RequireAuth>
             } />
 
             {/* Layout-wrapped routes */}
