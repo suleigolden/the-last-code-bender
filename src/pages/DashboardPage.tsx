@@ -14,6 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { BenderRow } from '@/types/database';
+import { ProfileWorkspaceEditor } from '@/components/profile/ProfileWorkspaceEditor';
 
 const DISCIPLINES: BenderRow['discipline'][] = [
   'Frontend',
@@ -198,7 +199,11 @@ export function DashboardPage() {
     <div className="min-h-screen bg-background noise-overlay">
       <div className="fixed inset-0 ide-grid-bg pointer-events-none opacity-20" />
 
-      <div className="relative z-10 max-w-lg mx-auto px-4 py-12 space-y-6">
+      <div
+        className={cn(
+          'relative z-10 mx-auto px-4 py-12 space-y-6'
+        )}
+      >
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -234,6 +239,8 @@ export function DashboardPage() {
           <>
             <p className="font-mono text-sm text-syntax-comment">// your claimed rank</p>
             <ProfileCard bender={existingBender} githubLogin={githubLogin} avatarUrl={avatarUrl} />
+            <p className="font-mono text-sm text-syntax-comment">// profile editor</p>
+            <ProfileWorkspaceEditor benderId={existingBender.id} />
           </>
         ) : (
           <>

@@ -47,9 +47,36 @@ export interface UserRow {
   last_sign_in: string;
 }
 
+export interface BenderProfileWorkspaceRow {
+  bender_id: string;
+  files: Record<string, string>;
+  updated_at: string;
+}
+
+export interface BenderProfileSnapshotRow {
+  id: string;
+  bender_id: string;
+  commit_message: string;
+  files: Record<string, string>;
+  created_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
+      bender_profile_snapshots: {
+        Row: BenderProfileSnapshotRow;
+        Insert: Omit<BenderProfileSnapshotRow, 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Omit<BenderProfileSnapshotRow, 'id'>>;
+      };
+      bender_profile_workspace: {
+        Row: BenderProfileWorkspaceRow;
+        Insert: Omit<BenderProfileWorkspaceRow, 'updated_at'> & { updated_at?: string };
+        Update: Partial<Omit<BenderProfileWorkspaceRow, 'bender_id'>>;
+      };
       benders: {
         Row: BenderRow;
         Insert: Omit<BenderRow, 'id' | 'registered_at' | 'last_active'> & {

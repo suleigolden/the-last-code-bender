@@ -12,6 +12,10 @@ import { DemoFrame } from '@/components/profile/DemoFrame';
 import { StackBadges } from '@/components/profile/StackBadges';
 import { ProfileExplorer } from '@/components/profile/ProfileExplorer';
 import { useRegistry } from '@/hooks/useRegistry';
+import { useBenderByHandle } from '@/hooks/useBenders';
+import { useProfileWorkspace } from '@/hooks/useProfileWorkspace';
+import { normalizeWorkspaceFiles } from '@/lib/profile-workspace-defaults';
+import { workspaceHasRenderableFiles } from '@/lib/profile-workspace-sandpack';
 import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
@@ -42,6 +46,11 @@ type ProfileComponentModule = { default: React.ComponentType };
 const PROFILE_COMPONENT_MODULES = import.meta.glob<ProfileComponentModule>(
   '../apps/codebender-profiles/**/index.tsx',
 );
+
+const ProfileWorkspacePreview = React.lazy(async () => {
+  const m = await import('@/components/profile/ProfileWorkspacePreview');
+  return { default: m.ProfileWorkspacePreview };
+});
 
 const FOUNDER_PROFILE_MODULE_KEY: string | undefined = Object.keys(PROFILE_COMPONENT_MODULES).find((k) =>
   k.toLowerCase().endsWith('/thelastcodebender/index.tsx'),
@@ -143,6 +152,22 @@ export const BenderProfilePage = () => {
 
     return React.lazy(PROFILE_COMPONENT_MODULES[moduleKey]);
   }, [hasComponent, isFounder, discipline, handle]);
+
+  const { data: supabaseBender } = useBenderByHandle(handle ?? '');
+  const shouldLoadWorkspace = Boolean(supabaseBender?.id);
+  const { data: hostedWorkspace, isLoading: workspaceLoading } = useProfileWorkspace(
+    shouldLoadWorkspace ? supabaseBender?.id : undefined,
+  );
+
+  const showHostedProfile =
+    shouldLoadWorkspace &&
+    !workspaceLoading &&
+    hostedWorkspace != null &&
+    workspaceHasRenderableFiles(hostedWorkspace.files);
+
+  const hostedFiles = showHostedProfile && hostedWorkspace
+    ? normalizeWorkspaceFiles(hostedWorkspace.files)
+    : null;
 
   const disciplineDisplay = bender
     ? bender.discipline.charAt(0).toUpperCase() + bender.discipline.slice(1)
@@ -282,8 +307,12 @@ export const BenderProfilePage = () => {
                     </div>
                   )}
 
-                  {/* Profile component or tabs */}
-                  {ProfileComponent ? (
+                  {/* Hosted workspace (Supabase) > local profile component > tabs */}
+                  {showHostedProfile && hostedFiles ? (
+                    <React.Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                      <ProfileWorkspacePreview files={hostedFiles} />
+                    </React.Suspense>
+                  ) : ProfileComponent ? (
                     <React.Suspense fallback={<Skeleton className="h-96 w-full" />}>
                       <ProfileComponent />
                     </React.Suspense>

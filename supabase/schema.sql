@@ -121,6 +121,31 @@ create index idx_benders_handle on benders(handle);
 create index idx_benders_registered_at on benders(registered_at desc);
 
 -- ────────────────────────────────────────────────────────────
+-- Hosted profile workspace (dashboard editor → Sandpack preview)
+-- ────────────────────────────────────────────────────────────
+create table if not exists bender_profile_workspace (
+  bender_id uuid primary key references benders(id) on delete cascade,
+  files jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists bender_profile_snapshots (
+  id uuid primary key default gen_random_uuid(),
+  bender_id uuid not null references benders(id) on delete cascade,
+  commit_message text not null,
+  files jsonb not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_bender_profile_snapshots_bender
+  on bender_profile_snapshots(bender_id, created_at desc);
+
+alter table bender_profile_workspace enable row level security;
+alter table bender_profile_snapshots enable row level security;
+
+-- See supabase/migrations/20250324120000_profile_workspace.sql for RLS policies.
+
+-- ────────────────────────────────────────────────────────────
 -- Seed — TheLastCodeBender founder (rank 0 / special tier)
 -- ────────────────────────────────────────────────────────────
 insert into benders (
