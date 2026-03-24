@@ -131,10 +131,50 @@ export function HeroSection() {
 `,
     'sections/StorySection.tsx': `export function StorySection() {
   return (
-    <section id="story" className="section story">
-      <p className="ey">// story</p>
-      <h2>How I bend code</h2>
-      <p>Tell visitors your journey, stack, and what you are building.</p>
+    <section id="story" className="section story story-ide" aria-labelledby="story-heading">
+      <p className="ey">// story/README.md</p>
+
+      <h2 id="story-heading" className="story-heading">
+        How I bend code
+      </h2>
+
+      <p className="story-subey">
+        <span className="syntax-comment">/**</span> Replace the copy below with your real journey.
+      </p>
+
+      <div className="story-panel ide-panel">
+        <p className="story-lead">
+          I build products end-to-end: from rough idea to deployed code. I care about clear architecture,
+          fast feedback loops, and shipping something people actually use.
+        </p>
+
+        <p>
+          My path has wandered through <span className="syntax-string">&quot;frontend polish&quot;</span>,{" "}
+          <span className="syntax-string">&quot;API design&quot;</span>, and{" "}
+          <span className="syntax-string">&quot;keeping production calm&quot;</span> — always chasing that
+          balance between craft and delivery.
+        </p>
+
+        <div className="story-chapter">
+          <p className="story-chapter-label">// What I&apos;m focused on now</p>
+          <ul className="story-list">
+            <li>
+              <span className="story-list-k">→</span> Shipping features with TypeScript + React ecosystems
+            </li>
+            <li>
+              <span className="story-list-k">→</span> Owning reliability: errors, observability, and UX when things break
+            </li>
+            <li>
+              <span className="story-list-k">→</span> Writing so the next developer isn&apos;t cursing my name
+            </li>
+          </ul>
+        </div>
+
+        <blockquote className="story-pullquote">
+          <span className="syntax-comment">// mantra</span>
+          <p>Ship small, measure, iterate — but never ship sloppy on purpose.</p>
+        </blockquote>
+      </div>
     </section>
   );
 }
