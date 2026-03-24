@@ -28,6 +28,7 @@ import {
   type ProfileWorkspacePath,
 } from '@/lib/profile-workspace-defaults';
 import { buildWorkspaceSandpackFiles } from '@/lib/profile-workspace-sandpack';
+import { profileSandpackCustomSetup } from '@/lib/sandpack-profile-deps';
 import {
   useProfileSnapshots,
   useProfileWorkspace,
@@ -164,6 +165,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                 template="react-ts"
                 theme="dark"
                 files={sandpackFiles}
+                customSetup={profileSandpackCustomSetup}
                 options={{
                   autorun: true,
                   recompileMode: 'delayed',
