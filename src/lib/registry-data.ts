@@ -12,6 +12,7 @@ interface RegisterMeJson {
   xp?: number;
   isPlaceholder?: boolean;
   isFounder?: boolean;
+  isPublished?: boolean;
   open_to_work?: boolean;
   skill_live?: boolean;
   skill_version?: string | null;
@@ -51,6 +52,7 @@ export const REGISTRY_DATA: Bender[] = Object.values(modules)
     demo_views: reg.demo_views ?? 0,
     joined: reg.joined ?? today,
     last_active: reg.last_active ?? today,
+    isPublished: reg.isPublished ?? false,
   }))
   .sort((a, b) => {
     if (a.discipline.toLowerCase() === 'founder') return -1;

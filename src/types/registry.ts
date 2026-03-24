@@ -13,6 +13,7 @@ export interface Bender {
   demo_views: number;
   joined: string;
   last_active: string;
+  isPublished: boolean;
 }
 
 export interface LeaderboardEntry {

@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { Bender } from '@/types/registry';
+import { UnclaimedCard } from './UnclaimedCard';
 
 const DISCIPLINE_AVATAR_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -32,17 +33,18 @@ const RANK_COLORS: Record<string, string> = {
 
 interface BenderCardProps {
   bender: Bender;
+  isPublished?: boolean;
 }
 
-export const BenderCard = ({ bender }: BenderCardProps) => {
+export const BenderCard = ({ bender, isPublished = true }: BenderCardProps) => {
   const navigate = useNavigate();
-  const initials = bender.handle[0]?.toUpperCase() ?? '?';
-  const avatarColor = DISCIPLINE_AVATAR_COLORS[bender.discipline] ?? 'text-muted-foreground border-border';
-  const disciplineColor = DISCIPLINE_COLORS[bender.discipline] ?? 'text-muted-foreground';
-  const rankColor = RANK_COLORS[bender.rank] ?? 'bg-muted/60 text-muted-foreground';
+  const initials = bender?.handle[0]?.toUpperCase() ?? '?';
+  const avatarColor = DISCIPLINE_AVATAR_COLORS[bender?.discipline] ?? 'text-muted-foreground border-border';
+  const disciplineColor = DISCIPLINE_COLORS[bender?.discipline] ?? 'text-muted-foreground';
+  const rankColor = RANK_COLORS[bender?.rank] ?? 'bg-muted/60 text-muted-foreground';
 
   const handleClick = () => {
-    navigate(`/benders/${bender.discipline.toLowerCase()}/${bender.handle}`);
+    navigate(`/benders/${bender?.discipline.toLowerCase()}/${bender?.handle}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -51,6 +53,14 @@ export const BenderCard = ({ bender }: BenderCardProps) => {
       handleClick();
     }
   };
+  if (!isPublished) {
+    return (
+      <UnclaimedCard
+        rankName={bender?.handle ?? ''}
+        discipline={bender?.discipline ?? ''}
+      />
+    );
+  }
 
   return (
     <Card
@@ -71,21 +81,21 @@ export const BenderCard = ({ bender }: BenderCardProps) => {
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-sm font-semibold text-foreground truncate">{bender.handle}</p>
-            <p className={cn('font-mono text-xs', disciplineColor)}>{bender.discipline}</p>
+            <p className="font-mono text-sm font-semibold text-foreground truncate">{bender?.handle}</p>
+            <p className={cn('font-mono text-xs', disciplineColor)}>{bender?.discipline}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge className={cn('font-mono text-xs border-0', rankColor)}>{bender.rank}</Badge>
-          <span className="font-mono text-xs text-muted-foreground">{bender.xp} XP</span>
+          <Badge className={cn('font-mono text-xs border-0', rankColor)}>{bender?.rank}</Badge>
+          <span className="font-mono text-xs text-muted-foreground">{bender?.xp} XP</span>
         </div>
-        {bender.challenge_wins > 0 && (
+        {bender?.challenge_wins > 0 && (
           <div className="flex items-center gap-1.5 font-mono text-xs text-syntax-function">
             <Trophy className="w-3 h-3" />
-            <span>{bender.challenge_wins} {bender.challenge_wins === 1 ? 'win' : 'wins'}</span>
+            <span>{bender?.challenge_wins} {bender?.challenge_wins === 1 ? 'win' : 'wins'}</span>
           </div>
         )}
-        {bender.open_to_work && (
+        {bender?.open_to_work && (
           <div className="flex items-center gap-1.5 font-mono text-xs text-syntax-string">
             <span className="w-1.5 h-1.5 rounded-full bg-syntax-string inline-block" />
             Open to work

@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { BenderCard } from '@/components/hall/BenderCard';
-import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
 import { FounderCard } from '@/components/hall/FounderCard';
 import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
@@ -229,17 +228,9 @@ export const HallOfFamePage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {showFounder && <FounderCard />}
                 {visibleSlots.map(slot =>
-                // if the bender is available, display the BenderCard
-                  slot.bender ? (
-                    <BenderCard key={slot.displayName} bender={slot.bender} />
-                  ) : (
-                    // if the bender is not available, display the UnclaimedCard
-                    <UnclaimedCard
-                      key={slot.displayName}
-                      rankName={slot.displayName}
-                      discipline={slot.discipline}
-                    />
-                  ),
+                    <div key={slot.displayName} className="relative">
+                      <BenderCard bender={slot.bender} isPublished={slot?.bender?.isPublished} />
+                    </div>
                 )}
               </div>
             )}
