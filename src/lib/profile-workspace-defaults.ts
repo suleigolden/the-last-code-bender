@@ -1,6 +1,8 @@
+import defaultSectionsStyles from '@/components/profile/profile-workspace-sections.css?raw';
+
 /**
  * Canonical paths for hosted profile sources (dashboard + Supabase).
- * Sandpack maps `index.tsx` → `/src/App.tsx`; sections keep relative paths under `/src/`.
+ * `index.tsx` → `/App.tsx`; sections → `/sections/…`; `styles.css` → `/styles.css` (live preview).
  */
 export const PROFILE_WORKSPACE_PATHS = [
   'index.tsx',
@@ -9,6 +11,7 @@ export const PROFILE_WORKSPACE_PATHS = [
   'sections/SocialsSection.tsx',
   'sections/StackSection.tsx',
   'sections/PortraitSection.tsx',
+  'styles.css',
 ] as const;
 
 export type ProfileWorkspacePath = (typeof PROFILE_WORKSPACE_PATHS)[number];
@@ -45,7 +48,7 @@ export default function App() {
 `,
     'sections/StorySection.tsx': `export function StorySection() {
   return (
-    <section className="section">
+    <section className="section story">
       <p className="ey">// story</p>
       <h2>How I bend code</h2>
       <p>Tell visitors your journey, stack, and what you are building.</p>
@@ -55,7 +58,7 @@ export default function App() {
 `,
     'sections/SocialsSection.tsx': `export function SocialsSection() {
   return (
-    <section className="section">
+    <section className="section socials">
       <p className="ey">// socials</p>
       <h2>Links</h2>
       <ul className="links">
@@ -69,7 +72,7 @@ export default function App() {
     'sections/StackSection.tsx': `export function StackSection() {
   const items = ["TypeScript", "React", "Vite"];
   return (
-    <section className="section">
+    <section className="section stack">
       <p className="ey">// stack</p>
       <h2>Tech I use</h2>
       <ul className="pill-list">
@@ -83,7 +86,7 @@ export default function App() {
 `,
     'sections/PortraitSection.tsx': `export function PortraitSection() {
   return (
-    <section className="section portrait">
+    <section className="section portrait" aria-label="Portrait">
       <p className="ey">// portrait</p>
       <div className="avatar" aria-hidden>CB</div>
       <p>Swap the placeholder for an image URL or your own markup.</p>
@@ -91,6 +94,7 @@ export default function App() {
   );
 }
 `,
+    'styles.css': defaultSectionsStyles,
   };
 }
 

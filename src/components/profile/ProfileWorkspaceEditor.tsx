@@ -1,5 +1,6 @@
-import { useDeferredValue, useEffect, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
+import { css as cssLang } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
 import { SandpackProvider, SandpackPreview } from '@codesandbox/sandpack-react';
 import { toast } from 'sonner';
@@ -35,7 +36,14 @@ import {
 } from '@/hooks/useProfileWorkspace';
 import { workspaceCodeMirrorChrome } from '@/components/profile/workspace-code-mirror-theme';
 
-const codeMirrorExtensions = [javascript({ jsx: true, typescript: true }), workspaceCodeMirrorChrome];
+const codeMirrorTsxExtensions = [javascript({ jsx: true, typescript: true }), workspaceCodeMirrorChrome];
+const codeMirrorCssExtensions = [cssLang(), workspaceCodeMirrorChrome];
+
+function fileTabLabel(path: ProfileWorkspacePath): string {
+  if (path === 'index.tsx') return 'index.tsx';
+  if (path === 'styles.css') return 'styles.css';
+  return path.replace('sections/', '');
+}
 
 interface ProfileWorkspaceEditorProps {
   benderId: string;
@@ -65,6 +73,11 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
 
   const deferredFiles = useDeferredValue(files);
   const sandpackFiles = buildWorkspaceSandpackFiles(deferredFiles);
+
+  const cmExtensions = useMemo(
+    () => (activePath === 'styles.css' ? codeMirrorCssExtensions : codeMirrorTsxExtensions),
+    [activePath],
+  );
 
   const handleSave = async () => {
     const msg = commitMessage.trim();
@@ -114,7 +127,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                         : 'text-slate-400 hover:text-slate-200',
                     )}
                   >
-                    {path === 'index.tsx' ? 'index.tsx' : path.replace('sections/', '')}
+                    {fileTabLabel(path)}
                   </button>
                 ))}
               </div>
@@ -125,7 +138,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                     <span className="truncate">{activePath}</span>
                   </span>
                   <span className="shrink-0 rounded bg-slate-600/50 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                    TSX
+                    {activePath === 'styles.css' ? 'CSS' : 'TSX'}
                   </span>
                 </div>
                 <div className="min-h-0 flex-1 overflow-hidden">
@@ -134,7 +147,7 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
                     value={files[activePath]}
                     height="100%"
                     theme="dark"
-                    extensions={codeMirrorExtensions}
+                    extensions={cmExtensions}
                     className="h-full overflow-hidden [&_.cm-editor]:min-h-full [&_.cm-editor]:h-full [&_.cm-scroller]:min-h-[12rem]"
                     onChange={(doc) => setFiles((prev) => ({ ...prev, [activePath]: doc }))}
                     basicSetup={true}
