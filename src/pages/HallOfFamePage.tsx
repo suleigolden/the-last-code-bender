@@ -7,13 +7,37 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { BenderCard } from '@/components/hall/BenderCard';
+import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
 import { FounderCard } from '@/components/hall/FounderCard';
 import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
-import { useRegistry, useRegistryStats } from '@/hooks/useRegistry';
+import { useRegistryStats } from '@/hooks/useRegistry';
+import { useAllBenders } from '@/hooks/useBenders';
 import { getBendingSpecializationsWithRanks } from '@/lib/code-bender-names';
 import type { Bender } from '@/types/registry';
+import type { BenderRow } from '@/types/database';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
+
+// Adapter: maps a live Supabase row to the Bender shape used by existing components
+function rowToBender(row: BenderRow): Bender {
+  return {
+    handle: row.handle,
+    github: row.github,
+    discipline: row.discipline,
+    rank: row.rank_tier,       // BenderRow.rank_tier → Bender.rank (tier name)
+    xp: row.xp,
+    skill_version: row.skill_version,
+    skill_live: row.skill_live,
+    open_to_work: row.open_to_work,
+    challenge_wins: row.challenge_wins,
+    community_vote: false,
+    demo_url: null,
+    demo_views: 0,
+    joined: row.registered_at,
+    last_active: row.last_active,
+    isPublished: true,          // if it's in Supabase, it's live
+  };
+}
 
 const SPEC_ID_TO_DISCIPLINE: Record<string, string> = {
   'frontend-bender': 'Frontend',
@@ -48,8 +72,11 @@ export const HallOfFamePage = () => {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('tier');
 
-  const { data: registry, isLoading } = useRegistry();
+  const { data: rows, isLoading, error } = useAllBenders();
   const { data: stats } = useRegistryStats();
+
+  // Convert live rows to Bender shape used by all existing components
+  const registry = useMemo(() => (rows ?? []).map(rowToBender), [rows]);
 
   const showFounder =
     activeTab === 'All' &&
@@ -64,7 +91,7 @@ export const HallOfFamePage = () => {
 
   // O(1) lookup map keyed by handle lowercase
   const benderMap = useMemo(
-    () => new Map((registry ?? []).map(b => [b.handle.toLowerCase(), b])),
+    () => new Map(registry.map(b => [b.handle.toLowerCase(), b])),
     [registry],
   );
 
@@ -84,8 +111,8 @@ export const HallOfFamePage = () => {
 
   // Benders for the active discipline tab (drives DisciplineStats)
   const disciplineBenders = useMemo(() => {
-    if (activeTab === 'All') return registry ?? [];
-    return (registry ?? []).filter(b => b.discipline === activeTab);
+    if (activeTab === 'All') return registry;
+    return registry.filter(b => b.discipline === activeTab);
   }, [registry, activeTab]);
 
   // Filter → search → sort pipeline
@@ -113,9 +140,7 @@ export const HallOfFamePage = () => {
     }
     // 'tier' sort: no-op; preserves original tier position within each group
 
-    slots = [...claimed, ...unclaimed];
-
-    return slots;
+    return [...claimed, ...unclaimed];
   }, [allSlots, activeTab, search, sortBy]);
 
   return (
@@ -213,6 +238,13 @@ export const HallOfFamePage = () => {
               />
             )}
 
+            {/* Error state */}
+            {error && (
+              <p className="font-mono text-sm text-red-500">
+                // Error loading benders: {error.message}
+              </p>
+            )}
+
             {/* Grid */}
             {isLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -228,9 +260,17 @@ export const HallOfFamePage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {showFounder && <FounderCard />}
                 {visibleSlots.map(slot =>
+                  slot.bender ? (
                     <div key={slot.displayName} className="relative">
-                      <BenderCard bender={slot.bender} isPublished={slot?.bender?.isPublished} />
+                      <BenderCard bender={slot.bender} isPublished={slot.bender.isPublished} />
                     </div>
+                  ) : (
+                    <UnclaimedCard
+                      key={slot.displayName}
+                      rankName={slot.displayName}
+                      discipline={slot.discipline}
+                    />
+                  )
                 )}
               </div>
             )}

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRegistryStats } from '@/hooks/useRegistry';
 import { activeChallenges } from '@/data/challenges';
 import { CodeBenderPlaceholder } from '@/apps/codebender-profile-placeholder/CodeBenderPlaceholder';
+import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 
 export function HomePage() {
   const stats = useRegistryStats();
@@ -92,7 +93,7 @@ export function HomePage() {
         <main className="flex-1 overflow-y-auto scroll-smooth">
           <CodeBenderPlaceholder codeBenderName="AnyCodeBender" section="README" />
         </main>
-       {/* <ForkRepositoryButton /> */}
+        <ForkRepositoryButton />
       </section>
     </div>
   );

@@ -13,6 +13,10 @@ import { CompatibilityPage } from "./pages/CompatibilityPage";
 import { DocsPage } from "./pages/DocsPage";
 import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
+import { LoginPage } from "./pages/LoginPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 
 
 const queryClient = new QueryClient();
@@ -22,23 +26,30 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Layout-wrapped routes */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/hall-of-fame" element={<HallOfFamePage />} />
-            <Route path="/challenges" element={<ChallengesPage />} />
-            <Route path="/stack-radar" element={<StackRadarPage />} />
-            <Route path="/benders/:discipline/:handle" element={<BenderProfilePage />} />
-            <Route path="/recruit" element={<RecruiterPage />} />
-            <Route path="/compat" element={<CompatibilityPage />} />
-            <Route path="/docs" element={<DocsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-          {/* Legacy full-screen IDE pages — no Layout */}
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Full-screen pages — no Layout */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/dashboard" element={
+              <RequireAuth><DashboardPage /></RequireAuth>
+            } />
+
+            {/* Layout-wrapped routes */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/hall-of-fame" element={<HallOfFamePage />} />
+              <Route path="/challenges" element={<ChallengesPage />} />
+              <Route path="/stack-radar" element={<StackRadarPage />} />
+              <Route path="/benders/:discipline/:handle" element={<BenderProfilePage />} />
+              <Route path="/recruit" element={<RecruiterPage />} />
+              <Route path="/compat" element={<CompatibilityPage />} />
+              <Route path="/docs" element={<DocsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

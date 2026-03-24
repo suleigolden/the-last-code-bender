@@ -244,6 +244,16 @@ Welcome to the CodeBenders Hierarchy.
 
 ---
 
+## Environment Setup
+
+```bash
+cp .env.example .env
+# Fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+# See supabase/README.md for the full setup guide
+```
+
+---
+
 # 🛠 Running the Project Locally
 
 Follow these steps to run TheLastCodeBender project on your local machine:
