@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { useHasClaimedRank, useHandleAvailable, useRegisterBender, useUpdateDemo } from '@/hooks/useBenders';
+import { useHasClaimedRank, useHandleAvailable, useRegisterBender, useUpdateDemo, useUpdateOpenToWork } from '@/hooks/useBenders';
 import { XPTimeline } from '@/components/rank/XPTimeline';
 import { XPProgress } from '@/components/rank/XPProgress';
 import { RankBadge } from '@/components/rank/RankBadge';
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -200,6 +201,13 @@ function ProfileCard({ bender, githubLogin, avatarUrl }: {
   avatarUrl: string | null;
 }) {
   const navigate = useNavigate();
+  const { mutateAsync: updateOpenToWork, isPending: updatingOpenToWork } = useUpdateOpenToWork();
+  const [openToWork, setOpenToWork] = useState(bender.open_to_work);
+
+  useEffect(() => {
+    setOpenToWork(bender.open_to_work);
+  }, [bender.open_to_work]);
+
   return (
     <div className="space-y-4">
       <Card className="bg-ide-sidebar border-border">
@@ -240,6 +248,37 @@ function ProfileCard({ bender, githubLogin, avatarUrl }: {
               >
                 {bender.skill_live ? `SKILL.md live · @${bender.handle}` : 'Skill pending review'}
               </p>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 mt-2">
+              <div className="space-y-1">
+                <p className="font-mono text-xs text-muted-foreground">Open to work</p>
+                <p
+                  className={cn(
+                    'font-mono text-xs',
+                    openToWork ? 'text-green-400' : 'text-muted-foreground',
+                  )}
+                >
+                  {openToWork ? 'Visible to recruiters' : 'Hidden from recruiters'}
+                </p>
+              </div>
+
+              <Switch
+                checked={openToWork}
+                disabled={updatingOpenToWork}
+                onCheckedChange={async (checked) => {
+                  const next = checked === true;
+                  setOpenToWork(next);
+                  try {
+                    await updateOpenToWork({ handle: bender.handle, open_to_work: next });
+                    toast.success(next ? 'Visible to recruiters' : 'Hidden from recruiters');
+                  } catch (e) {
+                    const message = e instanceof Error ? e.message : 'Update failed';
+                    setOpenToWork(bender.open_to_work);
+                    toast.error(message);
+                  }
+                }}
+              />
             </div>
 
           <div className="grid grid-cols-3 gap-4 font-mono text-center text-sm">

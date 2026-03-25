@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { BenderRow, DemoType } from '@/types/database';
+import type { RecruiterFilters } from '@/types/recruiter';
 import type { Bender, RegistryStats } from '@/types/registry';
 import { rowToBender } from '@/lib/bender-adapter';
 
@@ -334,6 +335,91 @@ export function useUpdateDemo() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(data.handle) });
       queryClient.invalidateQueries({ queryKey: benderKeys.all });
+    },
+  });
+}
+
+// ── Recruiter (Supabase server-side filtering) ─────────────
+export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
+  return useQuery({
+    queryKey: ['recruiter', filters, query],
+    queryFn: async (): Promise<BenderRow[]> => {
+      let q = supabase
+        .from('benders')
+        .select('*')
+        // Never show founder in recruiter
+        .eq('is_founder', false);
+
+      if (filters.disciplines?.length) {
+        q = q.in('discipline', filters.disciplines as unknown as string[]);
+      }
+
+      if (filters.openToWork === 'Open to work') {
+        q = q.eq('open_to_work', true);
+      } else if (filters.openToWork === 'Not looking') {
+        q = q.eq('open_to_work', false);
+      }
+
+      if (filters.minRank !== 'Any') {
+        const tiers =
+          filters.minRank === 'Journeyman+'
+            ? ['Journeyman', 'Senior', 'Master']
+            : filters.minRank === 'Senior+'
+              ? ['Senior', 'Master']
+              : ['Master'];
+        if (tiers.length) q = q.in('rank_tier', tiers);
+      }
+
+      const requiredTechs = filters.mustHaveStack
+        .split(',')
+        .map((t) => t.trim().toLowerCase())
+        .filter(Boolean);
+
+      // Best-effort server-side filtering using cached_stack languages.
+      // Requires cached_stack to exist in the DB.
+      if (requiredTechs.length > 0) {
+        q = q.contains('cached_stack', { languages: requiredTechs });
+      }
+
+      if (query && query.length >= 2) {
+        q = q.or(`handle.ilike.%${query}%,github.ilike.%${query}%`);
+      }
+
+      if (filters.sortBy === 'Most XP') {
+        q = q.order('xp', { ascending: false });
+      } else if (filters.sortBy === 'Most recent') {
+        q = q.order('last_active', { ascending: false });
+      } else if (filters.sortBy === 'Most challenge wins') {
+        q = q.order('challenge_wins', { ascending: false });
+      }
+
+      q = q.limit(50);
+
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 1000 * 60,
+  });
+}
+
+export function useUpdateOpenToWork() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ handle, open_to_work }: { handle: string; open_to_work: boolean }) => {
+      const { data, error } = await supabase
+        .from('benders')
+        .update({ open_to_work })
+        .eq('handle', handle)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: benderKeys.all });
+      queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) });
     },
   });
 }

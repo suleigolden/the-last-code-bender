@@ -88,6 +88,9 @@ export interface BenderRow {
   skill_live: boolean;
   open_to_work: boolean;
   challenge_wins: number;
+  is_founder?: boolean;
+  community_vote?: boolean;
+  cached_stack?: unknown | null;
   demo_url: string | null;
   demo_description?: string | null;
   demo_type?: DemoType | null;

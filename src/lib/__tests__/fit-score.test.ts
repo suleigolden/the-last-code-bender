@@ -13,6 +13,7 @@ const baseBender: Bender = {
   rank: 'Apprentice', xp: 0, skill_version: null, skill_live: false,
   open_to_work: false, challenge_wins: 0, community_vote: false,
   demo_url: null, demo_views: 0, joined: TODAY, last_active: TODAY,
+  cached_stack: null,
 };
 
 const tsStack: StackData = {
@@ -22,22 +23,22 @@ const tsStack: StackData = {
 
 describe('computeFitScore', () => {
   it('stackMatch = 100 when required tech is in primary', () => {
-    const r = computeFitScore(baseBender, ['typescript'], tsStack, 0);
+    const r = computeFitScore({ ...baseBender, cached_stack: tsStack }, ['typescript'], 0);
     expect(r.stackMatch).toBe(100);
   });
 
   it('stackMatch = 0 when no required techs match', () => {
-    const r = computeFitScore(baseBender, ['rust'], tsStack, 0);
+    const r = computeFitScore({ ...baseBender, cached_stack: tsStack }, ['rust'], 0);
     expect(r.stackMatch).toBe(0);
   });
 
   it('activityScore = 100 when active today', () => {
-    const r = computeFitScore({ ...baseBender, last_active: TODAY }, [], null, 0);
+    const r = computeFitScore({ ...baseBender, last_active: TODAY }, [], 0);
     expect(r.activityScore).toBe(100);
   });
 
   it('activityScore = 0 when last active 91 days ago', () => {
-    const r = computeFitScore({ ...baseBender, last_active: daysAgo(91) }, [], null, 0);
+    const r = computeFitScore({ ...baseBender, last_active: daysAgo(91) }, [], 0);
     expect(r.activityScore).toBe(0);
   });
 });

@@ -9,6 +9,7 @@ export interface Bender {
   open_to_work: boolean;
   challenge_wins: number;
   community_vote: boolean;
+  cached_stack: unknown | null;
   demo_url: string | null;
   demo_views: number;
   joined: string;
