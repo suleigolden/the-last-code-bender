@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { LoginPage } from '../LoginPage';
+import { LoginPage } from '../index';
 
 // ── Mock AuthContext ───────────────────────────────────────────────────────────
 vi.mock('@/contexts/AuthContext', () => ({

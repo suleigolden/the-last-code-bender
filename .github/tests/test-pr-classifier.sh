@@ -56,7 +56,7 @@ run_test "src/ file → structural" \
   "testbender" "structural"
 
 run_test "non-profile src file → structural" \
-  "src/pages/HomePage.tsx" \
+  "src/apps/landing-page/index.tsx" \
   "testbender" "structural"
 
 run_test "other profile folder → structural" \

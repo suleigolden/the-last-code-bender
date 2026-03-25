@@ -690,7 +690,8 @@ function RulesSection() {
             <span className="text-foreground font-semibold">Modify shared components or pages.</span>{' '}
             Do not edit files under{' '}
             <span className="text-syntax-function">src/components/</span>,{' '}
-            <span className="text-syntax-function">src/pages/</span>,{' '}
+            <span className="text-syntax-function">src/apps/</span> (except your profile under{' '}
+            <span className="text-syntax-function">codebender-profiles/</span>),{' '}
             <span className="text-syntax-function">src/hooks/</span>, or{' '}
             <span className="text-syntax-function">src/lib/</span>. These are maintained by the
             project author.
