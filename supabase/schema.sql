@@ -99,17 +99,36 @@ alter table benders enable row level security;
 create policy "Benders are publicly readable" on benders
   for select using (true);
 
--- Only the owner can insert their own row
+-- Only the owner can insert their own row (via public.users — do not SELECT auth.users in RLS)
 create policy "Authenticated users can register" on benders
   for insert with check (
-    auth.role() = 'authenticated' and
-    github_login = (select raw_user_meta_data->>'user_name' from auth.users where id = auth.uid())
+    auth.role() = 'authenticated'
+    and exists (
+      select 1
+      from public.users u
+      where u.id = auth.uid()
+        and u.github_login = benders.github_login
+    )
   );
 
 -- Only the owner can update their own row
 create policy "Owners can update their bender" on benders
-  for update using (
-    github_login = (select raw_user_meta_data->>'user_name' from auth.users where id = auth.uid())
+  for update
+  using (
+    exists (
+      select 1
+      from public.users u
+      where u.id = auth.uid()
+        and u.github_login = benders.github_login
+    )
+  )
+  with check (
+    exists (
+      select 1
+      from public.users u
+      where u.id = auth.uid()
+        and u.github_login = benders.github_login
+    )
   );
 
 -- ────────────────────────────────────────────────────────────
