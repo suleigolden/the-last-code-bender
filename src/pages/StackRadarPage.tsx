@@ -22,10 +22,10 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
-import { useRadar } from '@/hooks/useRegistry';
+import { useQuery } from '@tanstack/react-query';
 import { RadarQuadrant } from '@/components/radar/RadarQuadrant';
 import { TechPill } from '@/components/radar/TechPill';
-import type { RadarMovement } from '@/types/registry';
+import type { Radar, RadarMovement } from '@/types/registry';
 
 const CHART_CATEGORIES = ['Languages', 'Frameworks', 'Databases', 'DevOps', 'Testing', 'CSS'];
 const CATEGORY_KEY_MAP: Record<string, string> = {
@@ -67,7 +67,15 @@ function MovementRow({ movement }: { movement: RadarMovement }) {
 export function StackRadarPage() {
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [discipline, setDiscipline] = useState('All');
-  const { data: radar, isLoading } = useRadar();
+  const { data: radar, isLoading } = useQuery<Radar>({
+    queryKey: ['radar'],
+    queryFn: () =>
+      fetch('/registry/radar.json').then((r) => {
+        if (!r.ok) throw new Error(`Failed to fetch radar: ${r.status}`);
+        return r.json() as Promise<Radar>;
+      }),
+    staleTime: 5 * 60 * 1000,
+  });
 
   function handleTechClick(tech: string) {
     setSelectedTech(prev => (prev === tech ? null : tech));

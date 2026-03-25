@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQueries } from '@tanstack/react-query';
-import { useRegistry } from '@/hooks/useRegistry';
+import { useBenderList } from '@/hooks/useBenders';
 import { computeFitScore } from '@/lib/fit-score';
 import type { StackData } from '@/types/profile';
 import type { Bender } from '@/types/registry';
@@ -29,7 +29,7 @@ export function useRecruiterFilters(filters: RecruiterFilters): {
   filteredBenders: ScoredBender[];
   requiredTechs: string[];
 } {
-  const { data: registry = [] } = useRegistry();
+  const { data: registry = [] } = useBenderList();
 
   const stackQueries = useQueries({
     queries: registry.map(b => ({

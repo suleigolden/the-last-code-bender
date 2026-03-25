@@ -10,34 +10,13 @@ import { BenderCard } from '@/components/hall/BenderCard';
 import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
 import { FounderCard } from '@/components/hall/FounderCard';
-import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
-import { useRegistryStats } from '@/hooks/useRegistry';
-import { useAllBenders } from '@/hooks/useBenders';
+import { useAllBenders, useBenderStats } from '@/hooks/useBenders';
+import { rowToBender } from '@/lib/bender-adapter';
 import { getBendingSpecializationsWithRanks } from '@/lib/code-bender-names';
 import type { Bender } from '@/types/registry';
-import type { BenderRow } from '@/types/database';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
-// Adapter: maps a live Supabase row to the Bender shape used by existing components
-function rowToBender(row: BenderRow): Bender {
-  return {
-    handle: row.handle,
-    github: row.github,
-    discipline: row.discipline,
-    rank: row.rank_tier,       // BenderRow.rank_tier → Bender.rank (tier name)
-    xp: row.xp,
-    skill_version: row.skill_version,
-    skill_live: row.skill_live,
-    open_to_work: row.open_to_work,
-    challenge_wins: row.challenge_wins,
-    community_vote: false,
-    demo_url: null,
-    demo_views: 0,
-    joined: row.registered_at,
-    last_active: row.last_active,
-    isPublished: true,          // if it's in Supabase, it's live
-  };
-}
+const FOUNDER_HANDLE = 'TheLastCodeBender';
 
 const SPEC_ID_TO_DISCIPLINE: Record<string, string> = {
   'frontend-bender': 'Frontend',
@@ -73,14 +52,14 @@ export const HallOfFamePage = () => {
   const [sortBy, setSortBy] = useState<SortBy>('tier');
 
   const { data: rows, isLoading, error } = useAllBenders();
-  const { data: stats } = useRegistryStats();
+  const { data: stats } = useBenderStats();
 
   // Convert live rows to Bender shape used by all existing components
   const registry = useMemo(() => (rows ?? []).map(rowToBender), [rows]);
 
   const showFounder =
     activeTab === 'All' &&
-    (!search.trim() || BENDER_PROFILES[0].handle.toLowerCase().includes(search.toLowerCase()));
+    (!search.trim() || FOUNDER_HANDLE.toLowerCase().includes(search.toLowerCase()));
 
   const statValues: Record<string, number | undefined> = {
     totalBenders: stats?.totalBenders,

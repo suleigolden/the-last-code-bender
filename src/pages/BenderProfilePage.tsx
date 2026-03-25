@@ -11,8 +11,8 @@ import { SkillCard } from '@/components/profile/SkillCard';
 import { DemoFrame } from '@/components/profile/DemoFrame';
 import { StackBadges } from '@/components/profile/StackBadges';
 import { ProfileExplorer } from '@/components/profile/ProfileExplorer';
-import { useRegistry } from '@/hooks/useRegistry';
 import { useBenderByHandle } from '@/hooks/useBenders';
+import { rowToBender } from '@/lib/bender-adapter';
 import { useProfileWorkspace } from '@/hooks/useProfileWorkspace';
 import { normalizeWorkspaceFiles } from '@/lib/profile-workspace-defaults';
 import { workspaceHasRenderableFiles } from '@/lib/profile-workspace-sandpack';
@@ -20,7 +20,6 @@ import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 import { StoryRenderer } from '@/components/profile/StoryRenderer';
-import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
@@ -105,13 +104,10 @@ const NotClaimedUI = ({ handle }: { handle: string | undefined }) => (
 
 export const BenderProfilePage = () => {
   const { discipline, handle } = useParams<{ discipline: string; handle: string }>();
-  const { data: registry, isLoading } = useRegistry();
 
-  const bender = registry?.find(
-    (b) =>
-      b.handle.toLowerCase() === handle?.toLowerCase() &&
-      b.discipline.toLowerCase() === discipline?.toLowerCase(),
-  );
+  // Primary data source: Supabase
+  const { data: benderRow, isLoading } = useBenderByHandle(handle ?? '');
+  const bender = benderRow ? rowToBender(benderRow) : undefined;
 
   const { data: story, isLoading: storyLoading } = useQuery({
     queryKey: ['story', discipline, handle],
@@ -131,11 +127,18 @@ export const BenderProfilePage = () => {
     enabled: !!bender,
   });
 
-  const profileEntry = BENDER_PROFILES.find(
-    (p) => p.handle.toLowerCase() === handle?.toLowerCase(),
-  );
-  const isFounder = profileEntry?.isFounder === true;
-  const hasComponent = !!profileEntry && !profileEntry.isPlaceholder;
+  const isFounder =
+    discipline?.toLowerCase() === 'founder' ||
+    handle?.toLowerCase() === 'thelastcodebender';
+
+  const hasComponent = isFounder
+    ? !!FOUNDER_PROFILE_MODULE_KEY
+    : !!(
+        handle &&
+        discipline &&
+        DISCIPLINE_FOLDER[discipline.toLowerCase()] &&
+        findProfileModuleKey(DISCIPLINE_FOLDER[discipline.toLowerCase()], handle)
+      );
 
   const ProfileComponent = React.useMemo<React.LazyExoticComponent<React.ComponentType> | null>(() => {
     if (!hasComponent || !handle) return null;
@@ -153,10 +156,9 @@ export const BenderProfilePage = () => {
     return React.lazy(PROFILE_COMPONENT_MODULES[moduleKey]);
   }, [hasComponent, isFounder, discipline, handle]);
 
-  const { data: supabaseBender } = useBenderByHandle(handle ?? '');
-  const shouldLoadWorkspace = Boolean(supabaseBender?.id);
+  const shouldLoadWorkspace = Boolean(benderRow?.id);
   const { data: hostedWorkspace, isLoading: workspaceLoading } = useProfileWorkspace(
-    shouldLoadWorkspace ? supabaseBender?.id : undefined,
+    shouldLoadWorkspace ? benderRow?.id : undefined,
   );
 
   const showHostedProfile =

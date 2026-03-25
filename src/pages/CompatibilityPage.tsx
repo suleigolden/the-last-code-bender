@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { BenderSelector } from '@/components/compat/BenderSelector';
 import { CompatResult } from '@/components/compat/CompatResult';
 import { computeCompatibility } from '@/lib/compatibility';
-import { useRegistry } from '@/hooks/useRegistry';
+import { useBenderList } from '@/hooks/useBenders';
 import type { Bender } from '@/types/registry';
 import type { StackData } from '@/types/profile';
 
@@ -29,7 +29,7 @@ function useStack(bender: Bender | null) {
 }
 
 export function CompatibilityPage() {
-  const { data: registry = [] } = useRegistry();
+  const { data: registry = [] } = useBenderList();
   const [benderA, setBenderA] = useState<Bender | null>(null);
   const [benderB, setBenderB] = useState<Bender | null>(null);
 

@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/build-registry.mjs && vite",
-    "build": "node scripts/build-registry.mjs && vite build",
+    "dev": "vite",
+    "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

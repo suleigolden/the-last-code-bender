@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { BenderRow } from '@/types/database';
+import type { Bender, RegistryStats } from '@/types/registry';
+import { rowToBender } from '@/lib/bender-adapter';
 
 export const benderKeys = {
   all: ['benders'] as const,
@@ -156,6 +159,39 @@ export function useRegisterBender() {
       queryClient.invalidateQueries({ queryKey: benderKeys.hasClaimed(data.github_login) });
     },
   });
+}
+
+/** Supabase-backed drop-in replacement for the old static useRegistry() hook. */
+export function useBenderList(): { data: Bender[]; isLoading: boolean; error: Error | null } {
+  const { data: rows, isLoading, error } = useAllBenders();
+  const data = useMemo(() => (rows ?? []).map(rowToBender), [rows]);
+  return { data, isLoading, error };
+}
+
+/** Supabase-backed drop-in replacement for the old static useRegistryStats() hook. */
+export function useBenderStats(): {
+  data: RegistryStats | undefined;
+  isLoading: boolean;
+  isError: boolean;
+} {
+  const { data: benders, isLoading, error } = useBenderList();
+
+  const data = useMemo<RegistryStats | undefined>(() => {
+    if (isLoading || !benders.length) return undefined;
+    const byDiscipline: Record<string, number> = {};
+    const byRank: Record<string, number> = {};
+    let openToWork = 0;
+    let skillsLive = 0;
+    for (const b of benders) {
+      byDiscipline[b.discipline] = (byDiscipline[b.discipline] ?? 0) + 1;
+      byRank[b.rank] = (byRank[b.rank] ?? 0) + 1;
+      if (b.open_to_work) openToWork++;
+      if (b.skill_live) skillsLive++;
+    }
+    return { totalBenders: benders.length, byDiscipline, byRank, openToWork, skillsLive };
+  }, [benders, isLoading]);
+
+  return { data, isLoading, isError: !!error };
 }
 
 export function useSearchBenders(query: string) {

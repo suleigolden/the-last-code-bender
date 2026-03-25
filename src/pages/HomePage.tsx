@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRegistryStats } from '@/hooks/useRegistry';
+import { useBenderStats } from '@/hooks/useBenders';
 import { activeChallenges } from '@/data/challenges';
 import { CodeBenderPlaceholder } from '@/apps/codebender-profile-placeholder/CodeBenderPlaceholder';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 
 export function HomePage() {
-  const stats = useRegistryStats();
+  const stats = useBenderStats();
 
   const statItems = [
     { label: 'Total Benders', value: stats.isLoading ? '—' : (stats.data?.totalBenders ?? '—') },
