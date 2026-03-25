@@ -33,6 +33,12 @@ export type ChallengeType =
   | 'architecture'
   | 'relay';
 
+export type DemoType =
+  | 'live_app'
+  | 'component_library'
+  | 'api_demo'
+  | 'other';
+
 export interface ChallengeRow {
   id: string;
   slug: string;
@@ -46,6 +52,9 @@ export interface ChallengeRow {
   closes_at: string;
   xp_winner: number;
   xp_submit: number;
+}
+
+export interface ChallengeWithActiveRow extends ChallengeRow {
   is_active: boolean;
 }
 
@@ -80,11 +89,20 @@ export interface BenderRow {
   open_to_work: boolean;
   challenge_wins: number;
   demo_url: string | null;
+  demo_description?: string | null;
+  demo_type?: DemoType | null;
   demo_views: number;
   registered_at: string;
   last_active: string;
   profile_url: string | null;
   avatar_url: string | null;
+}
+
+export interface DemoViewRow {
+  id: string;
+  handle: string;
+  viewed_at: string;
+  viewer_ip: string | null;
 }
 
 export interface UserRow {
@@ -171,11 +189,10 @@ export interface Database {
       };
       challenges: {
         Row: ChallengeRow;
-        Insert: Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at' | 'is_active'> & {
+        Insert: Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at'> & {
           id?: string;
           opens_at?: string;
           closes_at?: string;
-          is_active?: boolean;
         };
         Update: Partial<Omit<ChallengeRow, 'id'>>;
       };
@@ -200,13 +217,38 @@ export interface Database {
         };
         Update: Partial<Omit<UserRow, 'id'>>;
       };
+      demo_views: {
+        Row: DemoViewRow;
+        Insert: Omit<DemoViewRow, 'id' | 'viewed_at'> & {
+          id?: string;
+          viewed_at?: string;
+        };
+        Update: Partial<Omit<DemoViewRow, 'id'>>;
+      };
     };
     Views: {
       leaderboard: {
         Row: LeaderboardRow;
       };
+      challenges_with_active: {
+        Row: ChallengeWithActiveRow;
+      };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      award_xp: {
+        Args: {
+          p_handle: string;
+          p_event_type: XPEventType;
+          p_xp: number;
+          p_metadata?: Record<string, unknown>;
+        };
+        Returns: Record<string, unknown>;
+      };
+      get_demo_view_count: {
+        Args: { p_handle: string };
+        Returns: number;
+      };
+    };
     Enums: {
       discipline: Discipline;
       rank_tier: RankTier;

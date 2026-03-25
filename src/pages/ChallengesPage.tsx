@@ -29,7 +29,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import type { ChallengeRow, LeaderboardRow } from '@/types/database';
+import type { ChallengeWithActiveRow, LeaderboardRow } from '@/types/database';
 
 const chartConfig = {
   xp: {
@@ -99,13 +99,13 @@ export const ChallengesPage = () => {
   const { refetch } = useMySubmissions(githubLogin ?? '');
 
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<ChallengeRow | null>(null);
+  const [selected, setSelected] = useState<ChallengeWithActiveRow | null>(null);
   const [language, setLanguage] = useState<(typeof LANGUAGE_OPTIONS)[number]>('typescript');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [judgeResult, setJudgeResult] = useState<JudgeResult | null>(null);
 
-  const openForChallenge = (c: ChallengeRow) => {
+  const openForChallenge = (c: ChallengeWithActiveRow) => {
     setSelected(c);
     setOpen(true);
     setContent('');

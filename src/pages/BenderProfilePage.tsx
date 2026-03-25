@@ -21,6 +21,7 @@ import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 import { StoryRenderer } from '@/components/profile/StoryRenderer';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
+import { supabase } from '@/lib/supabase';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -37,6 +38,44 @@ const RANK_COLORS: Record<string, string> = {
   Senior: 'text-syntax-function bg-[hsl(35_90%_65%/0.15)]',
   Master: 'text-primary bg-primary/15',
 };
+
+function demoTypeLabel(type: string | null | undefined) {
+  switch (type) {
+    case 'live_app':
+      return 'Live App';
+    case 'component_library':
+      return 'Component Library';
+    case 'api_demo':
+      return 'API Demo';
+    case 'other':
+    default:
+      return 'Other';
+  }
+}
+
+function hashString(input: string) {
+  // Small non-crypto hash for dedup keys.
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash << 5) - hash + input.charCodeAt(i);
+    hash |= 0; // 32-bit
+  }
+  return Math.abs(hash).toString(16);
+}
+
+function getDemoViewerFingerprint() {
+  const key = 'demo_viewer_fingerprint';
+  try {
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem(key, id);
+    }
+    return id;
+  } catch {
+    return null;
+  }
+}
 
 // Build-time import map for all profile components.
 // This avoids Vite's runtime "unknown variable dynamic import" errors.
@@ -108,6 +147,47 @@ export const BenderProfilePage = () => {
   // Primary data source: Supabase
   const { data: benderRow, isLoading } = useBenderByHandle(handle ?? '');
   const bender = benderRow ? rowToBender(benderRow) : undefined;
+
+  const demoUrl = benderRow?.demo_url ?? null;
+  const demoDescription = benderRow?.demo_description ?? null;
+  const demoType = benderRow?.demo_type ?? null;
+
+  const { data: demoViewCount } = useQuery({
+    queryKey: ['demo_views_count', benderRow?.handle],
+    enabled: Boolean(demoUrl && benderRow?.handle),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_demo_view_count', {
+        p_handle: benderRow?.handle,
+      });
+      if (error) throw error;
+      return typeof data === 'number' ? data : 0;
+    },
+    staleTime: 30_000,
+  });
+
+  React.useEffect(() => {
+    if (!demoUrl || !benderRow?.handle) return;
+
+    const storageKey = `demo_viewed_${benderRow.handle}`;
+    try {
+      if (localStorage.getItem(storageKey)) return;
+      const fingerprint = getDemoViewerFingerprint();
+      if (!fingerprint) return;
+
+      localStorage.setItem(storageKey, '1');
+
+      // Fire-and-forget view tracking (deduped per browser+handle via localStorage).
+      supabase
+        .from('demo_views')
+        .insert({
+          handle: benderRow.handle,
+          viewer_ip: hashString(fingerprint),
+        })
+        .catch(() => {});
+    } catch {
+      // Ignore view tracking failures (private browsing, storage disabled, etc.)
+    }
+  }, [demoUrl, benderRow?.handle]);
 
   const { data: story, isLoading: storyLoading } = useQuery({
     queryKey: ['story', discipline, handle],
@@ -361,7 +441,36 @@ export const BenderProfilePage = () => {
 
                       {/* Showcase */}
                       <TabsContent value="showcase">
-                        <DemoFrame url={bender?.demo_url ?? null} views={bender?.demo_views ?? 0} />
+                        <div className="space-y-4">
+                          {demoUrl && (
+                            <div className="space-y-2">
+                              <div className="flex items-start justify-between gap-3 flex-wrap">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Badge variant="outline" className="font-mono text-xs">
+                                    {demoTypeLabel(demoType)}
+                                  </Badge>
+                                </div>
+                                <Button asChild variant="secondary" size="sm">
+                                  <a
+                                    href={demoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Open full demo ↗
+                                  </a>
+                                </Button>
+                              </div>
+
+                              {demoDescription && (
+                                <p className="font-mono text-sm text-muted-foreground">
+                                  {demoDescription}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          <DemoFrame url={demoUrl} views={demoViewCount ?? 0} />
+                        </div>
                       </TabsContent>
 
                       {/* Challenges */}

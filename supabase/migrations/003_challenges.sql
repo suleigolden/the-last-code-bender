@@ -2,38 +2,34 @@
 -- Challenges + AI judging
 -- ============================================================
 
--- Needed for uuid_generate_v4()
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Needed for gen_random_uuid()
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ------------------------------------------------------------
 -- Challenges
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS challenges (
-  id           uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id           uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   slug         text UNIQUE NOT NULL,
   title        text NOT NULL,
-  type         text NOT NULL CHECK (type IN (
-                 'weekly_sprint','monthly_build',
-                 'skill_duel','architecture','relay'
-               )),
+  type         text NOT NULL CHECK (
+                 type IN ('weekly_sprint','monthly_build','skill_duel','architecture','relay')
+               ),
   discipline   text,           -- null = open to all
   spec         text NOT NULL,  -- the challenge description
   constraints  text,
-  scoring      jsonb NOT NULL  DEFAULT '{"correctness":40,"performance":30,"style":30}',
+  scoring      jsonb NOT NULL  DEFAULT '{"correctness":40,"performance":30,"style":30}'::jsonb,
   opens_at     timestamptz NOT NULL,
   closes_at    timestamptz NOT NULL,
   xp_winner    int DEFAULT 100,
-  xp_submit    int DEFAULT 10,
-  is_active    boolean GENERATED ALWAYS AS (
-                 now() BETWEEN opens_at AND closes_at
-               ) STORED
+  xp_submit    int DEFAULT 10
 );
 
 -- ------------------------------------------------------------
 -- Submissions
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS challenge_submissions (
-  id             uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id             uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   challenge_id   uuid NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
   challenge_slug text NOT NULL,
   handle         text NOT NULL,
@@ -89,4 +85,13 @@ INSERT INTO challenges (
   now(),
   now() + interval '72 hours'
 ) ON CONFLICT (slug) DO NOTHING;
+
+-- ------------------------------------------------------------
+-- View: challenges_with_active (computed is_active)
+-- ------------------------------------------------------------
+CREATE OR REPLACE VIEW challenges_with_active AS
+SELECT
+  c.*,
+  (now() BETWEEN c.opens_at AND c.closes_at) AS is_active
+FROM challenges c;
 

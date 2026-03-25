@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import type { BenderRow } from '@/types/database';
+import type { BenderRow, DemoType } from '@/types/database';
 import type { Bender, RegistryStats } from '@/types/registry';
 import { rowToBender } from '@/lib/bender-adapter';
 
@@ -143,6 +143,8 @@ export function useRegisterBender() {
           open_to_work: false,
           challenge_wins: 0,
           demo_url: null,
+          demo_description: null,
+          demo_type: null,
           demo_views: 0,
           profile_url: input.profile_url,
           avatar_url: input.avatar_url,
@@ -253,7 +255,7 @@ export function useChallenges() {
     queryKey: ['challenges'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('challenges')
+        .from('challenges_with_active')
         .select('*')
         .order('opens_at', { ascending: false });
       if (error) throw error;
@@ -277,5 +279,61 @@ export function useMySubmissions(handle: string) {
     },
     enabled: !!handle,
     staleTime: 1000 * 60,
+  });
+}
+
+// ── Showcase / Demos ─────────────────────────────────────────
+export function useUpdateDemo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      handle,
+      demo_url,
+      demo_description,
+      demo_type,
+    }: {
+      handle: string;
+      demo_url: string;
+      demo_description?: string;
+      demo_type?: DemoType;
+    }) => {
+      const { data: current, error: currentError } = await supabase
+        .from('benders')
+        .select('demo_url')
+        .eq('handle', handle)
+        .maybeSingle();
+      if (currentError) throw currentError;
+
+      const wasNull = !current?.demo_url;
+
+      const { data, error } = await supabase
+        .from('benders')
+        .update({
+          demo_url,
+          demo_description: demo_description ?? null,
+          demo_type: demo_type ?? null,
+        })
+        .eq('handle', handle)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (wasNull && demo_url) {
+        await supabase.rpc('award_xp', {
+          p_handle: handle,
+          p_event_type: 'showcase_deployed',
+          p_xp: 20,
+          p_metadata: { demo_url },
+        });
+      }
+
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(data.handle) });
+      queryClient.invalidateQueries({ queryKey: benderKeys.all });
+    },
   });
 }

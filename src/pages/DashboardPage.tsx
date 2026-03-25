@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { useHasClaimedRank, useHandleAvailable, useRegisterBender } from '@/hooks/useBenders';
+import { useHasClaimedRank, useHandleAvailable, useRegisterBender, useUpdateDemo } from '@/hooks/useBenders';
 import { XPTimeline } from '@/components/rank/XPTimeline';
 import { XPProgress } from '@/components/rank/XPProgress';
 import { RankBadge } from '@/components/rank/RankBadge';
@@ -14,10 +14,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import type { BenderRow } from '@/types/database';
+import type { BenderRow, DemoType } from '@/types/database';
 
 const DISCIPLINES: BenderRow['discipline'][] = [
   'Frontend',
@@ -49,6 +50,147 @@ const registrationSchema = z.object({
     .url('Must be a valid URL')
     .refine(v => v.startsWith('https://github.com/'), 'Profile URL must start with https://github.com/'),
 });
+
+const DEMO_TYPE_VALUES = ['live_app', 'component_library', 'api_demo', 'other'] as const satisfies readonly DemoType[];
+
+const demoUrlSchema = z
+  .string()
+  .min(1, 'Demo URL is required')
+  .url('Must be a valid URL')
+  .refine((v) => v.startsWith('https://'), 'Demo URL must start with https://');
+
+const showcaseSchema = z.object({
+  demo_url: demoUrlSchema,
+  demo_description: z.string().optional().default(''),
+  demo_type: z.enum(DEMO_TYPE_VALUES),
+});
+
+function ShowcaseSection({ bender }: { bender: BenderRow }) {
+  const { mutateAsync: updateDemo, isPending } = useUpdateDemo();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<z.infer<typeof showcaseSchema>>({
+    resolver: zodResolver(showcaseSchema),
+    defaultValues: {
+      demo_url: bender.demo_url ?? '',
+      demo_description: bender.demo_description ?? '',
+      demo_type: (bender.demo_type ?? 'other') as DemoType,
+    },
+  });
+
+  const demoUrl = watch('demo_url');
+  const wasDemoSet = Boolean(bender.demo_url);
+
+  useEffect(() => {
+    setValue('demo_url', bender.demo_url ?? '');
+    setValue('demo_description', bender.demo_description ?? '');
+    setValue('demo_type', (bender.demo_type ?? 'other') as DemoType);
+  }, [bender.handle, bender.demo_url, bender.demo_description, bender.demo_type, setValue]);
+
+  const submit = async (values: z.infer<typeof showcaseSchema>) => {
+    await updateDemo({
+      handle: bender.handle,
+      demo_url: values.demo_url,
+      demo_description: values.demo_description,
+      demo_type: values.demo_type,
+    });
+    toast.success(wasDemoSet ? 'Showcase updated.' : 'Showcase added — +20 XP awarded.');
+  };
+
+  return (
+    <div className="space-y-3 mt-6">
+      <p className="font-mono text-sm text-syntax-comment">// showcase</p>
+
+      {demoUrl && wasDemoSet && (
+        <div className="rounded-md border border-border overflow-hidden bg-background/30">
+          <div className="p-3 border-b border-border flex items-center justify-between gap-3">
+            <Badge variant="outline" className="font-mono text-[10px] px-2 py-0 h-5 leading-none">
+              {valuesToDemoTypeLabel(watch('demo_type'))}
+            </Badge>
+            <span className="font-mono text-xs text-muted-foreground">Preview</span>
+          </div>
+          <div className="w-full h-56 bg-background">
+            <iframe
+              src={demoUrl}
+              title="Showcase preview"
+              className="w-full h-full border-0"
+              sandbox="allow-scripts allow-same-origin allow-forms"
+            />
+          </div>
+        </div>
+      )}
+
+      {!wasDemoSet && (
+        <p className="font-mono text-xs text-muted-foreground">
+          // Add your demo to earn +20 XP
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit(submit)} className="space-y-4">
+        <div className="space-y-1.5">
+          <label className="font-mono text-xs text-muted-foreground">Demo URL</label>
+          <Input {...register('demo_url')} placeholder="https://your-project.vercel.app" className="font-mono text-sm" />
+          {errors.demo_url && <p className="font-mono text-xs text-red-500">{errors.demo_url.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="font-mono text-xs text-muted-foreground">Demo description</label>
+          <Textarea
+            {...register('demo_description')}
+            placeholder="Short description of what the demo does"
+            className="font-mono text-sm min-h-[80px]"
+          />
+          {errors.demo_description && <p className="font-mono text-xs text-red-500">{errors.demo_description.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="font-mono text-xs text-muted-foreground">Demo type</label>
+          <Select
+            value={watch('demo_type')}
+            onValueChange={(v) => setValue('demo_type', v as DemoType)}
+          >
+            <SelectTrigger className="font-mono text-sm">
+              <SelectValue placeholder="Select demo type" />
+            </SelectTrigger>
+            <SelectContent className="font-mono text-sm">
+              {DEMO_TYPE_VALUES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {valuesToDemoTypeLabel(t)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.demo_type && <p className="font-mono text-xs text-red-500">{errors.demo_type.message}</p>}
+        </div>
+
+        <div className="flex gap-2">
+          <Button type="submit" className="font-mono flex-1" disabled={isPending}>
+            {wasDemoSet ? 'Update URL' : 'Add demo'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function valuesToDemoTypeLabel(type: DemoType | null | undefined) {
+  switch (type) {
+    case 'live_app':
+      return 'Live App';
+    case 'component_library':
+      return 'Component Library';
+    case 'api_demo':
+      return 'API Demo';
+    case 'other':
+    default:
+      return 'Other';
+  }
+}
 
 type RegistrationForm = z.infer<typeof registrationSchema>;
 
@@ -270,6 +412,7 @@ export function DashboardPage() {
           <>
             <p className="font-mono text-sm text-syntax-comment">// your claimed rank</p>
             <ProfileCard bender={existingBender} githubLogin={githubLogin} avatarUrl={avatarUrl} />
+            <ShowcaseSection bender={existingBender} />
           </>
         ) : (
           <>
