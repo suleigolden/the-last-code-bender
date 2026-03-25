@@ -4,7 +4,7 @@ PASS=0; FAIL=0
 
 # Setup: temp CODEOWNERS
 TMPCO=$(mktemp)
-echo "CodeBenders/Frontend Bender/TestBender @testbender" > "$TMPCO"
+echo "src/apps/codebender-profiles/FrontendBenders/TestBender/ @testbender" > "$TMPCO"
 
 classify() {
   local changed_files="$1" author="$2" codeowners="$3"
@@ -12,22 +12,24 @@ classify() {
   owned_folder=$(grep -v '^#' "$codeowners" | grep "@${author}" | sed 's/ @.*//' | head -1)
 
   if [ -n "$owned_folder" ]; then
-    local all_in=true has_skill=false
+    local all_in=true
     while IFS= read -r f; do
       [ -z "$f" ] && continue
       if [[ "$f" != ${owned_folder#/}* ]]; then all_in=false; break; fi
-      if [[ "$(basename "$f")" == "SKILL.md" ]]; then has_skill=true; fi
     done <<< "$changed_files"
     if $all_in; then
-      type=$($has_skill && echo "skill" || echo "profile")
+      type="profile_ui"
     fi
   fi
 
   # Structural override
   while IFS= read -r f; do
     [ -z "$f" ] && continue
-    if [[ "$f" == .github/* ]] || [[ "$f" == src/* ]] || [[ "$f" == public/* ]] || \
-       [[ "$f" == "package.json" ]] || [[ "$f" != CodeBenders/* ]]; then
+    if [[ "$f" == .github/* ]] || [[ "$f" == public/* ]] || \
+       [[ "$f" == "package.json" ]] || [[ "$f" == "package-lock.json" ]] || [[ "$f" == "bun.lockb" ]] || \
+       [[ "$f" == "vite.config"* ]] || [[ "$f" == "tsconfig"* ]] || [[ "$f" == "tailwind.config"* ]] || \
+       [[ "$f" == "eslint.config"* ]] || [[ "$f" == "postcss.config"* ]] || [[ "$f" == "index.html" ]] || \
+       [[ "$f" != src/apps/codebender-profiles/* ]]; then
       type="structural"; break
     fi
   done <<< "$changed_files"
@@ -45,25 +47,20 @@ run_test() {
   fi
 }
 
-run_test "story file → profile" \
-  "CodeBenders/Frontend Bender/TestBender/story/story.md" \
-  "testbender" "profile"
-
-run_test "SKILL.md → skill" \
-  "CodeBenders/Frontend Bender/TestBender/SKILL.md" \
-  "testbender" "skill"
+run_test "profile ui file → profile_ui" \
+  "src/apps/codebender-profiles/FrontendBenders/TestBender/index.tsx" \
+  "testbender" "profile_ui"
 
 run_test "src/ file → structural" \
   "src/App.tsx" \
   "testbender" "structural"
 
-run_test "story + SKILL.md → skill" \
-  "CodeBenders/Frontend Bender/TestBender/story/story.md
-CodeBenders/Frontend Bender/TestBender/SKILL.md" \
-  "testbender" "skill"
+run_test "non-profile src file → structural" \
+  "src/pages/HomePage.tsx" \
+  "testbender" "structural"
 
-run_test "other bender folder → structural" \
-  "CodeBenders/Frontend Bender/OtherBender/story/story.md" \
+run_test "other profile folder → structural" \
+  "src/apps/codebender-profiles/FrontendBenders/OtherBender/index.tsx" \
   "testbender" "structural"
 
 echo ""
