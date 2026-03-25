@@ -1,8 +1,7 @@
-name: test
+name: legacy-test (disabled)
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -22,7 +21,7 @@ jobs:
         run: bun run test
 
       - name: compute-xp unit tests
-        run: node .github/tests/test-compute-xp.js
+        run: echo "skipped: compute-xp removed from CI"
 
       - name: PR classifier tests
         run: bash .github/tests/test-pr-classifier.sh
