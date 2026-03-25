@@ -35,7 +35,7 @@ function formatTimestamp(iso: string) {
 }
 
 function getCommitMessage(event: XPEventRow) {
-  const raw = event.metadata?.commit_message;
+  const raw = event.metadata?.['commit_message'];
   return typeof raw === 'string' && raw.trim().length ? raw : null;
 }
 

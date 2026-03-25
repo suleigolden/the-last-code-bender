@@ -246,3 +246,36 @@ export function useLeaderboard() {
     staleTime: 1000 * 60 * 2,
   });
 }
+
+// ── Challenges ─────────────────────────────────────────────
+export function useChallenges() {
+  return useQuery({
+    queryKey: ['challenges'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('challenges')
+        .select('*')
+        .order('opens_at', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useMySubmissions(handle: string) {
+  return useQuery({
+    queryKey: ['submissions', handle],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('challenge_submissions')
+        .select('*')
+        .eq('handle', handle)
+        .order('submitted_at', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!handle,
+    staleTime: 1000 * 60,
+  });
+}

@@ -26,6 +26,45 @@ export type XPEventType =
   | 'streak_30_days'
   | 'profile_complete';
 
+export type ChallengeType =
+  | 'weekly_sprint'
+  | 'monthly_build'
+  | 'skill_duel'
+  | 'architecture'
+  | 'relay';
+
+export interface ChallengeRow {
+  id: string;
+  slug: string;
+  title: string;
+  type: ChallengeType;
+  discipline: string | null;
+  spec: string;
+  constraints: string | null;
+  scoring: Record<string, number>;
+  opens_at: string;
+  closes_at: string;
+  xp_winner: number;
+  xp_submit: number;
+  is_active: boolean;
+}
+
+export interface ChallengeSubmissionRow {
+  id: string;
+  challenge_id: string;
+  challenge_slug: string;
+  handle: string;
+  github: string;
+  content: string;
+  language: string | null;
+  score_total: number | null;
+  score_breakdown: Record<string, number> | null;
+  ai_feedback: string | null;
+  placement: number | null;
+  submitted_at: string;
+  judged_at: string | null;
+}
+
 export interface BenderRow {
   id: string;
   handle: string;
@@ -79,7 +118,7 @@ export interface XPEventRow {
   handle: string;
   event_type: XPEventType;
   xp_awarded: number;
-  metadata: Record<string, any> | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -129,6 +168,29 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Omit<XPEventRow, 'id'>>;
+      };
+      challenges: {
+        Row: ChallengeRow;
+        Insert: Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at' | 'is_active'> & {
+          id?: string;
+          opens_at?: string;
+          closes_at?: string;
+          is_active?: boolean;
+        };
+        Update: Partial<Omit<ChallengeRow, 'id'>>;
+      };
+      challenge_submissions: {
+        Row: ChallengeSubmissionRow;
+        Insert: Omit<ChallengeSubmissionRow, 'id' | 'submitted_at' | 'score_total' | 'score_breakdown' | 'ai_feedback' | 'placement' | 'judged_at'> & {
+          id?: string;
+          submitted_at?: string;
+          score_total?: number | null;
+          score_breakdown?: Record<string, number> | null;
+          ai_feedback?: string | null;
+          placement?: number | null;
+          judged_at?: string | null;
+        };
+        Update: Partial<Omit<ChallengeSubmissionRow, 'id'>>;
       };
       users: {
         Row: UserRow;
