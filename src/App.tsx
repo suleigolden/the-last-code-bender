@@ -14,7 +14,7 @@ import { DocsPage } from "./pages/DocsPage";
 import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
-import { DashboardPage } from "./pages/DashboardPage";
+import { Dashboard } from "./apps/dash-board";
 import { ProfileWorkspacePage } from "./pages/ProfileWorkspacePage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
@@ -33,7 +33,7 @@ const App = () => (
             {/* Full-screen pages — no Layout */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard" element={
-              <RequireAuth><DashboardPage /></RequireAuth>
+              <RequireAuth><Dashboard /></RequireAuth>
             } />
             <Route path="/dashboard/workspace" element={
               <RequireAuth><ProfileWorkspacePage /></RequireAuth>
