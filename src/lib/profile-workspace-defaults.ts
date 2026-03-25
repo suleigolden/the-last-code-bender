@@ -10,6 +10,8 @@ export const PROFILE_WORKSPACE_PATHS = [
   'sections/StorySection.tsx',
   'sections/SocialsSection.tsx',
   'sections/StackSection.tsx',
+  'SKILL.md',
+  'stack/stack.json',
   'sections/PortraitSection.tsx',
   'styles.css',
 ] as const;
@@ -207,6 +209,8 @@ export function HeroSection() {
   );
 }
 `,
+    'SKILL.md': `# Claude Code Skill: The Last Code Bender Skill\n\nYou are a senior developer assistant.\n\n## What you do\n- Convert messy requirements into a clear plan\n- Write and explain TypeScript/React improvements\n- Help keep PRs small, consistent, and reviewable\n\n## How you work\n- Ask 1-3 clarifying questions when requirements are ambiguous\n- Prefer concrete examples over vague advice\n- End with a short checklist\n\n## Example\nGiven: \"Refactor a React component\".\nOutput: A step-by-step plan + a safe patch-style approach.\n`,
+    'stack/stack.json': `{\n  \"languages\": [\"TypeScript\"],\n  \"frameworks\": [\"React\"],\n  \"tools\": [\"Vite\", \"Tailwind CSS\"],\n  \"notes\": \"Edit this to match your real stack. This is ground truth for skill review.\"\n}\n`,
     'sections/PortraitSection.tsx': `export function PortraitSection() {
   return (
     <section id="portrait" className="section portrait" aria-label="Portrait">

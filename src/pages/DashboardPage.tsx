@@ -82,6 +82,24 @@ function ProfileCard({ bender, githubLogin, avatarUrl }: {
               <RankBadge tier={bender.rank_tier} size="sm" />
             </div>
           </div>
+
+            <div className="flex items-center gap-2 mt-1">
+              <span
+                className={cn(
+                  'w-2.5 h-2.5 rounded-full shrink-0',
+                  bender.skill_live ? 'bg-green-500' : 'bg-muted/70',
+                )}
+              />
+              <p
+                className={cn(
+                  'font-mono text-xs',
+                  bender.skill_live ? 'text-green-400' : 'text-muted-foreground',
+                )}
+              >
+                {bender.skill_live ? `SKILL.md live · @${bender.handle}` : 'Skill pending review'}
+              </p>
+            </div>
+
           <div className="grid grid-cols-3 gap-4 font-mono text-center text-sm">
             <div>
               <p className="text-2xl font-bold text-foreground">{bender.xp}</p>

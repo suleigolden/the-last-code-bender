@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { css as cssLang } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -36,9 +36,12 @@ import {
   useSnapshotFiles,
 } from '@/hooks/useProfileWorkspace';
 import { workspaceCodeMirrorChrome } from '@/components/profile/workspace-code-mirror-theme';
+import { SkillSection } from '@/components/profile/SkillSection';
 
 const codeMirrorTsxExtensions = [javascript({ jsx: true, typescript: true }), workspaceCodeMirrorChrome];
 const codeMirrorCssExtensions = [cssLang(), workspaceCodeMirrorChrome];
+const codeMirrorJsonExtensions = [javascript({ jsx: false, typescript: false }), workspaceCodeMirrorChrome];
+const codeMirrorMarkdownExtensions = [workspaceCodeMirrorChrome];
 
 function fileTabLabel(path: ProfileWorkspacePath): string {
   if (path === 'index.tsx') return 'index.tsx';
@@ -48,9 +51,10 @@ function fileTabLabel(path: ProfileWorkspacePath): string {
 
 interface ProfileWorkspaceEditorProps {
   benderId: string;
+  handle: string;
 }
 
-export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps) {
+export function ProfileWorkspaceEditor({ benderId, handle }: ProfileWorkspaceEditorProps) {
   const { data: workspaceRow, isLoading } = useProfileWorkspace(benderId);
   const { data: snapshots = [] } = useProfileSnapshots(benderId);
   const { mutateAsync: saveWorkspace, isPending: saving } = useSaveProfileWorkspace();
@@ -60,14 +64,24 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
   const [activePath, setActivePath] = useState<ProfileWorkspacePath>('index.tsx');
   const [saveOpen, setSaveOpen] = useState(false);
   const [commitMessage, setCommitMessage] = useState('');
+  const lastSavedSkillContentRef = useRef<string>('');
+  const [skillSubmitReady, setSkillSubmitReady] = useState(false);
+  const [pendingSkillContent, setPendingSkillContent] = useState('');
+  const [pendingStackContent, setPendingStackContent] = useState('');
 
   useEffect(() => {
     if (isLoading) return;
     if (workspaceRow?.files) {
-      setFiles(normalizeWorkspaceFiles(workspaceRow.files));
+      const next = normalizeWorkspaceFiles(workspaceRow.files);
+      setFiles(next);
+      lastSavedSkillContentRef.current = next['SKILL.md'] ?? '';
+      setSkillSubmitReady(false);
       return;
     }
-    setFiles(getDefaultProfileWorkspaceFiles());
+    const defaults = getDefaultProfileWorkspaceFiles();
+    setFiles(defaults);
+    lastSavedSkillContentRef.current = defaults['SKILL.md'] ?? '';
+    setSkillSubmitReady(false);
     // Re-sync only when workspace row identity/updated_at changes (not arbitrary files reference churn).
     // eslint-disable-next-line react-hooks/exhaustive-deps -- workspaceRow.files intentionally omitted
   }, [isLoading, workspaceRow?.bender_id, workspaceRow?.updated_at]);
@@ -76,7 +90,14 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
   const sandpackFiles = buildWorkspaceSandpackFiles(deferredFiles);
 
   const cmExtensions = useMemo(
-    () => (activePath === 'styles.css' ? codeMirrorCssExtensions : codeMirrorTsxExtensions),
+    () =>
+      activePath === 'styles.css'
+        ? codeMirrorCssExtensions
+        : activePath === 'SKILL.md'
+          ? codeMirrorMarkdownExtensions
+          : activePath === 'stack/stack.json'
+            ? codeMirrorJsonExtensions
+            : codeMirrorTsxExtensions,
     [activePath],
   );
 
@@ -87,10 +108,22 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
       return;
     }
     try {
+      const currentSkillContent = files['SKILL.md'] ?? '';
+      const skillChanged = currentSkillContent.trim() !== lastSavedSkillContentRef.current.trim();
+      const currentStackContent = files['stack/stack.json'] ?? '';
       await saveWorkspace({ benderId, files, commitMessage: msg });
       toast.success('Profile saved.');
       setSaveOpen(false);
       setCommitMessage('');
+
+      if (skillChanged) {
+        lastSavedSkillContentRef.current = currentSkillContent;
+        setPendingSkillContent(currentSkillContent);
+        setPendingStackContent(currentStackContent);
+        setSkillSubmitReady(true);
+      } else {
+        setSkillSubmitReady(false);
+      }
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Save failed';
       toast.error(message);
@@ -198,6 +231,14 @@ export function ProfileWorkspaceEditor({ benderId }: ProfileWorkspaceEditorProps
             </span>
           )}
         </div>
+
+        <SkillSection
+          handle={handle}
+          showSubmit={skillSubmitReady}
+          skillContent={pendingSkillContent}
+          stackContent={pendingStackContent}
+          onApproved={() => setSkillSubmitReady(false)}
+        />
 
         {snapshots.length > 0 && (
           <Accordion type="single" collapsible className="shrink-0 rounded-md border border-border bg-background/40 px-3 font-mono">

@@ -63,7 +63,7 @@ export function ProfileWorkspacePage() {
         ) : (
           existingBender && (
             <div className="flex min-h-0 flex-1 flex-col">
-              <ProfileWorkspaceEditor benderId={existingBender.id} />
+              <ProfileWorkspaceEditor benderId={existingBender.id} handle={existingBender.handle} />
             </div>
           )
         )}

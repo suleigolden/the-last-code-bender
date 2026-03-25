@@ -36,6 +36,7 @@ export interface BenderRow {
   rank_tier: RankTier;
   xp: number;
   skill_version: string;
+  cached_skill?: string | null;
   skill_live: boolean;
   open_to_work: boolean;
   challenge_wins: number;
