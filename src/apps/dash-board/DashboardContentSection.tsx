@@ -101,7 +101,7 @@ function ShowcaseSection({ bender }: { bender: BenderRow }) {
             <Badge variant="outline" className="font-mono text-[10px] px-2 py-0 h-5 leading-none max-w-full truncate">
               {valuesToDemoTypeLabel(watch('demo_type'))}
             </Badge>
-            <span className="font-mono text-xs text-muted-foreground shrink-0">Preview</span>
+            <span className="font-mono text-xs text-foreground shrink-0">Preview</span>
           </div>
           <div className="w-full h-44 sm:h-56 bg-background min-h-0">
             <iframe
@@ -115,20 +115,20 @@ function ShowcaseSection({ bender }: { bender: BenderRow }) {
       )}
 
       {!wasDemoSet && (
-        <p className="font-mono text-xs text-muted-foreground">
+        <p className="font-mono text-xs text-foreground">
           // Add your demo to earn +20 XP
         </p>
       )}
 
       <form onSubmit={handleSubmit(submit)} className="space-y-4">
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-xs text-muted-foreground">Demo URL</label>
+          <label className="font-mono text-xs text-foreground">Demo URL</label>
           <Input {...register('demo_url')} placeholder="https://your-project.vercel.app" className="font-mono text-sm min-w-0" />
           {errors.demo_url && <p className="font-mono text-xs text-red-500">{errors.demo_url.message}</p>}
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-xs text-muted-foreground">Demo description</label>
+          <label className="font-mono text-[12px] text-foreground">Demo description</label>
           <Textarea
             {...register('demo_description')}
             placeholder="Short description of what the demo does"
@@ -138,7 +138,7 @@ function ShowcaseSection({ bender }: { bender: BenderRow }) {
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-xs text-muted-foreground">Demo type</label>
+          <label className="font-mono text-[12px] text-foreground">Demo type</label>
           <Select
             value={watch('demo_type')}
             onValueChange={(v) => setValue('demo_type', v as DemoType)}
@@ -201,7 +201,7 @@ function ProfileCard({
               )}
               <div className="min-w-0">
                 <p className="font-mono font-bold text-foreground text-base sm:text-lg truncate">{bender.handle}</p>
-                <p className="font-mono text-xs sm:text-sm text-muted-foreground truncate">{bender.discipline}</p>
+                <p className="font-mono text-xs sm:text-sm text-foreground truncate">{bender.discipline}</p>
               </div>
             </div>
             <div className="shrink-0 sm:ml-auto">
@@ -219,7 +219,7 @@ function ProfileCard({
             <p
               className={cn(
                 'font-mono text-xs leading-snug break-words',
-                bender.skill_live ? 'text-green-400' : 'text-muted-foreground',
+                bender.skill_live ? 'text-green-400' : 'text-foreground',
               )}
             >
               {bender.skill_live ? `SKILL.md live · @${bender.handle}` : 'Skill pending review'}
@@ -228,11 +228,11 @@ function ProfileCard({
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-md border border-border/50 p-3 sm:p-0 sm:border-0">
             <div className="space-y-1 min-w-0">
-              <p className="font-mono text-xs text-muted-foreground">Open to work</p>
+              <p className="font-mono text-xs text-foreground">Open to work</p>
               <p
                 className={cn(
                   'font-mono text-xs break-words',
-                  openToWork ? 'text-green-400' : 'text-muted-foreground',
+                  openToWork ? 'text-green-400' : 'text-foreground',
                 )}
               >
                 {openToWork ? 'Visible to recruiters' : 'Hidden from recruiters'}
@@ -261,15 +261,15 @@ function ProfileCard({
           <div className="grid grid-cols-3 gap-2 sm:gap-4 font-mono text-center text-xs sm:text-sm">
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">{bender.xp}</p>
-              <p className="text-muted-foreground text-[10px] sm:text-xs truncate">XP</p>
+              <p className="text-foreground text-[10px] sm:text-xs truncate">XP</p>
             </div>
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">{bender.challenge_wins}</p>
-              <p className="text-muted-foreground text-[10px] sm:text-xs truncate">Wins</p>
+              <p className="text-foreground text-[10px] sm:text-xs truncate">Wins</p>
             </div>
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">#{bender.rank}</p>
-              <p className="text-muted-foreground text-[10px] sm:text-xs truncate">Rank</p>
+              <p className="text-foreground text-[10px] sm:text-xs truncate">Rank</p>
             </div>
           </div>
 

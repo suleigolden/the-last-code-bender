@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,6 +20,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { BenderRow } from '@/types/database';
+import {
+  REGISTRATION_DISCIPLINE_SUFFIX,
+  composeRankHandle,
+  disciplineSuffix,
+  handlePrefixOnly,
+} from './registration-handle';
 
 const DISCIPLINES: BenderRow['discipline'][] = [
   'Frontend',
@@ -30,27 +36,55 @@ const DISCIPLINES: BenderRow['discipline'][] = [
   'DevOps',
 ];
 
-const DISCIPLINE_SUFFIX: Record<string, string> = {
-  Frontend: 'FrontendBender',
-  Backend: 'BackendBender',
-  FullStack: 'FullStackBender',
-  Security: 'SecurityBender',
-  AI: 'AIBender',
-  DevOps: 'DevOpsBender',
-};
+const registrationSchema = z
+  .object({
+    discipline: z.enum(['Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps', 'QA', 'Founder'] as const),
+    handleBase: z
+      .string()
+      .regex(/^[a-zA-Z0-9_-]*$/, 'Only letters, numbers, hyphens, and underscores'),
+    profile_url: z
+      .string()
+      .url('Must be a valid URL')
+      .refine(v => v.startsWith('https://github.com/'), 'Profile URL must start with https://github.com/'),
+  })
+  .superRefine((data, ctx) => {
+    const suffix = REGISTRATION_DISCIPLINE_SUFFIX[data.discipline];
+    if (!suffix) return;
+    const base = handlePrefixOnly(data.handleBase, suffix);
+    const full = `${base}${suffix}`;
 
-const registrationSchema = z.object({
-  discipline: z.enum(['Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps', 'QA', 'Founder'] as const),
-  handle: z
-    .string()
-    .min(3, 'Handle must be at least 3 characters')
-    .max(32, 'Handle must be at most 32 characters')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'Handle can only contain letters, numbers, hyphens, and underscores'),
-  profile_url: z
-    .string()
-    .url('Must be a valid URL')
-    .refine(v => v.startsWith('https://github.com/'), 'Profile URL must start with https://github.com/'),
-});
+    if (!base.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Enter your handle (without the ending like FrontendBender)',
+        path: ['handleBase'],
+      });
+      return;
+    }
+    if (full.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Full rank handle must be at least 3 characters',
+        path: ['handleBase'],
+      });
+      return;
+    }
+    if (full.length > 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Too long with “${suffix}” added — full handle max 32 characters`,
+        path: ['handleBase'],
+      });
+      return;
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(full)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Invalid characters in handle',
+        path: ['handleBase'],
+      });
+    }
+  });
 
 type RegistrationForm = z.infer<typeof registrationSchema>;
 
@@ -67,30 +101,28 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
     control,
     watch,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<RegistrationForm>({
     resolver: zodResolver(registrationSchema),
   });
 
-  const handle = watch('handle') ?? '';
+  const handleBase = watch('handleBase') ?? '';
   const discipline = watch('discipline');
+  const suffix = disciplineSuffix(discipline);
+  const fullHandle =
+    discipline && suffix ? composeRankHandle(handleBase, discipline) : handleBase.trim();
 
-  const [debouncedHandle, setDebouncedHandle] = useState('');
+  const [debouncedFullHandle, setDebouncedFullHandle] = useState('');
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedHandle(handle), 300);
+    const t = setTimeout(() => {
+      setDebouncedFullHandle(discipline && suffix ? fullHandle : '');
+    }, 300);
     return () => clearTimeout(t);
-  }, [handle]);
+  }, [fullHandle, discipline, suffix]);
 
-  const { data: isHandleAvailable, isFetching: checkingHandle } = useHandleAvailable(debouncedHandle);
-
-  const prefillHandle = useCallback(
-    (disc: string) => {
-      const suffix = DISCIPLINE_SUFFIX[disc];
-      if (suffix && githubLogin) {
-        setValue('handle', `${githubLogin}${suffix}`, { shouldValidate: false });
-      }
-    },
-    [githubLogin, setValue],
+  const { data: isHandleAvailable, isFetching: checkingHandle } = useHandleAvailable(
+    debouncedFullHandle.length >= 3 ? debouncedFullHandle : '',
   );
 
   const { mutateAsync: registerBender } = useRegisterBender();
@@ -99,8 +131,9 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
     if (!githubLogin) return;
 
     try {
+      const handle = composeRankHandle(data.handleBase, data.discipline);
       const bender = await registerBender({
-        handle: data.handle,
+        handle,
         github: `https://github.com/${githubLogin}`,
         github_login: githubLogin,
         discipline: data.discipline,
@@ -116,21 +149,25 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
     }
   };
 
+  const canCheckHandle = Boolean(discipline && suffix && debouncedFullHandle.length >= 3);
+
   const handleStatusColor =
-    debouncedHandle.length < 3 || checkingHandle
+    !canCheckHandle || checkingHandle
       ? ''
       : isHandleAvailable
         ? 'border-green-500 focus-visible:ring-green-500/20'
         : 'border-red-500 focus-visible:ring-red-500/20';
 
   const handleStatusText =
-    debouncedHandle.length < 3
+    !discipline || !suffix
       ? null
-      : checkingHandle
-        ? '// checking...'
-        : isHandleAvailable
-          ? '// available'
-          : '// already taken';
+      : fullHandle.length < 3
+        ? null
+        : checkingHandle
+          ? '// checking...'
+          : isHandleAvailable
+            ? '// available'
+            : '// already taken';
 
   const handleStatusTextColor =
     isHandleAvailable ? 'text-green-500' : checkingHandle ? 'text-muted-foreground' : 'text-red-500';
@@ -138,15 +175,15 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
   return (
     <>
       <div className="space-y-1">
-        <p className="font-mono text-xs text-syntax-comment">// register</p>
-        <p className="font-mono text-sm text-muted-foreground break-words">
+        <p className="font-mono text-[12px] text-syntax-comment">// register</p>
+        <p className="font-mono text-sm text-foreground break-words">
           Claim your permanent rank in the CodeBenders hierarchy.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
         <div className="space-y-1.5">
-          <label className="font-mono text-xs text-muted-foreground">Discipline</label>
+          <label className="font-mono text-[12px] text-foreground">Discipline</label>
           <Controller
             name="discipline"
             control={control}
@@ -155,7 +192,9 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
                 value={field.value}
                 onValueChange={(v) => {
                   field.onChange(v);
-                  prefillHandle(v);
+                  if (!getValues('handleBase')?.trim() && githubLogin && REGISTRATION_DISCIPLINE_SUFFIX[v]) {
+                    setValue('handleBase', githubLogin, { shouldValidate: false });
+                  }
                 }}
               >
                 <SelectTrigger className="font-mono text-sm w-full min-w-0">
@@ -170,29 +209,50 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
             )}
           />
           {errors.discipline && (
-            <p className="font-mono text-xs text-red-500">{errors.discipline.message}</p>
+            <p className="font-mono text-[12px] text-red-500">{errors.discipline.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-xs text-muted-foreground">Handle</label>
+          <label className="font-mono text-[12px] text-foreground">Handle prefix</label>
+          <p className="font-mono text-[12px] sm:text-[12px] text-foregroundleading-snug">
+            Type only your unique prefix — we add the rank suffix automatically (e.g.{' '}
+            <span className="text-syntax-keyword tabular-nums">
+              MyHandle
+              <span className="text-foreground/80">{suffix || 'FrontendBender'}</span>
+            </span>
+            {suffix ? '' : ' once you choose a discipline'}).
+          </p>
           <Input
-            {...register('handle')}
-            placeholder="e.g. MyHandleFrontendBender"
+            {...register('handleBase')}
+            placeholder={githubLogin ? `e.g. ${githubLogin}` : 'e.g. MyHandle'}
             className={cn('font-mono text-sm min-w-0', handleStatusColor)}
+            autoComplete="off"
+            disabled={!discipline}
           />
+          {discipline && suffix && fullHandle.length > 0 && (
+            <div className="rounded-md border border-border bg-muted/20 px-3 py-2 space-y-0.5">
+              <p className="font-mono text-[12px] text-foregrounduppercase tracking-wide">
+                Full rank handle
+              </p>
+              <p className="font-mono text-sm text-cyan-400 break-all">{fullHandle}</p>
+            </div>
+          )}
+          {!discipline && (
+            <p className="font-mono text-[12px] text-muted-foreground">// Select a discipline first</p>
+          )}
           {handleStatusText && (
-            <p className={cn('font-mono text-xs', handleStatusTextColor)}>
+            <p className={cn('font-mono text-[12px]', handleStatusTextColor)}>
               {handleStatusText}
             </p>
           )}
-          {errors.handle && (
-            <p className="font-mono text-xs text-red-500">{errors.handle.message}</p>
+          {errors.handleBase && (
+            <p className="font-mono text-[12px] text-red-500">{errors.handleBase.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-xs text-muted-foreground">
+          <label className="font-mono text-[12px] text-foreground">
             Profile repo URL (GitHub)
           </label>
           <Input
@@ -201,18 +261,18 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
             className="font-mono text-sm min-w-0"
           />
           {errors.profile_url && (
-            <p className="font-mono text-xs text-red-500">{errors.profile_url.message}</p>
+            <p className="font-mono text-[12px] text-red-500">{errors.profile_url.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="font-mono text-xs text-muted-foreground">GitHub identity</label>
+          <label className="font-mono text-[12px] text-foreground">GitHub identity</label>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 py-2 rounded-md border border-border bg-muted/30 min-w-0">
             {avatarUrl && (
               <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full shrink-0" />
             )}
             <span className="font-mono text-sm text-foreground break-all min-w-0">@{githubLogin}</span>
-            <Badge variant="outline" className="font-mono text-xs shrink-0 sm:ml-auto">
+            <Badge variant="outline" className="font-mono text-[12px] shrink-0 sm:ml-auto">
               verified
             </Badge>
           </div>
@@ -225,9 +285,12 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
           disabled={
             isSubmitting ||
             !discipline ||
-            !handle ||
+            !suffix ||
+            !handlePrefixOnly(handleBase, suffix) ||
+            fullHandle.length < 3 ||
+            checkingHandle ||
             isHandleAvailable === false ||
-            checkingHandle
+            (fullHandle.length >= 3 && !checkingHandle && isHandleAvailable !== true)
           }
         >
           {isSubmitting ? (
@@ -236,21 +299,24 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
               Registering...
             </>
           ) : (
-            `Claim ${handle || 'your rank'} →`
+            `Claim ${fullHandle || 'your rank'} →`
           )}
         </Button>
       </form>
 
       <Accordion type="single" collapsible className="font-mono w-full">
         <AccordionItem value="help" className="border-border">
-          <AccordionTrigger className="text-xs text-muted-foreground font-mono hover:text-foreground text-left break-words">
+          <AccordionTrigger className="text-[12px] text-foreground font-mono hover:text-foreground text-left break-words">
             // Don&apos;t have a profile repo yet?
           </AccordionTrigger>
-          <AccordionContent className="text-xs text-muted-foreground space-y-3 pb-4 break-words">
+          <AccordionContent className="text-[12px] text-foreground space-y-3 pb-4 break-words">
             <p>Create a public GitHub repo for your profile, then come back here.</p>
             <ol className="space-y-1 list-decimal list-inside">
               <li>Go to GitHub → New repository</li>
-              <li>Name it after your handle (e.g. <code className="break-all">MyHandleFrontendBender</code>)</li>
+              <li>
+                Name it after your full rank handle (prefix + suffix, e.g.{' '}
+                <code className="break-all">MyHandleFrontendBender</code>)
+              </li>
               <li>Add a <code>README.md</code> with your story</li>
               <li>Add a <code>stack.json</code> with your tech stack</li>
               <li>Come back here and paste the repo URL</li>
@@ -269,7 +335,7 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
         </AccordionItem>
       </Accordion>
 
-      <p className="text-center font-mono text-xs text-muted-foreground pb-6 sm:pb-4">
+      <p className="text-center font-mono text-[12px] text-foreground pb-6 sm:pb-4">
         <Link to="/" className="hover:text-foreground transition-colors inline-block py-1">
           ← Back to home
         </Link>
