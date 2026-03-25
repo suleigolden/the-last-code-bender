@@ -7,6 +7,9 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHasClaimedRank, useHandleAvailable, useRegisterBender } from '@/hooks/useBenders';
+import { XPTimeline } from '@/components/rank/XPTimeline';
+import { XPProgress } from '@/components/rank/XPProgress';
+import { RankBadge } from '@/components/rank/RankBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -75,7 +78,9 @@ function ProfileCard({ bender, githubLogin, avatarUrl }: {
               <p className="font-mono font-bold text-foreground text-lg">{bender.handle}</p>
               <p className="font-mono text-sm text-muted-foreground">{bender.discipline}</p>
             </div>
-            <Badge className="ml-auto font-mono">{bender.rank_tier}</Badge>
+            <div className="ml-auto">
+              <RankBadge tier={bender.rank_tier} size="sm" />
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-4 font-mono text-center text-sm">
             <div>
@@ -90,6 +95,11 @@ function ProfileCard({ bender, githubLogin, avatarUrl }: {
               <p className="text-2xl font-bold text-foreground">#{bender.rank}</p>
               <p className="text-muted-foreground text-xs">Rank</p>
             </div>
+          </div>
+
+          <div className="space-y-3">
+            <XPProgress tier={bender.rank_tier} xp={bender.xp} />
+            <XPTimeline handle={bender.handle} />
           </div>
         </CardContent>
       </Card>

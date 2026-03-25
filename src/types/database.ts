@@ -15,6 +15,17 @@ export type RankTier =
   | 'Master'
   | 'TheLastCodeBender';
 
+export type XPEventType =
+  | 'workspace_save'
+  | 'skill_approved'
+  | 'challenge_win'
+  | 'challenge_submit'
+  | 'showcase_deployed'
+  | 'peer_endorsement'
+  | 'streak_7_days'
+  | 'streak_30_days'
+  | 'profile_complete';
+
 export interface BenderRow {
   id: string;
   handle: string;
@@ -61,6 +72,30 @@ export interface BenderProfileSnapshotRow {
   created_at: string;
 }
 
+export interface XPEventRow {
+  id: string;
+  bender_id: string;
+  handle: string;
+  event_type: XPEventType;
+  xp_awarded: number;
+  metadata: Record<string, any> | null;
+  created_at: string;
+}
+
+export interface LeaderboardRow {
+  handle: string;
+  github: string;
+  discipline: Discipline;
+  rank: number;
+  rank_tier: RankTier;
+  xp: number;
+  challenge_wins: number;
+  skill_live: boolean;
+  avatar_url: string | null;
+  is_founder: boolean;
+  position: number;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -86,6 +121,14 @@ export interface Database {
         };
         Update: Partial<Omit<BenderRow, 'id'>>;
       };
+      xp_events: {
+        Row: XPEventRow;
+        Insert: Omit<XPEventRow, 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Omit<XPEventRow, 'id'>>;
+      };
       users: {
         Row: UserRow;
         Insert: Omit<UserRow, 'id' | 'created_at'> & {
@@ -95,7 +138,11 @@ export interface Database {
         Update: Partial<Omit<UserRow, 'id'>>;
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      leaderboard: {
+        Row: LeaderboardRow;
+      };
+    };
     Functions: Record<string, never>;
     Enums: {
       discipline: Discipline;

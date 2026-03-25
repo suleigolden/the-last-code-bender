@@ -211,3 +211,38 @@ export function useSearchBenders(query: string) {
     staleTime: 30 * 1000,
   });
 }
+
+// ── XP Events ────────────────────────────────────────────────
+export function useXPEvents(handle: string) {
+  return useQuery({
+    queryKey: ['xp_events', handle],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('xp_events')
+        .select('*')
+        .eq('handle', handle)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!handle,
+    staleTime: 1000 * 60,
+  });
+}
+
+// ── Leaderboard ───────────────────────────────────────────────
+export function useLeaderboard() {
+  return useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leaderboard') // the DB view
+        .select('*')
+        .limit(100);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 1000 * 60 * 2,
+  });
+}
