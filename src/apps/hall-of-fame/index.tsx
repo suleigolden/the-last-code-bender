@@ -25,10 +25,11 @@ const SPEC_ID_TO_DISCIPLINE: Record<string, string> = {
   'security-bender': 'Security',
   'ai-bender': 'AI',
   'devops-bender': 'DevOps',
+  'qa-bender': 'QA',
 };
 
-const DISCIPLINES = ['All', 'Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps'];
-const TOTAL_SLOTS = 1200;
+const DISCIPLINES = ['All', 'Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps', 'QA'];
+const TOTAL_SLOTS = 1400;
 const SLOTS_PER_DISCIPLINE = 200;
 
 type SortBy = 'tier' | 'xp' | 'recent' | 'wins';

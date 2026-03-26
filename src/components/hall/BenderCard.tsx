@@ -13,6 +13,7 @@ const DISCIPLINE_AVATAR_COLORS: Record<string, string> = {
   Security: 'text-syntax-variable border-syntax-variable',
   AI: 'text-primary border-primary',
   DevOps: 'text-muted-foreground border-border',
+  QA: 'text-syntax-number border-syntax-number',
 };
 
 const DISCIPLINE_COLORS: Record<string, string> = {
@@ -22,6 +23,7 @@ const DISCIPLINE_COLORS: Record<string, string> = {
   Security: 'text-syntax-variable',
   AI: 'text-primary',
   DevOps: 'text-muted-foreground',
+  QA: 'text-syntax-number',
 };
 
 const RANK_COLORS: Record<string, string> = {
