@@ -287,29 +287,35 @@ export const BenderProfilePage = () => {
                         <div className="flex flex-wrap items-center gap-1.5 mt-1">
                           <Badge
                             variant="outline"
-                            className={cn('font-mono text-[10px] px-1.5 py-0 h-5 leading-none', disciplineColor)}
+                            className={cn('font-mono text-[12px] px-1.5 py-0 h-5 leading-none', disciplineColor)}
                           >
                             {disciplineDisplay}
                           </Badge>
-                          <Badge className={cn('font-mono text-[10px] px-1.5 py-0 h-5 leading-none border-0', rankColor)}>
+                          <Badge className={cn('font-mono text-[12px] px-1.5 py-0 h-5 leading-none border-0', rankColor)}>
                             {bender.rank}
                           </Badge>
                           {bender.open_to_work && (
                             <Badge
                               variant="outline"
-                              className="font-mono text-[10px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-string"
+                              className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-string"
                             >
                               Open to work
                             </Badge>
                           )}
-                          <span className="font-mono text-[10px] text-muted-foreground">{bender.xp} XP</span>
+                           <Badge
+                              variant="outline"
+                              className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-function"
+                            >
+                               <span className="font-mono text-[12px] text-syntax-function">{bender.xp} XP</span>
+                            </Badge>
+                        
                         </div>
                         <div className="mt-1.5">
                           <Button
                             variant="ghost"
                             size="sm"
                             asChild
-                            className="gap-1 px-0 h-7 font-mono text-[10px]"
+                            className="gap-1 px-0 h-7 font-mono text-[12px]"
                           >
                             <a
                               href={`https://github.com/${bender.github}`}
@@ -338,21 +344,26 @@ export const BenderProfilePage = () => {
                         <div className="flex flex-wrap items-center gap-1.5 mt-1">
                           <Badge
                             variant="outline"
-                            className="font-mono text-[10px] px-1.5 py-0 h-5 leading-none text-primary border-primary"
+                            className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none text-primary border-primary"
                           >
                             Founder
                           </Badge>
-                          <Badge className="font-mono text-[10px] px-1.5 py-0 h-5 leading-none border-0 text-primary bg-primary/15">
+                          <Badge className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none border-0 text-primary bg-primary/15">
                             Master Bender
                           </Badge>
-                          <span className="font-mono text-[10px] text-muted-foreground">9999 XP</span>
+                          <Badge
+                              variant="outline"
+                              className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-function"
+                            >
+                               <span className="font-mono text-[12px] text-syntax-function">9999 XP</span>
+                            </Badge>
                         </div>
                         <div className="mt-1.5">
                           <Button
                             variant="ghost"
                             size="sm"
                             asChild
-                            className="gap-1 px-0 h-7 font-mono text-[10px]"
+                            className="gap-1 px-0 h-7 font-mono text-[12px]"
                           >
                             <a
                               href="https://github.com/suleigolden"
