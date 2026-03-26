@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, GitFork, Cpu, ShieldAlert, ChevronRight } from 'lucide-react';
+import { BookOpen, GitFork, Cpu, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
@@ -130,7 +130,7 @@ function AboutSection() {
             <br />
             <Cm>{' * 1,200 unique ranks are available — one per developer, forever.'}</Cm>
             <br />
-            <Cm>{' * Claim your rank by submitting a pull request with your profile.'}</Cm>
+            <Cm>{' * Claim your rank from the Dashboard, then publish via the Profile workspace.'}</Cm>
             <br />
             <Cm>{' * Once claimed, a rank is yours permanently and cannot be taken.'}</Cm>
             <br />
@@ -140,7 +140,7 @@ function AboutSection() {
             <Kw>const </Kw>
             <Fn>totalRanks</Fn>
             <Mut> = </Mut>
-            <span className="text-syntax-number">1200</span>
+            <span className="text-syntax-number">1400</span>
             <Mut>;</Mut>
           </div>
           <div>
@@ -153,7 +153,7 @@ function AboutSection() {
         </div>
       </Block>
 
-      <Block title="disciplines.ts — 6 specializations">
+      <Block title="disciplines.ts — 7 specializations">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-sm">
           {[
             { key: 'frontend',  color: 'text-syntax-keyword border-syntax-keyword',  label: 'Frontend Bender',  desc: '200 ranks — UI, React, CSS masters' },
@@ -162,6 +162,7 @@ function AboutSection() {
             { key: 'security',  color: 'text-syntax-variable border-syntax-variable', label: 'Security Bender',  desc: '200 ranks — AppSec, hacking, defense' },
             { key: 'ai',        color: 'text-primary border-primary',                 label: 'AI Bender',        desc: '200 ranks — ML, LLMs, data science' },
             { key: 'devops',    color: 'text-muted-foreground border-border',         label: 'DevOps Bender',    desc: '200 ranks — infra, CI/CD, cloud' },
+            { key: 'qa',        color: 'text-syntax-number border-syntax-number',     label: 'QA Bender',        desc: '200 ranks — testing, quality, reliability' },
           ].map((d) => (
             <div key={d.key} className="flex items-start gap-3 p-3 bg-background border border-border rounded-md">
               <Badge variant="outline" className={cn('font-mono text-[10px] px-1.5 shrink-0', d.color)}>
@@ -197,7 +198,7 @@ function AboutSection() {
             ))}
           </div>
           <p className="text-muted-foreground text-xs">
-            <Cm>// XP grows over time through challenges, community votes, and skill demos.</Cm>
+            <Cm>// XP grows through workspace activity, skill reviews, challenges, and showcase publishing.</Cm>
           </p>
         </div>
       </Block>
@@ -230,290 +231,80 @@ function ContributingSection() {
         title={
           <>
             <Kw>async function </Kw>
-            <Fn>claimYourRank</Fn>
+            <Fn>contribute</Fn>
             <Mut>() {'{'}</Mut>
           </>
         }
-        subtitle="// Step-by-step guide to submitting your profile via pull request."
+        subtitle="// The modern workflow: Dashboard → Profile workspace → Save → Publish."
       />
 
       <Block title="overview.ts">
         <div className="space-y-2 text-sm font-mono text-muted-foreground leading-relaxed">
           <p>
-            <Cm>// You contribute ONE file: register-me.json inside your profile folder.</Cm>
+            <Cm>// Claiming and editing now happens inside the in-app Dashboard.</Cm>
           </p>
           <p>
-            <Cm>// The system auto-picks it up — no global files to edit.</Cm>
+            <Cm>// Your public profile renders from the saved Profile workspace sources.</Cm>
           </p>
           <p>
-            <Cm>// Your index.tsx renders your profile UI below the page header.</Cm>
-          </p>
-          <p>
-            <Cm>// First merged PR claiming a rank wins it permanently.</Cm>
+            <Cm>// Saving with a commit message records activity + XP events.</Cm>
           </p>
         </div>
       </Block>
 
       <div className="space-y-1 mb-6">
-        <Step n={1} title="Fork & clone the repository">
-          <CodeBlock>{`git clone https://github.com/suleigolden/the-last-code-bender.git
-cd the-last-code-bender
-bun install          # or: yarn install`}</CodeBlock>
-        </Step>
-
-        <Step n={2} title="Choose your discipline and find your handle">
-          <p className="mb-2 text-muted-foreground">
-            Browse{' '}
-            <span className="text-foreground">/hall-of-fame</span> to see which ranks are still
-            unclaimed. Your handle must match the exact rank name (e.g.{' '}
-            <span className="text-syntax-string">"ThirdFrontendBender"</span>).
-          </p>
-          <CodeBlock>{`src/apps/codebender-profiles/
-├── FrontendBenders/          ← discipline folder
-│   ├── FirstFrontendBender/  ← claimed
-│   ├── SecondFrontendBender/ ← claimed
-│   └── ThirdFrontendBender/  ← yours to claim!
-├── BackendBenders/
-├── FullStackBenders/
-├── SecurityBenders/
-├── AIBenders/
-└── DevOpsBenders/`}</CodeBlock>
-        </Step>
-
-        <Step n={3} title="Create your profile folder">
-          <CodeBlock>{`mkdir src/apps/codebender-profiles/FrontendBenders/ThirdFrontendBender`}</CodeBlock>
-        </Step>
-
-        <Step n={4} title='Create register-me.json — the only registry file you touch'>
-          <p className="mb-2 text-muted-foreground">
-            This is the <span className="text-foreground">only file</span> that registers you in
-            the system. Fill in your real information — the site picks it up automatically.
-          </p>
-          <CodeBlock>{`// src/apps/codebender-profiles/FrontendBenders/ThirdFrontendBender/register-me.json
-{
-  "handle":     "ThirdFrontendBender",
-  "discipline": "frontend",
-  "github":     "your-github-username",
-  "rank":       "Apprentice",
-  "xp":         0,
-
-  "socials": {
-    "linkedin": "https://linkedin.com/in/yourprofile",  // optional
-    "twitter":  "https://twitter.com/yourhandle",       // optional
-    "email":    "you@example.com"                       // optional
-  },
-
-  "stack": {
-    "primary":  [{ "tech": "React",      "category": "framework" }],
-    "familiar": [{ "tech": "TypeScript", "category": "language"  }],
-    "aware":    []
-  },
-
-  "open_to_work":    false,
-  "skill_live":      false,
-  "skill_version":   null,
-  "challenge_wins":  0,
-  "community_vote":  false,
-  "demo_url":        null,
-  "demo_views":      0,
-  "joined":          "2026-03-23"
-}`}</CodeBlock>
-          <div className="mt-3">
-            <p className="text-xs text-muted-foreground mb-2"><Cm>// register-me.json field reference:</Cm></p>
-            <div className="overflow-x-auto">
-              <table className="text-xs w-full border-collapse">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-1.5 pr-4 text-foreground">Field</th>
-                    <th className="text-left py-1.5 pr-4 text-foreground">Required</th>
-                    <th className="text-left py-1.5 text-foreground">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="text-muted-foreground">
-                  {[
-                    ['handle',        '✓', 'Exact PascalCase handle — must match folder name'],
-                    ['discipline',    '✓', 'frontend | backend | fullstack | security | ai | devops'],
-                    ['github',        '✓', 'GitHub username without @'],
-                    ['rank',          '✓', 'Apprentice | Journeyman | Senior | Master'],
-                    ['xp',            '✓', 'Start at 0'],
-                    ['socials',       '—', 'linkedin, twitter, youtube, email — all optional'],
-                    ['stack',         '—', 'primary, familiar, aware arrays of { tech, category }'],
-                    ['open_to_work',  '—', 'Shown as a badge on your profile'],
-                    ['skill_live',    '—', 'true when your Claude Code skill is published'],
-                    ['joined',        '—', 'ISO date string YYYY-MM-DD'],
-                  ].map(([field, req, desc]) => (
-                    <tr key={field} className="border-b border-border/50">
-                      <td className="py-1.5 pr-4 text-syntax-function">{field}</td>
-                      <td className="py-1.5 pr-4 text-center">{req}</td>
-                      <td className="py-1.5">{desc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </Step>
-
-        <Step n={5} title="Create index.tsx — your profile, your canvas">
-          {/* Recruiter callout */}
-          <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
-            <p className="text-xs font-mono text-primary font-semibold mb-1">
-              👀 Tech recruiters will see this.
-            </p>
-            <p className="text-xs font-mono text-muted-foreground leading-relaxed">
-              Your profile folder is your portfolio. Recruiters browse the repo — they see your
-              folder structure, how you split components, how you name files, and how you build UI.
-              Think of it as a live coding interview you designed yourself.
-            </p>
-          </div>
-
-          {/* Creative freedom note */}
-          <div className="mb-4 space-y-2 text-xs font-mono text-muted-foreground leading-relaxed">
-            <p>
-              <Cm>{'// ✦ Build it however you want. Be creative. Be modern. Be you.'}</Cm>
-            </p>
-            <p>
-              <Cm>{'// ✦ No template required — this is your showcase, not a form to fill.'}</Cm>
-            </p>
-            <p>
-              <Cm>{'// ✦ You can create your own component library inside your folder.'}</Cm>
-            </p>
-            <p>
-              <Cm>{'// ✦ Split into sections, add animations, tabs, grids — anything React supports.'}</Cm>
-            </p>
-          </div>
-
-          {/* Folder structure example */}
-          <p className="text-xs font-mono text-muted-foreground mb-2">
-            <Cm>{'// Reference: how TheLastCodeBender structures their profile folder —'}</Cm>
-            <br />
-            <Cm>{'// your structure can look completely different. This is just one way.'}</Cm>
-          </p>
-          <CodeBlock>{`ThirdFrontendBender/            ← your folder (you own everything inside)
-├── index.tsx                   ← entry point — must export a default component
-├── register-me.json            ← your registration (the only registry file)
-└── sections/                   ← optional: your own component library
-    ├── HeroSection.tsx
-    ├── StorySection.tsx
-    ├── StackSection.tsx
-    ├── PortraitSection.tsx
-    └── SocialsSection.tsx
-
-// You could also do:
-ThirdFrontendBender/
-├── index.tsx
-├── register-me.json
-├── components/
-│   ├── TerminalCard.tsx
-│   ├── TechBadge.tsx
-│   └── GlowButton.tsx
-└── hooks/
-    └── useTypingEffect.ts`}</CodeBlock>
-
-          {/* Hard rules */}
-          <div className="mt-4 mb-3">
-            <p className="text-xs font-mono text-foreground font-semibold mb-2">
-              Hard rules (non-negotiable):
-            </p>
-            <ul className="space-y-1.5 text-muted-foreground text-xs font-mono list-none">
-              {[
-                ['index.tsx must export a default function',                          'The page lazy-loads it by default export'],
-                ['All files must live inside your profile folder',                    'No imports from other contributors\' folders'],
-                ['Use IDE design tokens — no hardcoded hex colors',                   'bg-ide-sidebar, text-syntax-keyword, border-border, etc.'],
-                ['Do not render full-page chrome',                                    'The tab bar, sidebar, and status bar are provided by BenderProfilePage'],
-                ['No external npm packages',                                          'Use only what is already installed in the project'],
-              ].map(([rule, reason]) => (
-                <li key={rule} className="flex items-start gap-2">
-                  <ChevronRight className="w-3 h-3 mt-0.5 text-syntax-function shrink-0" />
-                  <span>
-                    <span className="text-foreground">{rule}</span>
-                    <span className="text-muted-foreground/60"> — {reason}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Minimal starter */}
-          <p className="text-xs font-mono text-muted-foreground mb-2">
-            <Cm>{'// Minimal starter — replace everything, go wild:'}</Cm>
-          </p>
-          <CodeBlock>{`// src/apps/codebender-profiles/FrontendBenders/ThirdFrontendBender/index.tsx
-import { HeroSection }   from './sections/HeroSection';
-import { StackSection }  from './sections/StackSection';
-import { SocialsSection } from './sections/SocialsSection';
-
-export default function ThirdFrontendBenderProfile() {
-  return (
-    <div className="space-y-6 font-mono">
-      <HeroSection />
-      <StackSection />
-      <SocialsSection />
-    </div>
-  );
-}
-
-// — or skip sections entirely and write it all inline —
-// — or build a full tabbed IDE layout like TheLastCodeBender —
-// — or make something nobody has seen before. Your call. —`}</CodeBlock>
-
-          {/* Design tokens reminder */}
-          <div className="mt-4 p-3 bg-ide-sidebar border border-border rounded-lg">
-            <p className="text-xs font-mono text-muted-foreground mb-2">
-              <Cm>{'// Available IDE design tokens (use these instead of hardcoded colors):'}</Cm>
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-[11px] font-mono">
-              {[
-                ['bg-ide-sidebar',           'panel / card backgrounds'],
-                ['bg-ide-tabbar',            'tab bar background'],
-                ['bg-ide-statusbar',         'bottom status strip'],
-                ['text-syntax-keyword',      'blue — const, function, import'],
-                ['text-syntax-string',       'green — string values'],
-                ['text-syntax-function',     'yellow — function names'],
-                ['text-syntax-comment',      'grey — // comments'],
-                ['text-syntax-variable',     'orange — variables'],
-                ['text-muted-foreground',    'subdued text'],
-                ['border-border',            'all borders'],
-              ].map(([token, desc]) => (
-                <div key={token} className="flex items-center gap-2 py-0.5">
-                  <span className="text-syntax-function shrink-0">{token}</span>
-                  <span className="text-muted-foreground/60">— {desc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Step>
-
-        <Step n={6} title="Run the dev server to preview your profile">
-          <CodeBlock>{`yarn dev
-# or: bun dev
-
-# Navigate to:
-# http://localhost:3004/benders/frontend/ThirdFrontendBender`}</CodeBlock>
-        </Step>
-
-        <Step n={7} title="Submit a pull request">
-          <CodeBlock>{`git checkout -b feat/profile-ThirdFrontendBender
-git add src/apps/codebender-profiles/FrontendBenders/ThirdFrontendBender/
-git commit -m "feat(profile): add ThirdFrontendBender"
-git push origin feat/profile-ThirdFrontendBender`}</CodeBlock>
+        <Step n={1} title="Sign in with GitHub">
+          <CodeBlock>{`/login → Continue with GitHub`}</CodeBlock>
           <p className="mt-2 text-muted-foreground text-xs">
-            Open a PR against <span className="text-foreground">main</span>. First merged PR wins
-            the rank. Once merged, your profile is live on thelastcodebender.com.
+            You&apos;ll be redirected to the Dashboard after auth.
           </p>
+        </Step>
+
+        <Step n={2} title="Register your rank from the Dashboard">
+          <p className="mb-2 text-muted-foreground">
+            Pick a discipline, type your handle prefix (the discipline suffix is appended), and submit.
+          </p>
+          <CodeBlock>{`/dashboard\n\n// Example\nhandle prefix:  MyHandle\nfull handle:    MyHandleFrontendBender`}</CodeBlock>
+        </Step>
+
+        <Step n={3} title="Open the Profile workspace">
+          <CodeBlock>{`Dashboard → “Start editing profile”\n/dashboard/workspace`}</CodeBlock>
+        </Step>
+
+        <Step n={4} title="Edit your profile sources">
+          <p className="mb-2 text-muted-foreground">
+            This is where your real content lives — it&apos;s what visitors see on your profile page.
+          </p>
+          <CodeBlock>{`index.tsx            // your React profile entry\nsections/*.tsx        // optional components\nstyles.css            // styling\nSKILL.md              // your skill (submit for AI review)\nstack/stack.json      // your tech stack (recruiter matching)`}</CodeBlock>
+        </Step>
+
+        <Step n={5} title="Save with a commit message (XP + history)">
+          <CodeBlock>{`// Example commit message\n"feat: add hero + socials"`}</CodeBlock>
+          <p className="mt-2 text-muted-foreground text-xs">
+            Saves create snapshots and can award XP (shown on your dashboard timeline).
+          </p>
+        </Step>
+
+        <Step n={6} title="Publish your skill (optional)">
+          <p className="mb-2 text-muted-foreground">
+            Open the <span className="text-foreground">SKILL.md</span> tab and submit for AI review.
+          </p>
+          <CodeBlock>{`Profile workspace → SKILL.md → “Submit for AI Review”`}</CodeBlock>
+        </Step>
+
+        <Step n={7} title="Add your demo / project showcase (optional)">
+          <CodeBlock>{`Dashboard → Showcase → Add demo URL + type + description`}</CodeBlock>
         </Step>
       </div>
 
-      <Block title="stack-categories.ts">
-        <div className="text-sm font-mono">
-          <p className="text-muted-foreground mb-3"><Cm>// Valid category values for stack entries:</Cm></p>
-          <div className="flex flex-wrap gap-2">
-            {['language', 'framework', 'db', 'devops', 'other'].map((cat) => (
-              <Badge key={cat} variant="outline" className="font-mono text-xs">
-                <Str>"{cat}"</Str>
-              </Badge>
-            ))}
-          </div>
+      <Block title="advanced.ts — contributing to the codebase">
+        <div className="space-y-2 text-sm font-mono text-muted-foreground leading-relaxed">
+          <p>
+            <Cm>// Want to improve the platform itself?</Cm>
+          </p>
+          <p>
+            <Cm>// Open a PR with your changes — CI runs tests + build on every push/PR.</Cm>
+          </p>
         </div>
       </Block>
     </div>
@@ -550,7 +341,7 @@ function SkillSection() {
         </div>
       </Block>
 
-      <Block title="skill-fields.ts — your register-me.json skill flags">
+      <Block title="skill-fields.ts — skill + showcase fields">
         <div className="space-y-4 text-sm font-mono">
           <div className="p-3 bg-background border border-border rounded-md">
             <div className="flex items-center gap-2 mb-1">
@@ -559,10 +350,9 @@ function SkillSection() {
               <span className="text-syntax-string">boolean</span>
             </div>
             <p className="text-muted-foreground text-xs">
-              Set to <span className="text-syntax-keyword">true</span> when your skill is
-              published and usable by others. This shows a{' '}
-              <span className="text-foreground">Skill Live</span> indicator on your profile card
-              in the Hall of Fame.
+              Set to <span className="text-syntax-keyword">true</span> when your skill passes AI
+              review and is published. This shows a{' '}
+              <span className="text-foreground">Skill Live</span> indicator in the Hall of Fame.
             </p>
           </div>
 
@@ -586,8 +376,9 @@ function SkillSection() {
               <span className="text-syntax-string">string | null</span>
             </div>
             <p className="text-muted-foreground text-xs">
-              A URL to a live demo of your skill or project. Displayed in the Showcase tab
-              of your profile page as an embedded iframe.
+              A URL to a live demo of your skill or project. Manage it from the{' '}
+              <span className="text-foreground">Dashboard</span> Showcase section; it appears as an
+              embedded iframe on your profile page.
             </p>
           </div>
         </div>
@@ -597,11 +388,11 @@ function SkillSection() {
         <div className="space-y-2 text-sm font-mono">
           <p className="text-muted-foreground"><Cm>// XP sources for your profile:</Cm></p>
           {[
-            ['Claiming a rank',          '+10 XP',  'Awarded when your PR is merged'],
-            ['Publishing a skill',       '+25 XP',  'skill_live = true'],
-            ['Winning a challenge',      '+50 XP',  'Per challenge_wins entry'],
-            ['Community vote',           '+15 XP',  'community_vote = true'],
-            ['Demo views milestone',     '+5 XP',   'Every 100 demo_views'],
+            ['Workspace save',           '+10 XP',  'Saving with a commit message'],
+            ['Skill approved',           '+50 XP',  'SKILL.md passes AI review'],
+            ['Challenge submit',         '+10 XP',  'Per challenge submission'],
+            ['Challenge win',            '+100 XP', 'Winner placement XP'],
+            ['Showcase published',       '+20 XP',  'First time you add a demo URL'],
           ].map(([action, xp, note]) => (
             <div key={action} className="flex items-start gap-3 py-2 border-b border-border/50 last:border-0">
               <span className="text-syntax-function shrink-0 text-xs w-20">{xp}</span>
@@ -619,10 +410,9 @@ function SkillSection() {
           <p className="text-muted-foreground"><Cm>// Steps to publish a Claude Code skill:</Cm></p>
           {[
             ['Build your skill',    'Create a .md prompt file or Claude Code workflow that solves a real developer problem'],
-            ['Test it locally',     'Install it in your own Claude Code CLI and verify it works'],
-            ['Publish it',          'Submit to the Claude Code skills registry or share via GitHub'],
-            ['Update register-me',  'Set skill_live: true, skill_version: "1.0.0" in your register-me.json'],
-            ['Submit a PR',         'The update will appear on your profile after merge'],
+            ['Add SKILL.md',        'Paste your skill into the SKILL.md tab in the Profile workspace'],
+            ['Submit for review',   'Click “Submit for AI Review” in the workspace UI'],
+            ['Iterate',             'Fix issues, resubmit, and publish when approved'],
           ].map(([step, desc], i) => (
             <div key={step} className="flex gap-3">
               <span className="text-syntax-number shrink-0">{i + 1}.</span>
@@ -652,27 +442,36 @@ function RulesSection() {
         }
         subtitle="// What you must never do — and what you are encouraged to do."
       />
+      <Block title="rules.ts — how to contribute">
+        <div className="space-y-2 text-sm font-mono text-muted-foreground leading-relaxed">
+          <p>
+            <Cm>// Primary workflow: contribute inside the app.</Cm>
+          </p>
+          <p>
+            <Cm>// Dashboard → Profile workspace → Save with a commit message → Publish.</Cm>
+          </p>
+          <p>
+            <Cm>// Pull requests are for improving the platform itself.</Cm>
+          </p>
+        </div>
+      </Block>
 
+      {/* Don't do section */}
       <Block title="dont-do.ts — prohibited actions">
         <div className="space-y-0">
           <DontItem>
-            <span className="text-foreground font-semibold">Edit another contributor&apos;s files.</span>{' '}
-            You may only modify files inside your own profile folder (
-            <span className="text-syntax-function">src/apps/codebender-profiles/YourDiscipline/YourHandle/</span>
-            ) and your own{' '}
-            <span className="text-syntax-function">register-me.json</span>.
+            <span className="text-foreground font-semibold">Don&apos;t edit someone else&apos;s profile.</span>{' '}
+            If you&apos;re working in the Profile workspace, only publish content for your own handle.
           </DontItem>
           <DontItem>
-            <span className="text-foreground font-semibold">Edit global registry files.</span>{' '}
-            Never manually edit{' '}
-            <span className="text-syntax-function">registry/registry.json</span>,{' '}
-            <span className="text-syntax-function">src/apps/codebender-profiles/registry.ts</span>, or any
-            barrel index.ts file. These are auto-generated.
+            <span className="text-foreground font-semibold">Don&apos;t bypass the Dashboard workflow.</span>{' '}
+            Your public profile is rendered from saved workspace sources — saving without a commit
+            message may not award XP.
           </DontItem>
           <DontItem>
-            <span className="text-foreground font-semibold">Claim a rank that is already taken.</span>{' '}
-            If a handle folder already exists with a real profile, that rank is claimed. Do not
-            overwrite or rename another contributor&apos;s folder.
+            <span className="text-foreground font-semibold">Don&apos;t claim a rank that&apos;s taken.</span>{' '}
+            Use <span className="text-foreground">Hall of Fame</span> to find an open slot before
+            registering on the Dashboard.
           </DontItem>
           <DontItem>
             <span className="text-foreground font-semibold">Use hardcoded hex colors or inline styles.</span>{' '}
@@ -687,14 +486,9 @@ function RulesSection() {
             Use only what is already in the project.
           </DontItem>
           <DontItem>
-            <span className="text-foreground font-semibold">Modify shared components or pages.</span>{' '}
-            Do not edit files under{' '}
-            <span className="text-syntax-function">src/components/</span>,{' '}
-            <span className="text-syntax-function">src/apps/</span> (except your profile under{' '}
-            <span className="text-syntax-function">codebender-profiles/</span>),{' '}
-            <span className="text-syntax-function">src/hooks/</span>, or{' '}
-            <span className="text-syntax-function">src/lib/</span>. These are maintained by the
-            project author.
+            <span className="text-foreground font-semibold">Don&apos;t ship platform changes casually.</span>{' '}
+            If you open a PR, keep it focused and be ready to iterate on review — these paths affect
+            everyone.
           </DontItem>
           <DontItem>
             <span className="text-foreground font-semibold">Impersonate another developer.</span>{' '}
@@ -718,19 +512,21 @@ function RulesSection() {
           </DontItem>
         </div>
       </Block>
-
+        
+      {/* Do this section */}
       <Block title="do-this.ts — encouraged contributions">
         <div className="space-y-0">
           <DoItem>
-            <span className="text-foreground font-semibold">Study the reference implementation.</span>{' '}
-            Read{' '}
-            <span className="text-syntax-function">TheLastCodeBender/index.tsx</span> carefully before
-            writing your own component. It demonstrates every pattern you should follow.
+            <span className="text-foreground font-semibold">Start in the Profile workspace.</span>{' '}
+            Put your story, UI, and projects in <span className="text-foreground">index.tsx</span> and
+            optional <span className="text-foreground">sections/</span> files, then save with a commit
+            message.
           </DoItem>
           <DoItem>
-            <span className="text-foreground font-semibold">Keep your component self-contained.</span>{' '}
-            All your code lives in your folder. Import only from the shared component library
-            already in the project.
+            <span className="text-foreground font-semibold">Use the built-in file set.</span>{' '}
+            <span className="text-foreground">SKILL.md</span> is for skill review,{' '}
+            <span className="text-foreground">stack/stack.json</span> powers recruiter matching, and
+            the Dashboard Showcase is for your demo URL.
           </DoItem>
           <DoItem>
             <span className="text-foreground font-semibold">Use IDE design tokens consistently.</span>{' '}
@@ -741,34 +537,32 @@ function RulesSection() {
             profile look native in both light and dark themes.
           </DoItem>
           <DoItem>
-            <span className="text-foreground font-semibold">Run lint before pushing.</span>{' '}
-            Run <span className="text-syntax-function">yarn lint</span> or{' '}
-            <span className="text-syntax-function">bun lint</span> and fix all warnings before
-            opening your PR. The pre-commit hook enforces zero warnings.
+            <span className="text-foreground font-semibold">Save often (with intent).</span>{' '}
+            Workspace saves + commit messages create history and XP events — small, meaningful
+            changes add up.
           </DoItem>
           <DoItem>
-            <span className="text-foreground font-semibold">Preview locally before submitting.</span>{' '}
-            Run <span className="text-syntax-function">yarn dev</span>, navigate to your profile URL,
-            and confirm everything renders correctly in both light and dark mode.
+            <span className="text-foreground font-semibold">Preview like a visitor.</span>{' '}
+            Open your public profile route and confirm your workspace content renders and your
+            showcase demo loads.
           </DoItem>
           <DoItem>
-            <span className="text-foreground font-semibold">Keep your register-me.json up to date.</span>{' '}
-            When you publish a skill, win a challenge, or want to show{' '}
-            <span className="text-syntax-function">open_to_work</span>, submit a PR updating only
-            your <span className="text-syntax-function">register-me.json</span>.
+            <span className="text-foreground font-semibold">Keep your profile up to date.</span>{' '}
+            Use the Dashboard + Profile workspace to update your story, stack, skill, open-to-work,
+            and showcase demo.
           </DoItem>
         </div>
       </Block>
 
-      <Block title="file-ownership.ts — what you own">
-        <CodeBlock>{`// You own ONLY:
-src/apps/codebender-profiles/
-  └── YourDisciplineBenders/
-      └── YourHandle/
-          ├── register-me.json  ← registration + metadata
-          └── index.tsx         ← your profile component
-
-// Everything else is off-limits.`}</CodeBlock>
+      <Block title="ownership.ts — what&apos;s yours">
+        <div className="space-y-2 text-sm font-mono text-muted-foreground leading-relaxed">
+          <p>
+            <Cm>// Your content belongs in your Profile workspace.</Cm>
+          </p>
+          <p>
+            <Cm>// If you open a PR: only change what you intend to maintain and keep it small.</Cm>
+          </p>
+        </div>
       </Block>
     </div>
   );
