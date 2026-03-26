@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Code2 } from 'lucide-react';
+import { PenLine } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateOpenToWork } from '@/hooks/useBenders';
 import { XPTimeline } from '@/components/rank/XPTimeline';
@@ -129,6 +129,13 @@ function ProfileCard({
         </CardContent>
       </Card>
 
+      <p className="font-mono text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+        // Edit <span className="text-foreground/90">index.tsx</span>,{" "}
+        <span className="text-foreground/90">SKILL.md</span>, and{" "}
+        <span className="text-foreground/90">stack/stack.json</span> in the workspace; save with a
+        commit message for XP. Use the showcase block below for your demo link.
+      </p>
+
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <Button
           className="flex-1 font-mono min-w-0 sm:min-w-[10rem]"
@@ -136,10 +143,10 @@ function ProfileCard({
         >
           View my profile
         </Button>
-        <Button variant="secondary" className="flex-1 font-mono gap-1 min-w-0 sm:min-w-[10rem]" asChild>
+        <Button variant="default" className="flex-1 font-mono gap-1 min-w-0 sm:min-w-[10rem]" asChild>
           <Link to="/dashboard/workspace" className="inline-flex items-center justify-center">
-            <Code2 className="h-4 w-4 shrink-0" />
-            <span className="truncate">Profile workspace</span>
+            <PenLine className="h-4 w-4 shrink-0" />
+            <span className="truncate">Start editing profile</span>
           </Link>
         </Button>
         {bender.profile_url && (

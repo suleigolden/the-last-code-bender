@@ -2,15 +2,13 @@ import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { FileCode2, Github } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { SkillCard } from '@/components/profile/SkillCard';
-import { DemoFrame } from '@/components/profile/DemoFrame';
-import { StackBadges } from '@/components/profile/StackBadges';
 import { ProfileExplorer } from '@/components/profile/ProfileExplorer';
+import { useAuth } from '@/contexts/AuthContext';
 import { useBenderByHandle } from '@/hooks/useBenders';
 import { rowToBender } from '@/lib/bender-adapter';
 import { useProfileWorkspace } from '@/hooks/useProfileWorkspace';
@@ -19,9 +17,9 @@ import { workspaceHasRenderableFiles } from '@/lib/profile-workspace-sandpack';
 import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
-import { StoryRenderer } from '@/components/profile/StoryRenderer';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 import { supabase } from '@/lib/supabase';
+import { CodeBenderPlaceholder } from '../codebender-profile-placeholder/CodeBenderPlaceholder';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -38,20 +36,6 @@ const RANK_COLORS: Record<string, string> = {
   Senior: 'text-syntax-function bg-[hsl(35_90%_65%/0.15)]',
   Master: 'text-primary bg-primary/15',
 };
-
-function demoTypeLabel(type: string | null | undefined) {
-  switch (type) {
-    case 'live_app':
-      return 'Live App';
-    case 'component_library':
-      return 'Component Library';
-    case 'api_demo':
-      return 'API Demo';
-    case 'other':
-    default:
-      return 'Other';
-  }
-}
 
 function hashString(input: string) {
   // Small non-crypto hash for dedup keys.
@@ -133,9 +117,10 @@ const SkeletonLayout = () => (
 const NotClaimedUI = ({ handle }: { handle: string | undefined }) => (
   <div className="text-center py-16 font-mono">
     <p className="text-muted-foreground text-sm mb-4">// {handle ?? 'unknown'}.profile.ts</p>
-    <h2 className="text-xl font-bold text-foreground mb-2">Rank not yet claimed</h2>
-    <p className="text-muted-foreground text-sm mb-6">
-      This handle hasn&apos;t been registered yet. Be the first to claim it.
+    <h2 className="text-xl font-bold text-foreground mb-2">Rank not yet registered</h2>
+    <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
+      This handle isn&apos;t in the registry yet. Sign in and contribute to register your rank, or
+      browse the hall of fame for open slots.
     </p>
     <ForkRepositoryButton />
   </div>
@@ -143,27 +128,13 @@ const NotClaimedUI = ({ handle }: { handle: string | undefined }) => (
 
 export const BenderProfilePage = () => {
   const { discipline, handle } = useParams<{ discipline: string; handle: string }>();
+  const { githubLogin } = useAuth();
 
   // Primary data source: Supabase
   const { data: benderRow, isLoading } = useBenderByHandle(handle ?? '');
   const bender = benderRow ? rowToBender(benderRow) : undefined;
 
   const demoUrl = benderRow?.demo_url ?? null;
-  const demoDescription = benderRow?.demo_description ?? null;
-  const demoType = benderRow?.demo_type ?? null;
-
-  const { data: demoViewCount } = useQuery({
-    queryKey: ['demo_views_count', benderRow?.handle],
-    enabled: Boolean(demoUrl && benderRow?.handle),
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_demo_view_count', {
-        p_handle: benderRow?.handle,
-      });
-      if (error) throw error;
-      return typeof data === 'number' ? data : 0;
-    },
-    staleTime: 30_000,
-  });
 
   React.useEffect(() => {
     if (!demoUrl || !benderRow?.handle) return;
@@ -177,19 +148,18 @@ export const BenderProfilePage = () => {
       localStorage.setItem(storageKey, '1');
 
       // Fire-and-forget view tracking (deduped per browser+handle via localStorage).
-      supabase
+      void supabase
         .from('demo_views')
         .insert({
           handle: benderRow.handle,
           viewer_ip: hashString(fingerprint),
-        })
-        .catch(() => {});
+        });
     } catch {
       // Ignore view tracking failures (private browsing, storage disabled, etc.)
     }
   }, [demoUrl, benderRow?.handle]);
 
-  const { data: story, isLoading: storyLoading } = useQuery({
+  void useQuery({
     queryKey: ['story', discipline, handle],
     queryFn: () =>
       fetch(`/codebenders/${discipline}/${handle}/story/README.md`).then((r) =>
@@ -198,7 +168,7 @@ export const BenderProfilePage = () => {
     enabled: !!bender,
   });
 
-  const { data: stackData, isLoading: stackLoading } = useQuery<StackData | null>({
+  void useQuery<StackData | null>({
     queryKey: ['stack', discipline, handle],
     queryFn: () =>
       fetch(`/codebenders/${discipline}/${handle}/stack/stack.json`).then((r) =>
@@ -258,6 +228,12 @@ export const BenderProfilePage = () => {
     DISCIPLINE_COLORS[disciplineDisplay] ?? 'text-muted-foreground border-border';
   const rankColor = bender ? (RANK_COLORS[bender.rank] ?? 'bg-muted/60 text-muted-foreground') : '';
   const initials = bender?.handle[0]?.toUpperCase() ?? '?';
+
+  const isOwnProfile = Boolean(
+    githubLogin &&
+      benderRow?.github_login &&
+      githubLogin.toLowerCase() === benderRow.github_login.toLowerCase(),
+  );
 
   if (handle === 'codebender-profile-placeholder') {
     return <Navigate to="/hall-of-fame" replace />;
@@ -399,105 +375,11 @@ export const BenderProfilePage = () => {
                       <ProfileComponent />
                     </React.Suspense>
                   ) : (
-                    <Tabs defaultValue="story">
-                      <TabsList className="font-mono mb-6">
-                        <TabsTrigger value="story">Story</TabsTrigger>
-                        <TabsTrigger value="stack">Stack</TabsTrigger>
-                        <TabsTrigger value="showcase">Showcase</TabsTrigger>
-                        <TabsTrigger value="challenges">Challenges</TabsTrigger>
-                      </TabsList>
-
-                      {/* Story */}
-                      <TabsContent value="story">
-                        {storyLoading ? (
-                          <Skeleton className="h-48 w-full" />
-                        ) : story ? (
-                          <div className="bg-ide-sidebar border border-border rounded-lg p-4">
-                            <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border">
-                              <span className="text-xs font-mono text-muted-foreground">story/README.md</span>
-                              <span className="text-xs text-syntax-comment font-mono">— Preview</span>
-                            </div>
-                            <StoryRenderer markdown={story} />
-                          </div>
-                        ) : (
-                          <p className="font-mono text-sm text-muted-foreground">
-                            // No story yet
-                          </p>
-                        )}
-                      </TabsContent>
-
-                      {/* Stack */}
-                      <TabsContent value="stack">
-                        {stackLoading ? (
-                          <Skeleton className="h-48 w-full" />
-                        ) : stackData ? (
-                          <StackBadges data={stackData} />
-                        ) : (
-                          <p className="font-mono text-sm text-muted-foreground">
-                            // Stack not yet added
-                          </p>
-                        )}
-                      </TabsContent>
-
-                      {/* Showcase */}
-                      <TabsContent value="showcase">
-                        <div className="space-y-4">
-                          {demoUrl && (
-                            <div className="space-y-2">
-                              <div className="flex items-start justify-between gap-3 flex-wrap">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <Badge variant="outline" className="font-mono text-xs">
-                                    {demoTypeLabel(demoType)}
-                                  </Badge>
-                                </div>
-                                <Button asChild variant="secondary" size="sm">
-                                  <a
-                                    href={demoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    Open full demo ↗
-                                  </a>
-                                </Button>
-                              </div>
-
-                              {demoDescription && (
-                                <p className="font-mono text-sm text-muted-foreground">
-                                  {demoDescription}
-                                </p>
-                              )}
-                            </div>
-                          )}
-
-                          <DemoFrame url={demoUrl} views={demoViewCount ?? 0} />
-                        </div>
-                      </TabsContent>
-
-                      {/* Challenges */}
-                      <TabsContent value="challenges">
-                        {(bender?.challenge_wins ?? 0) > 0 ? (
-                          <div className="font-mono text-sm">
-                            <p className="text-muted-foreground mb-4">
-                              // Challenge wins: {bender?.challenge_wins}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="default" className="text-sm px-3 py-1">
-                                🏆 {bender?.challenge_wins}{' '}
-                                {bender?.challenge_wins === 1 ? 'win' : 'wins'}
-                              </Badge>
-                            </div>
-                          </div>
-                        ) : (
-                          <p className="font-mono text-sm text-muted-foreground">
-                            // No challenge wins yet — check the{' '}
-                            <a href="/challenges" className="text-primary underline underline-offset-2">
-                              challenges page
-                            </a>
-                            .
-                          </p>
-                        )}
-                      </TabsContent>
-                    </Tabs>
+                    <CodeBenderPlaceholder
+                      codeBenderName={bender?.handle ?? handle ?? 'CodeBender'}
+                      section="story"
+                      isOwnProfile={isOwnProfile}
+                    />
                   )}
 
                   {/* Skill Card */}
