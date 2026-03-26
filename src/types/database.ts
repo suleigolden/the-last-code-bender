@@ -157,51 +157,62 @@ export interface LeaderboardRow {
   position: number;
 }
 
+type TableDef<Row, Insert, Update> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Update;
+  Relationships: [];
+};
+
+type ViewDef<Row> = {
+  Row: Row;
+  Relationships: [];
+};
+
 export interface Database {
   public: {
     Tables: {
-      bender_profile_snapshots: {
-        Row: BenderProfileSnapshotRow;
-        Insert: Omit<BenderProfileSnapshotRow, 'id' | 'created_at'> & {
-          id?: string;
-          created_at?: string;
-        };
-        Update: Partial<Omit<BenderProfileSnapshotRow, 'id'>>;
-      };
-      bender_profile_workspace: {
-        Row: BenderProfileWorkspaceRow;
-        Insert: Omit<BenderProfileWorkspaceRow, 'updated_at'> & { updated_at?: string };
-        Update: Partial<Omit<BenderProfileWorkspaceRow, 'bender_id'>>;
-      };
-      benders: {
-        Row: BenderRow;
-        Insert: Omit<BenderRow, 'id' | 'registered_at' | 'last_active'> & {
+      bender_profile_snapshots: TableDef<
+        BenderProfileSnapshotRow,
+        Omit<BenderProfileSnapshotRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        Partial<Omit<BenderProfileSnapshotRow, 'id'>>
+      >;
+      bender_profile_workspace: TableDef<
+        BenderProfileWorkspaceRow,
+        Omit<BenderProfileWorkspaceRow, 'updated_at'> & { updated_at?: string },
+        Partial<Omit<BenderProfileWorkspaceRow, 'bender_id'>>
+      >;
+      benders: TableDef<
+        BenderRow,
+        Omit<BenderRow, 'id' | 'registered_at' | 'last_active'> & {
           id?: string;
           registered_at?: string;
           last_active?: string;
-        };
-        Update: Partial<Omit<BenderRow, 'id'>>;
-      };
-      xp_events: {
-        Row: XPEventRow;
-        Insert: Omit<XPEventRow, 'id' | 'created_at'> & {
-          id?: string;
-          created_at?: string;
-        };
-        Update: Partial<Omit<XPEventRow, 'id'>>;
-      };
-      challenges: {
-        Row: ChallengeRow;
-        Insert: Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at'> & {
-          id?: string;
-          opens_at?: string;
-          closes_at?: string;
-        };
-        Update: Partial<Omit<ChallengeRow, 'id'>>;
-      };
-      challenge_submissions: {
-        Row: ChallengeSubmissionRow;
-        Insert: Omit<ChallengeSubmissionRow, 'id' | 'submitted_at' | 'score_total' | 'score_breakdown' | 'ai_feedback' | 'placement' | 'judged_at'> & {
+        },
+        Partial<Omit<BenderRow, 'id'>>
+      >;
+      xp_events: TableDef<
+        XPEventRow,
+        Omit<XPEventRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        Partial<Omit<XPEventRow, 'id'>>
+      >;
+      challenges: TableDef<
+        ChallengeRow,
+        Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at'> & { id?: string; opens_at?: string; closes_at?: string },
+        Partial<Omit<ChallengeRow, 'id'>>
+      >;
+      challenge_submissions: TableDef<
+        ChallengeSubmissionRow,
+        Omit<
+          ChallengeSubmissionRow,
+          | 'id'
+          | 'submitted_at'
+          | 'score_total'
+          | 'score_breakdown'
+          | 'ai_feedback'
+          | 'placement'
+          | 'judged_at'
+        > & {
           id?: string;
           submitted_at?: string;
           score_total?: number | null;
@@ -209,33 +220,23 @@ export interface Database {
           ai_feedback?: string | null;
           placement?: number | null;
           judged_at?: string | null;
-        };
-        Update: Partial<Omit<ChallengeSubmissionRow, 'id'>>;
-      };
-      users: {
-        Row: UserRow;
-        Insert: Omit<UserRow, 'id' | 'created_at'> & {
-          id?: string;
-          created_at?: string;
-        };
-        Update: Partial<Omit<UserRow, 'id'>>;
-      };
-      demo_views: {
-        Row: DemoViewRow;
-        Insert: Omit<DemoViewRow, 'id' | 'viewed_at'> & {
-          id?: string;
-          viewed_at?: string;
-        };
-        Update: Partial<Omit<DemoViewRow, 'id'>>;
-      };
+        },
+        Partial<Omit<ChallengeSubmissionRow, 'id'>>
+      >;
+      users: TableDef<
+        UserRow,
+        Omit<UserRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        Partial<Omit<UserRow, 'id'>>
+      >;
+      demo_views: TableDef<
+        DemoViewRow,
+        Omit<DemoViewRow, 'id' | 'viewed_at'> & { id?: string; viewed_at?: string },
+        Partial<Omit<DemoViewRow, 'id'>>
+      >;
     };
     Views: {
-      leaderboard: {
-        Row: LeaderboardRow;
-      };
-      challenges_with_active: {
-        Row: ChallengeWithActiveRow;
-      };
+      leaderboard: ViewDef<LeaderboardRow>;
+      challenges_with_active: ViewDef<ChallengeWithActiveRow>;
     };
     Functions: {
       award_xp: {
@@ -256,5 +257,6 @@ export interface Database {
       discipline: Discipline;
       rank_tier: RankTier;
     };
+    CompositeTypes: Record<string, never>;
   };
 }

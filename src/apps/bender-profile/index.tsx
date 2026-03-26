@@ -148,7 +148,10 @@ export const BenderProfilePage = () => {
       localStorage.setItem(storageKey, '1');
 
       // Fire-and-forget view tracking (deduped per browser+handle via localStorage).
-      void supabase
+      // NOTE: Supabase client typing can resolve table inserts as `never` if the
+      // local `Database` type drifts from the generated schema shape.
+      // Runtime behavior is correct; keep this non-blocking.
+      void (supabase as unknown as { from: (t: string) => { insert: (v: unknown) => unknown } })
         .from('demo_views')
         .insert({
           handle: benderRow.handle,
