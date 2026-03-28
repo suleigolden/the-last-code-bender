@@ -42,7 +42,7 @@ jobs:
         # Vite build catches TypeScript errors
 
       - name: Run tests
-        run: bun test
+        run: bun run test
 
       - name: Lint
         run: bun run lint
