@@ -1,306 +1,147 @@
-# 🌍 TheLastCodeBender
+# The Last Code Bender
 
-> An open-source developer legacy project.
->  
+> An open-source developer legacy project.  
 > Clone. Contribute. Claim your rank.
->
-> 🌐 **Live site:** [thelastcodebender.com](https://thelastcodebender.com/)
+
+**Live site:** [thelastcodebender.com](https://thelastcodebender.com/)  
+**In-app documentation:** [thelastcodebender.com/docs](https://thelastcodebender.com/docs) (same structure as this README: About, Contributing, Skill, Rules)
 
 ---
 
-## 🧭 What Is This?
+## About
 
-**TheLastCodeBender** is a global open-source movement where developers document their:
+**The Last Code Bender** is a developer legacy project: **1,400 unique ranks** — one developer per rank, forever. You claim a rank from the **Dashboard**, then build your public profile in the **Profile workspace**. Once claimed, a rank is yours permanently.
 
-- 📖 Story  
-- 🧠 Tech Stack  
-- 🛠 Craft  
-- 🌐 Social Presence  
+- **Ranks per discipline:** 200  
+- **Disciplines (7):**
+  - **Frontend Bender** — UI, React, CSS
+  - **Backend Bender** — APIs, databases, servers
+  - **FullStack Bender** — end-to-end
+  - **Security Bender** — AppSec, defense
+  - **AI Bender** — ML, LLMs, data science
+  - **DevOps Bender** — infra, CI/CD, cloud
+  - **QA Bender** — testing, quality, reliability
 
-Each contributor claims a unique rank in the **CodeBenders Hierarchy** by **Bending Specialization**:
+**Rank tiers** (per discipline): Apprentice (ranks 1–50), Journeyman (51–100), Senior (101–150), Master (151–200). Rank 1 is the most prestigious — first to claim wins it.
 
-- 🔥 **Frontend Bender** — FirstFrontendBender, SecondFrontendBender, … (200 ranks)  
-- 🌊 **Backend Bender** — FirstBackendBender, SecondBackendBender, … (200 ranks)  
-- 🌪 **FullStack Bender** — FirstFullStackBender, SecondFullStackBender, … (200 ranks)  
-- ⚡ **Security Bender** — FirstSecurityBender, … (200 ranks)  
-- 🧠 **AI Bender** — FirstAIBender, … (200 ranks)  
-- 🏗 **DevOps Bender** — FirstDevOpsBender, … (200 ranks)  
+XP grows through workspace activity, skill reviews, challenges, and showcase publishing.
 
-Only one developer can claim each rank within a specialization.
-
-First merged Pull Request wins the rank.
+**Site stack:** React 18 + TypeScript 5 + Vite 5, Tailwind CSS 3 + shadcn/ui, React Router DOM 6, TanStack React Query 5, Vitest + Testing Library.
 
 ---
 
-# 🚀 How to Contribute
+## Contributing
 
-Becoming a CodeBender takes 5 simple steps.
+Primary workflow: **Dashboard → Profile workspace → Save → Publish.**
 
----
+1. **Sign in with GitHub** — `/login` → Continue with GitHub (you land on the Dashboard).
+2. **Register your rank** — Pick a discipline, enter your handle prefix (the discipline suffix is appended). Example: prefix `MyHandle` → full handle `MyHandleFrontendBender`. Use **Hall of Fame** to confirm the rank is free.
+3. **Open the Profile workspace** — Dashboard → “Start editing profile” → `/dashboard/workspace`.
+4. **Edit your sources** (what visitors see):
+   - `index.tsx` — profile entry
+   - `sections/*.tsx` — optional sections
+   - `styles.css`
+   - `SKILL.md` — skill text (submit for AI review)
+   - `stack/stack.json` — tech stack (recruiter matching)
+5. **Save with a commit message** — Creates snapshots and can award XP (timeline on the Dashboard). Example: `feat: add hero + socials`.
+6. **Publish your skill (optional)** — Profile workspace → `SKILL.md` → “Submit for AI Review”.
+7. **Showcase (optional)** — Dashboard → Showcase → add demo URL, type, and description.
 
-## 1️⃣ Fork & Clone
-
-Fork this repository and clone it locally:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/TheLastCodeBender.git
-cd TheLastCodeBender
-```
-
----
-
-## 2️⃣ Choose an Available Rank
-
-Navigate to:
-
-```
-CodeBenders/
-```
-
-Choose a **Bending Specialization** folder, then choose the next available rank folder inside it:
-
-```
-CodeBenders/
-  Frontend Bender/
-    FirstFrontendBender/
-    SecondFrontendBender/
-    ...
-  Backend Bender/
-    FirstBackendBender/
-    ...
-  FullStack Bender/
-  Security Bender/
-  AI Bender/
-  DevOps Bender/
-```
-
-Each specialization has 200 ranks (First… through 200th). If a folder already contains a completed profile, that rank is taken.
-
-Only one developer per rank per specialization.
+**Platform / codebase changes:** Open a PR; CI runs tests and build on pushes and pull requests.
 
 ---
 
-## 3️⃣ Complete Your Profile Structure
+## Skills & XP
 
-Inside your chosen folder, you must fill the following structure:
+A **Claude Code Skill** is a custom prompt or workflow you publish that others can install into their Claude Code CLI. When your skill is live, **`skill_live`** is true on your profile (e.g. **Skill Live** in the Hall of Fame).
 
-```
-story/
-stack/
-assets/
-socials/
-```
+| Field | Meaning |
+|--------|---------|
+| `skill_live` | `true` after the skill passes AI review and is published |
+| `skill_version` | Semantic version (e.g. `1.0.0`), or `null` if not published |
+| `demo_url` | Live demo URL; set from Dashboard Showcase; can embed on your profile |
 
----
+**XP examples**
 
-### 📖 story/
+| Action | XP |
+|--------|-----|
+| Workspace save (with commit message) | +10 |
+| Skill approved (`SKILL.md` AI review) | +50 |
+| Challenge submit | +10 |
+| Challenge win | +100 |
+| Showcase published (first demo URL) | +20 |
 
-Create:
-
-- `story.md` → Your journey into tech
-- `origin.md` → How you started coding
-- `philosophy.md` → How you think about engineering
-
----
-
-### 🧠 stack/
-
-Create:
-
-`stack.json`
-
-Example:
-
-```json
-{
-  "languages": ["JavaScript", "TypeScript", "Python"],
-  "frameworks": ["React", "Node.js", "Next.js"],
-  "experience_years": 5,
-  "specialization": "Full Stack Development"
-}
-```
+**Publishing a skill:** Build the skill → add content in `SKILL.md` → Submit for AI Review → iterate until approved.
 
 ---
 
-### 🖼 assets/
+## Rules
 
-Add:
+- **Primary workflow is in the app:** Dashboard → Profile workspace → save with a commit message. Pull requests are for improving the platform itself.
+- **One developer, one rank, one profile.** Do not claim multiple ranks or submit multiple profiles.
+- **Do not edit another contributor’s profile** or impersonate someone else.
+- **Profile code:** Use Tailwind **IDE design tokens** (e.g. `bg-ide-sidebar`, `text-syntax-keyword`, `border-border`) — avoid hardcoded hex/rgb and inline `style` colors.
+- **Do not add new npm dependencies** or change `package.json` for profile work; use what the project already includes.
+- **No offensive, harmful, or illegal content.** No committing `dist/`, `node_modules/`, or other build artifacts.
 
-- `avatar.png` (square recommended)
-- Optional banner image
-
----
-
-### 🌐 socials/
-
-Create:
-
-`socials.json`
-
-Example:
-
-```json
-{
-  "github": "https://github.com/yourusername",
-  "linkedin": "https://linkedin.com/in/yourprofile",
-  "portfolio": "https://yourwebsite.com",
-  "twitter": "https://twitter.com/yourhandle"
-}
-```
+**Encouraged:** Save meaningful updates often, use `SKILL.md` and `stack/stack.json` as intended, preview your public profile and showcase demo like a visitor would.
 
 ---
 
-## 4️⃣ Follow Contribution Rules
+## FAQ
 
-To maintain quality and professionalism:
+**Can I update my profile later?**  
+Yes — use the Dashboard and Profile workspace.
 
-✅ Write clearly and professionally  
-✅ No offensive, political, or inappropriate content  
-✅ Keep file structure intact  
-✅ Do not modify other contributors’ folders  
-✅ Do not rename ranks  
-✅ Only edit your claimed folder  
+**Can I claim multiple ranks?**  
+No. One developer, one rank.
 
-Low-effort submissions may be rejected.
+**Can beginners join?**  
+Yes. Your journey matters at every level.
 
 ---
 
-## 5️⃣ Submit Your Pull Request
-
-Create a new branch:
-
-```bash
-git checkout -b claim-TheSecondCodeBender
-```
-
-Add your changes:
-
-```bash
-git add .
-git commit -m "Claim TheSecondCodeBender and add profile"
-git push origin claim-TheSecondCodeBender
-```
-
-Open a Pull Request.
-
-### PR Title Example
-
-```
-Claiming TheSecondCodeBender – Your Name
-```
-
-### PR Description Example
-
-```
-This PR claims TheSecondCodeBender rank and includes my story, stack, assets, and socials.
-```
-
----
-
-# 🏆 Rank Assignment Rules
-
-- Ranks are assigned in order of merged Pull Requests
-- First valid, complete PR wins the rank
-- If two contributors claim the same rank:
-  - The first approved PR gets merged
-  - The other contributor must choose the next available rank
-
----
-
-# 🧠 CodeBenders Philosophy
-
-Being a CodeBender means:
-
-- Always learning  
-- Building with purpose  
-- Respecting the craft  
-- Sharing your journey  
-- Helping others grow  
-
-It is not about knowing everything.
-
-It is about being willing to learn anything.
-
----
-
-# ❓ FAQ
-
-### Can I update my profile later?
-Yes. Submit a new PR updating your folder.
-
-### Can I claim multiple ranks?
-No. One developer = one rank.
-
-### Can beginners join?
-Absolutely. Your journey matters at every level.
-
----
-
-# 🌟 Final Call
-
-Clone. Contribute. Claim your rank.
-
-Welcome to the CodeBenders Hierarchy.
-
----
-
-## Environment Setup
+## Environment setup
 
 ```bash
 cp .env.example .env
-# Fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-# See supabase/README.md for the full setup guide
 ```
+
+Fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`. See `supabase/README.md` for the full guide.
 
 ---
 
-# 🛠 Running the Project Locally
+## Running the project locally
 
-Follow these steps to run TheLastCodeBender project on your local machine:
-
-## Prerequisites
-
-- **Node.js** (v18 or higher recommended)
-- **npm**, **yarn**, or **bun** package manager
-
-## Installation Steps
-
-### 1. Clone the Repository
+**Prerequisites:** Node.js 18+ and npm, Yarn, or Bun.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/TheLastCodeBender.git
-cd TheLastCodeBender
+git clone https://github.com/YOUR_USERNAME/the-last-code-bender.git
+cd the-last-code-bender
 ```
 
-### 2. Install Dependencies
+Install dependencies (pick one):
 
-Choose one of the following package managers:
-
-**Using npm:**
 ```bash
 npm install
+# or: yarn install
+# or: bun install
 ```
 
-**Using yarn:**
-```bash
-yarn install
-```
+Start the dev server:
 
-
-### 3. Start the Development Server
-
-**Using npm:**
 ```bash
 npm run dev
+# or: yarn dev
+# or: bun dev
 ```
 
-**Using yarn:**
-```bash
-yarn dev
-```
+The app defaults to **http://localhost:3004** (or whatever `PORT` you set — see `vite.config.ts`).
 
+**Useful scripts:** `npm run build`, `npm run preview`, `npm test`, `npm run lint`.
 
-The development server will start and you can access the application at `http://localhost:5173` (or the port shown in your terminal).
+---
 
-> 🌐 **Live site:** [thelastcodebender.com](https://thelastcodebender.com/)
+Clone. Contribute. Claim your rank.
 
+For the full walkthrough with the same sections as the site, open **[Docs](https://thelastcodebender.com/docs)** (`/docs` when running locally).
