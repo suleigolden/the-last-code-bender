@@ -1,9 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BENDER_PROFILES } from '@/apps/codebender-profiles/registry';
-
-const founder = BENDER_PROFILES[0]; // always TheLastCodeBender
 
 export const FounderCard = () => {
   const navigate = useNavigate();
@@ -26,13 +23,18 @@ export const FounderCard = () => {
             T
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-sm font-semibold text-foreground truncate">{founder.handle}</p>
+            <p className="font-mono text-sm font-semibold text-foreground truncate">TheLastCodeBender</p>
             <p className="font-mono text-xs text-amber-400">★ Founder</p>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge className="font-mono text-xs border-0 text-amber-400 bg-amber-500/15">{founder.rank}</Badge>
-          <span className="font-mono text-xs text-muted-foreground">{founder.xp} XP</span>
+          <Badge className="font-mono text-xs border-0 text-amber-400 bg-amber-500/15">Master</Badge>
+          <Badge
+            variant="outline"
+            className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-function"
+          >
+            <span className="font-mono text-[12px] text-syntax-function">9999 XP</span>
+          </Badge>
         </div>
       </CardContent>
     </Card>

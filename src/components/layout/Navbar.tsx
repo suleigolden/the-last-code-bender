@@ -3,9 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-
-const GITHUB_URL = 'https://github.com/suleigolden/the-last-code-bender';
 
 const NAV_LINKS = [
   { label: 'Hall of Fame', href: '/hall-of-fame' },
@@ -19,6 +18,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { user, isLoading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
@@ -45,13 +45,13 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button size="sm" asChild>
-            <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-              Claim Your Rank
-            </a>
-          </Button>
-        </div>
+        {!isLoading && user && (
+          <div className="hidden md:block">
+            <Button size="sm" asChild>
+              <Link to="/dashboard">Dashboard</Link>
+            </Button>
+          </div>
+        )}
 
         {/* Mobile menu */}
         <Sheet open={open} onOpenChange={setOpen}>
@@ -85,16 +85,13 @@ export function Navbar() {
                 </Link>
               ))}
             </nav>
-            <Button asChild className="mt-auto">
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => setOpen(false)}
-              >
-                Claim Your Rank
-              </a>
-            </Button>
+            {!isLoading && user && (
+              <Button asChild className="mt-auto">
+                <Link to="/dashboard" onClick={() => setOpen(false)}>
+                  Dashboard
+                </Link>
+              </Button>
+            )}
           </SheetContent>
         </Sheet>
       </div>

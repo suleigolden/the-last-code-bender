@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test-and-build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate .env.example
+        run: |
+          if [ ! -f ".env.example" ]; then
+            echo "FAIL: .env.example is missing"
+            exit 1
+          fi
+          if ! grep -q "^VITE_SUPABASE_URL=" ".env.example"; then
+            echo "FAIL: .env.example is missing VITE_SUPABASE_URL"
+            exit 1
+          fi
+          if ! grep -q "^VITE_SUPABASE_ANON_KEY=" ".env.example"; then
+            echo "FAIL: .env.example is missing VITE_SUPABASE_ANON_KEY"
+            exit 1
+          fi
+
+      - name: Type check
+        run: bun run build
+        # Vite build catches TypeScript errors
+
+      - name: Run tests
+        run: bun test
+
+      - name: Lint
+        run: bun run lint
+        continue-on-error: true
+        # Lint failures warn but don't block — Husky enforces on commit
+
+  validate-registry:
+    name: Validate Profile Components
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check profile components compile
+        run: |
+          # Find all index.tsx files in apps/codebender-profiles/
+          # and verify they have a default export
+          if [ ! -d "src/apps/codebender-profiles" ]; then
+            echo "OK: src/apps/codebender-profiles does not exist yet"
+            exit 0
+          fi
+          find src/apps/codebender-profiles -name "index.tsx" | while read -r f; do
+            if ! grep -q "export default" "$f"; then
+              echo "FAIL: $f is missing a default export"
+              exit 1
+            fi
+            echo "OK: $f"
+          done
+

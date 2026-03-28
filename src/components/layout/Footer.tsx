@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const GITHUB_URL = 'https://github.com/suleigolden/the-last-code-bender';
 
 export function Footer() {
+  const navigate = useNavigate();
   return (
     <footer className="border-t border-border">
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -49,14 +50,12 @@ export function Footer() {
             >
               GitHub Repo
             </a>
-            <a
-              href={`${GITHUB_URL}/blob/main/CONTRIBUTING.md`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            <button
+              onClick={() => navigate('/login')}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
             >
               Contribute
-            </a>
+            </button>
             <a
               href={GITHUB_URL}
               target="_blank"

@@ -19,6 +19,7 @@ export const BENDING_SPECIALIZATIONS: BendingSpecialization[] = [
   { id: "security-bender", label: "Security Bender", nameSuffix: "SecurityBender" },
   { id: "ai-bender", label: "AI Bender", nameSuffix: "AIBender" },
   { id: "devops-bender", label: "DevOps Bender", nameSuffix: "DevOpsBender" },
+  { id: "qa-bender", label: "QA Bender", nameSuffix: "QABender" },
 ];
 
 export type BenderRank = {

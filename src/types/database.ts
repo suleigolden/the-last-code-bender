@@ -1,0 +1,262 @@
+export type Discipline =
+  | 'Frontend'
+  | 'Backend'
+  | 'FullStack'
+  | 'Security'
+  | 'AI'
+  | 'DevOps'
+  | 'QA'
+  | 'Founder';
+
+export type RankTier =
+  | 'Apprentice'
+  | 'Journeyman'
+  | 'Senior'
+  | 'Master'
+  | 'TheLastCodeBender';
+
+export type XPEventType =
+  | 'workspace_save'
+  | 'skill_approved'
+  | 'challenge_win'
+  | 'challenge_submit'
+  | 'showcase_deployed'
+  | 'peer_endorsement'
+  | 'streak_7_days'
+  | 'streak_30_days'
+  | 'profile_complete';
+
+export type ChallengeType =
+  | 'weekly_sprint'
+  | 'monthly_build'
+  | 'skill_duel'
+  | 'architecture'
+  | 'relay';
+
+export type DemoType =
+  | 'live_app'
+  | 'component_library'
+  | 'api_demo'
+  | 'other';
+
+export interface ChallengeRow {
+  id: string;
+  slug: string;
+  title: string;
+  type: ChallengeType;
+  discipline: string | null;
+  spec: string;
+  constraints: string | null;
+  scoring: Record<string, number>;
+  opens_at: string;
+  closes_at: string;
+  xp_winner: number;
+  xp_submit: number;
+}
+
+export interface ChallengeWithActiveRow extends ChallengeRow {
+  is_active: boolean;
+}
+
+export interface ChallengeSubmissionRow {
+  id: string;
+  challenge_id: string;
+  challenge_slug: string;
+  handle: string;
+  github: string;
+  content: string;
+  language: string | null;
+  score_total: number | null;
+  score_breakdown: Record<string, number> | null;
+  ai_feedback: string | null;
+  placement: number | null;
+  submitted_at: string;
+  judged_at: string | null;
+}
+
+export interface BenderRow {
+  id: string;
+  handle: string;
+  github: string;
+  github_login: string;
+  discipline: Discipline;
+  rank: number;
+  rank_tier: RankTier;
+  xp: number;
+  skill_version: string;
+  cached_skill?: string | null;
+  skill_live: boolean;
+  open_to_work: boolean;
+  challenge_wins: number;
+  is_founder?: boolean;
+  community_vote?: boolean;
+  cached_stack?: unknown | null;
+  demo_url: string | null;
+  demo_description?: string | null;
+  demo_type?: DemoType | null;
+  demo_views: number;
+  registered_at: string;
+  last_active: string;
+  profile_url: string | null;
+  avatar_url: string | null;
+}
+
+export interface DemoViewRow {
+  id: string;
+  handle: string;
+  viewed_at: string;
+  viewer_ip: string | null;
+}
+
+export interface UserRow {
+  id: string;
+  github_login: string;
+  github_id: number;
+  avatar_url: string | null;
+  name: string | null;
+  email: string | null;
+  created_at: string;
+  last_sign_in: string;
+}
+
+export interface BenderProfileWorkspaceRow {
+  bender_id: string;
+  files: Record<string, string>;
+  updated_at: string;
+}
+
+export interface BenderProfileSnapshotRow {
+  id: string;
+  bender_id: string;
+  commit_message: string;
+  files: Record<string, string>;
+  created_at: string;
+}
+
+export interface XPEventRow {
+  id: string;
+  bender_id: string;
+  handle: string;
+  event_type: XPEventType;
+  xp_awarded: number;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface LeaderboardRow {
+  handle: string;
+  github: string;
+  discipline: Discipline;
+  rank: number;
+  rank_tier: RankTier;
+  xp: number;
+  challenge_wins: number;
+  skill_live: boolean;
+  avatar_url: string | null;
+  is_founder: boolean;
+  position: number;
+}
+
+type TableDef<Row, Insert, Update> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Update;
+  Relationships: [];
+};
+
+type ViewDef<Row> = {
+  Row: Row;
+  Relationships: [];
+};
+
+export interface Database {
+  public: {
+    Tables: {
+      bender_profile_snapshots: TableDef<
+        BenderProfileSnapshotRow,
+        Omit<BenderProfileSnapshotRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        Partial<Omit<BenderProfileSnapshotRow, 'id'>>
+      >;
+      bender_profile_workspace: TableDef<
+        BenderProfileWorkspaceRow,
+        Omit<BenderProfileWorkspaceRow, 'updated_at'> & { updated_at?: string },
+        Partial<Omit<BenderProfileWorkspaceRow, 'bender_id'>>
+      >;
+      benders: TableDef<
+        BenderRow,
+        Omit<BenderRow, 'id' | 'registered_at' | 'last_active'> & {
+          id?: string;
+          registered_at?: string;
+          last_active?: string;
+        },
+        Partial<Omit<BenderRow, 'id'>>
+      >;
+      xp_events: TableDef<
+        XPEventRow,
+        Omit<XPEventRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        Partial<Omit<XPEventRow, 'id'>>
+      >;
+      challenges: TableDef<
+        ChallengeRow,
+        Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at'> & { id?: string; opens_at?: string; closes_at?: string },
+        Partial<Omit<ChallengeRow, 'id'>>
+      >;
+      challenge_submissions: TableDef<
+        ChallengeSubmissionRow,
+        Omit<
+          ChallengeSubmissionRow,
+          | 'id'
+          | 'submitted_at'
+          | 'score_total'
+          | 'score_breakdown'
+          | 'ai_feedback'
+          | 'placement'
+          | 'judged_at'
+        > & {
+          id?: string;
+          submitted_at?: string;
+          score_total?: number | null;
+          score_breakdown?: Record<string, number> | null;
+          ai_feedback?: string | null;
+          placement?: number | null;
+          judged_at?: string | null;
+        },
+        Partial<Omit<ChallengeSubmissionRow, 'id'>>
+      >;
+      users: TableDef<
+        UserRow,
+        Omit<UserRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        Partial<Omit<UserRow, 'id'>>
+      >;
+      demo_views: TableDef<
+        DemoViewRow,
+        Omit<DemoViewRow, 'id' | 'viewed_at'> & { id?: string; viewed_at?: string },
+        Partial<Omit<DemoViewRow, 'id'>>
+      >;
+    };
+    Views: {
+      leaderboard: ViewDef<LeaderboardRow>;
+      challenges_with_active: ViewDef<ChallengeWithActiveRow>;
+    };
+    Functions: {
+      award_xp: {
+        Args: {
+          p_handle: string;
+          p_event_type: XPEventType;
+          p_xp: number;
+          p_metadata?: Record<string, unknown>;
+        };
+        Returns: Record<string, unknown>;
+      };
+      get_demo_view_count: {
+        Args: { p_handle: string };
+        Returns: number;
+      };
+    };
+    Enums: {
+      discipline: Discipline;
+      rank_tier: RankTier;
+    };
+    CompositeTypes: Record<string, never>;
+  };
+}

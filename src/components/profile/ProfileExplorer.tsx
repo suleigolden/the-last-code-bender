@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Folder, FolderOpen, FileCode2, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useRegistry } from '@/hooks/useRegistry';
+import { useBenderList } from '@/hooks/useBenders';
 
 const DISCIPLINES: { key: string; label: string }[] = [
   { key: 'frontend', label: 'Frontend Bender' },
@@ -20,7 +20,7 @@ export const ProfileExplorer = () => {
     handle: string;
   }>();
 
-  const { data: registry } = useRegistry();
+  const { data: registry } = useBenderList();
 
   const [founderOpen, setFounderOpen] = useState(false);
   const [codeBendersOpen, setCodeBendersOpen] = useState(true);

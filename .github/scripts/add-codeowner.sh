@@ -5,7 +5,7 @@ CODEOWNERS_FILE="$(dirname "$0")/../CODEOWNERS"
 
 if [[ $# -lt 2 ]]; then
   echo "Usage: $0 <folder-path> <github-handle>"
-  echo "  Example: $0 'CodeBenders/Frontend Bender/FirstFrontendBender/' @myhandle"
+  echo "  Example: $0 'src/apps/codebender-profiles/FrontendBenders/FirstFrontendBender/' @myhandle"
   exit 1
 fi
 

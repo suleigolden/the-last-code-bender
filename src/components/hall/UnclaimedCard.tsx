@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -8,6 +8,8 @@ interface UnclaimedCardProps {
 }
 
 export const UnclaimedCard = ({ rankName, discipline }: UnclaimedCardProps) => {
+  const navigate = useNavigate();
+
   return (
     <Card className="bg-muted/10 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
       <CardContent className="p-4 flex flex-col gap-3">
@@ -20,14 +22,13 @@ export const UnclaimedCard = ({ rankName, discipline }: UnclaimedCardProps) => {
             <p className="font-mono text-xs text-muted-foreground/40">{discipline}</p>
           </div>
         </div>
-        <Button variant="outline" size="sm" asChild className="w-full text-xs font-mono gap-1.5">
-          <a
-            href="https://github.com/suleigolden/the-last-code-bender"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Claim this rank <ExternalLink className="w-3 h-3" />
-          </a>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-xs font-mono"
+          onClick={() => navigate('/login')}
+        >
+          Claim this rank
         </Button>
       </CardContent>
     </Card>

@@ -1,5 +1,6 @@
-import { FileText } from "lucide-react";
-import { fileNames } from "@/lib/helper";
+import { FileText, LayoutDashboard, PenLine } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { ForkRepositoryButton } from "../action-buttons/ ForkRepositoryButton";
 import { ViewOnGitHubButton } from "../action-buttons/ViewOnGitHubButton";
 
@@ -8,36 +9,32 @@ type CodeBenderPlaceholderProps = {
   section: string;
   /** e.g. "Frontend Bender" for path display: code-benders/Frontend Bender/FirstFrontendBender/... */
   specializationLabel?: string;
+  /** When the signed-in user owns this rank — show Dashboard / workspace CTAs. */
+  isOwnProfile?: boolean;
 };
 
-const placeholderContent = `Be the first to fork, clone, and contribute to the {codeBenderName} folder.
-Add your story, stack, and journey — and claim your position in the CodeBenders legacy.`;
-
-export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationLabel }: CodeBenderPlaceholderProps) => {
+export const CodeBenderPlaceholder = ({
+  codeBenderName,
+  section,
+  specializationLabel,
+  isOwnProfile = false,
+}: CodeBenderPlaceholderProps) => {
   const displayName = codeBenderName.replace(/([A-Z])/g, " $1").trim();
   const folderName = codeBenderName.toLowerCase();
   const sectionName = section;
   const pathPrefix = specializationLabel
     ? `code-benders/${specializationLabel}/${codeBenderName}`
     : `code-benders/${folderName}`;
-  const foldersToContribute = [
-    { name: "story", file: fileNames.readme },
-    { name: "stack", file: fileNames.readme },
-    { name: "socials", file: fileNames.readme },
-    { name: "assets", file: fileNames.readme },
-  ];
+
 
   return (
     <section className="min-h-screen py-12 px-4 flex items-center justify-center">
       <div className="max-w-3xl w-full">
-        {/* Header */}
         <div className="font-mono text-sm text-syntax-comment mb-6">
           {`// ${pathPrefix}/${sectionName}/README.md`}
         </div>
 
-        {/* IDE Panel */}
         <div className="ide-panel overflow-hidden">
-          {/* Editor header */}
           <div className="bg-ide-tab px-4 py-2 flex items-center gap-2 border-b border-border">
             <FileText className="w-4 h-4 text-syntax-string" />
             <span className="text-xs font-mono text-muted-foreground">README.md</span>
@@ -45,63 +42,94 @@ export const CodeBenderPlaceholder = ({ codeBenderName, section, specializationL
             <span className="text-xs text-syntax-comment font-mono">Placeholder</span>
           </div>
 
-          {/* Content */}
           <div className="p-8 font-mono text-sm leading-7">
             <div className="space-y-4">
-              <h1 className="text-2xl font-bold text-foreground mb-6">
-                {displayName}
-              </h1>
-              
-              <div className="text-foreground/90 whitespace-pre-line">
-                {placeholderContent.replace("{codeBenderName}", displayName)}
-              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-2">{displayName}</h1>
 
-              <div className="mt-8 pt-6 border-t border-border">
-                <h2 className="text-lg font-semibold text-foreground mb-4">
-                  Get Started
-                </h2>
-                <div className="space-y-3 text-foreground/80 mb-6 text-left">
-                  <p>
-                    <span className="syntax-keyword">1.</span> Fork this repository
-                  </p>
-                  <p>
-                    <span className="syntax-keyword">2.</span> Clone your fork
-                  </p>
-                  <p>
-                    <span className="syntax-keyword">3.</span> Navigate to <code className="syntax-string">{pathPrefix}/</code>
-                  </p>
-                  <p>
-                    <span className="syntax-keyword">4.</span> Add your content to the folders and files:
-                  </p>
-                </div>
-                
-                {/* Folders and Files List */}
-                <div className="ml-4 space-y-2 text-foreground/80 font-mono text-sm text-left">
-                  {foldersToContribute.map((folder) => (
-                    <div key={folder.name} className="flex items-start gap-2">
-                      <span className="text-syntax-keyword">-</span>
-                      <div className="flex-1">
-                        <span className="text-syntax-function">{folder.name}/</span>
-                        <div className="ml-4 mt-1">
-                          <span className="text-syntax-string">{folder.file}</span>
-                        </div>
+              <p className="text-foreground/90">
+                <span className="text-syntax-keyword">No published profile workspace yet.</span>{" "}
+                Live profiles are built from your{" "}
+                <span className="text-cyan-400">Profile workspace</span> (saved sources in the
+                dashboard). Either nothing has been saved yet, or the workspace doesn&apos;t have
+                enough content to render here.
+              </p>
+
+              {isOwnProfile ? (
+                <div className="rounded-lg border border-border bg-ide-sidebar/50 p-4 space-y-3 text-left">
+                  <p className="text-xs text-syntax-comment font-mono">// how to fill this page</p>
+                  <h2 className="text-lg font-semibold text-foreground mb-4">Get Started</h2>
+                  <ol className="list-decimal list-inside space-y-2 text-foreground/90 text-sm">
+                    <li>
+                      Open your <strong className="text-foreground">Dashboard</strong> (signed in with
+                      GitHub).
+                    </li>
+                    <li>
+                      Click <strong className="text-foreground">Start editing profile</strong> to open
+                      the Profile workspace.
+                    </li>
+                    <li>
+                      Edit <code className="text-syntax-string">index.tsx</code>,{'\n'}
+                      <code className="text-syntax-string">HeroSection.tsx</code>,{'\n'}
+                      <code className="text-syntax-string">StorySection.tsx</code>,{'\n'}
+                      <code className="text-syntax-string">SocialsSection.tsx</code>,{'\n'}
+                      <code className="text-syntax-string">StackSection.tsx</code>,{'\n'}
+                      <code className="text-syntax-string">SKILL.md</code>,{'\n'}
+                      <code className="text-syntax-string">stack/stack.json</code>,{'\n'}
+                      <code className="text-syntax-string">PortraitSection.tsx</code> and{'\n'}
+                      <code className="text-syntax-string">styles.css</code>.
+                      <br />
+                      <label className="text-foreground">Rreview updates live.</label>
+                      <br />
+                      <label className="text-blue-500">Build it however you want. Be creative. Be modern. Be you.</label>
+                    </li>
+                    <li>
+                      Save each change with a <strong className="text-foreground">commit message</strong> so XP is
+                      recorded; add a <strong className="text-foreground">demo URL</strong> {" "}on the
+                      Dashboard showcase section when you&apos;re ready.
+                    </li>
+                  </ol>
+                  <div className="flex flex-col gap-3 mt-8">
+                    {isOwnProfile && (
+                      <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                        <Button
+                          size="lg"
+                          className="font-mono glow-primary gap-2"
+                          asChild
+                        >
+                          <Link to="/dashboard/workspace">
+                            <PenLine className="w-4 h-4 shrink-0" />
+                            Start editing profile
+                          </Link>
+                        </Button>
+                        <Button size="lg" variant="secondary" className="font-mono gap-2" asChild>
+                          <Link to="/dashboard">
+                            <LayoutDashboard className="w-4 h-4 shrink-0" />
+                            Open Dashboard
+                          </Link>
+                        </Button>
                       </div>
+                    )}
+
+                  </div>
+
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                  <div className="mt-8 pt-6 border-t border-border">
+                    <p className="text-muted-foreground text-sm">
+                      This CodeBender hasn&apos;t published workspace content to the site yet. Check back
+                      later, or view the project on GitHub below.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                    <p>Are you interested in contributing to this project, feel free to submit a PR.</p>
+                    <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                      <ViewOnGitHubButton />
+                      <ForkRepositoryButton />
                     </div>
-                  ))}
+                  </div>
                 </div>
-
-                <div className="mt-6 text-foreground/80 text-left">
-                  <p>
-                    <span className="syntax-keyword">5.</span> Submit a pull request
-                  </p>
-                </div>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4 mt-8 justify-center">
-                <ForkRepositoryButton />
-                <ViewOnGitHubButton />
-              </div>
+              )}
             </div>
           </div>
         </div>

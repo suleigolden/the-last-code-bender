@@ -1,6 +1,28 @@
 import { differenceInDays } from 'date-fns';
 import type { Bender } from '@/types/registry';
-import type { StackData } from '@/types/profile';
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((v) => (typeof v === 'string' ? v : null))
+    .filter((v): v is string => v !== null)
+    .map((v) => v.toLowerCase());
+}
+
+function asTechArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => {
+      if (typeof item === 'string') return item.toLowerCase();
+      if (typeof item !== 'object' || item === null) return null;
+
+      const obj = item as Record<string, unknown>;
+      const tech = obj.tech;
+      return typeof tech === 'string' ? tech.toLowerCase() : null;
+    })
+    .filter((v): v is string => v !== null);
+}
 
 export interface FitResult {
   overall: number;
@@ -14,7 +36,6 @@ export interface FitResult {
 export function computeFitScore(
   bender: Bender,
   requiredTechs: string[],
-  stack: StackData | null,
   maxWins: number,
 ): FitResult {
   const daysAgo = differenceInDays(new Date(), new Date(bender.last_active));
@@ -28,9 +49,22 @@ export function computeFitScore(
   let matchedTechs: string[] = [];
   let missingTechs: string[] = [];
 
-  if (requiredTechs.length > 0 && stack) {
-    const allTechs = [...stack.primary, ...stack.familiar].map(t => t.tech.toLowerCase());
-    matchedTechs = requiredTechs.filter(t => allTechs.includes(t));
+  const cachedStack = bender.cached_stack as unknown;
+
+  if (requiredTechs.length > 0 && cachedStack) {
+    // Support both shapes:
+    //  - legacy/current: { primary: [{ tech }], familiar: [{ tech }] }
+    //  - newer cached form (per spec): { languages: string[] }
+
+    const stackObj = cachedStack as Record<string, unknown>;
+    const primaryTechs = asTechArray(stackObj.primary);
+    const familiarTechs = asTechArray(stackObj.familiar);
+    const languagesTechs = asStringArray(stackObj.languages);
+    const frameworksTechs = asStringArray(stackObj.frameworks);
+
+    const allTechs = [...primaryTechs, ...familiarTechs, ...languagesTechs, ...frameworksTechs];
+
+    matchedTechs = requiredTechs.filter((t) => allTechs.includes(t));
     missingTechs = requiredTechs.filter(t => !allTechs.includes(t));
     stackMatch = Math.round((matchedTechs.length / requiredTechs.length) * 100);
   }
