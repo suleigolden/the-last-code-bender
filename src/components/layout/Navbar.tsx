@@ -45,11 +45,17 @@ export function Navbar() {
           ))}
         </nav>
 
-        {!isLoading && user && (
+        {!isLoading && (
           <div className="hidden md:block">
-            <Button size="sm" asChild>
-              <Link to="/dashboard">Dashboard</Link>
-            </Button>
+            {user ? (
+              <Button size="sm" asChild>
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <Button size="sm" variant="outline" className="hover:bg-cyan-400 hover:text-black" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+            )}
           </div>
         )}
 
@@ -85,10 +91,13 @@ export function Navbar() {
                 </Link>
               ))}
             </nav>
-            {!isLoading && user && (
-              <Button asChild className="mt-auto">
-                <Link to="/dashboard" onClick={() => setOpen(false)}>
-                  Dashboard
+            {!isLoading && (
+              <Button asChild className="mt-auto hover:bg-cyan-400 hover:text-black" variant={user ? 'default' : 'outline'}>
+                <Link
+                  to={user ? '/dashboard' : '/login'}
+                  onClick={() => setOpen(false)}
+                >
+                  {user ? 'Dashboard' : 'Login'}
                 </Link>
               </Button>
             )}
