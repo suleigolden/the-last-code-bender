@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FileCode2, Github } from 'lucide-react';
+import { FileCode2, FolderTree, Github } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -129,12 +129,26 @@ const NotClaimedUI = ({ handle }: { handle: string | undefined }) => (
 export const BenderProfilePage = () => {
   const { discipline, handle } = useParams<{ discipline: string; handle: string }>();
   const { githubLogin } = useAuth();
+  const [mobileExplorerOpen, setMobileExplorerOpen] = React.useState(false);
 
   // Primary data source: Supabase
   const { data: benderRow, isLoading } = useBenderByHandle(handle ?? '');
   const bender = benderRow ? rowToBender(benderRow) : undefined;
 
   const demoUrl = benderRow?.demo_url ?? null;
+
+  React.useEffect(() => {
+    setMobileExplorerOpen(false);
+  }, [discipline, handle]);
+
+  React.useEffect(() => {
+    if (!mobileExplorerOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileExplorerOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileExplorerOpen]);
 
   React.useEffect(() => {
     if (!demoUrl || !benderRow?.handle) return;
@@ -249,19 +263,52 @@ export const BenderProfilePage = () => {
 
       <div className="flex flex-1 flex-col relative z-10 h-full overflow-hidden">
         {/* Mini tab bar */}
-        <div className="flex items-center bg-ide-tabbar border-b border-border px-2 shrink-0">
+        <div className="flex items-center bg-ide-tabbar border-b border-border px-2 shrink-0 gap-1">
           <IDEWindowControls />
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-background border-r border-l border-border text-syntax-function text-sm font-mono">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="md:hidden h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground"
+            aria-label={mobileExplorerOpen ? 'Close explorer' : 'Open explorer'}
+            aria-expanded={mobileExplorerOpen}
+            onClick={() => setMobileExplorerOpen((o) => !o)}
+          >
+            <FolderTree className="h-4 w-4" />
+          </Button>
+          <div className="flex min-w-0 flex-1 items-center gap-2 px-2 py-2.5 sm:px-4 bg-background border border-border text-syntax-function text-sm font-mono">
             <FileCode2 className="w-4 h-4 shrink-0" />
-            <span>{handle ?? 'profile'}.profile.ts</span>
+            <span className="truncate">{handle ?? 'profile'}.profile.ts</span>
           </div>
         </div>
 
         {/* Sidebar + Content */}
-        <div className="flex flex-1 overflow-hidden">
-          <ProfileExplorer />
+        <div className="relative flex flex-1 min-h-0 overflow-hidden">
+          {/* Mobile overlay */}
+          <div
+            className={cn(
+              'absolute inset-0 z-40 bg-background/80 backdrop-blur-sm transition-opacity duration-300 md:hidden',
+              mobileExplorerOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
+            )}
+            aria-hidden={!mobileExplorerOpen}
+            onClick={() => setMobileExplorerOpen(false)}
+          />
 
-          <main className="flex-1 overflow-y-auto p-6">
+          {/* Explorer: slide-in on mobile, always visible md+ */}
+          <div
+            className={cn(
+              'absolute left-0 top-0 bottom-0 z-50 flex w-[min(85vw,14rem)] flex-col transition-transform duration-300 ease-out motion-reduce:transition-none sm:w-56',
+              'border-r border-border bg-sidebar shadow-xl md:shadow-none',
+              mobileExplorerOpen ? 'translate-x-0' : '-translate-x-full',
+              'max-md:pointer-events-none',
+              mobileExplorerOpen && 'max-md:pointer-events-auto',
+              'md:relative md:z-auto md:w-56 md:translate-x-0 md:pointer-events-auto md:max-w-none md:border-r-0 md:bg-transparent md:shadow-none',
+            )}
+          >
+            <ProfileExplorer className="border-r-0 shadow-none md:border-r" />
+          </div>
+
+          <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
             <div className="mx-auto">
               {isLoading && <SkeletonLayout />}
 

@@ -13,7 +13,11 @@ const DISCIPLINES: { key: string; label: string }[] = [
   { key: 'devops', label: 'DevOps Bender' },
 ];
 
-export const ProfileExplorer = () => {
+type ProfileExplorerProps = {
+  className?: string;
+};
+
+export const ProfileExplorer = ({ className }: ProfileExplorerProps) => {
   const navigate = useNavigate();
   const { discipline: currentDiscipline, handle: currentHandle } = useParams<{
     discipline: string;
@@ -48,7 +52,12 @@ export const ProfileExplorer = () => {
     handle.toLowerCase() === currentHandle?.toLowerCase();
 
   return (
-    <aside className="w-56 shrink-0 h-full bg-sidebar border-r border-border flex flex-col overflow-hidden">
+    <aside
+      className={cn(
+        'w-56 shrink-0 h-full min-h-0 bg-sidebar border-r border-border flex flex-col overflow-hidden',
+        className,
+      )}
+    >
       {/* Header */}
       <div className="px-4 py-3 border-b border-border shrink-0">
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
