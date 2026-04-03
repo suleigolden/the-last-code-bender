@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Trophy } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,6 +32,7 @@ const SPEC_ID_TO_DISCIPLINE: Record<string, string> = {
 const DISCIPLINES = ['All', 'Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps', 'QA'];
 const TOTAL_SLOTS = 1400;
 const SLOTS_PER_DISCIPLINE = 200;
+const PAGE_SIZE = 40;
 
 type SortBy = 'tier' | 'xp' | 'recent' | 'wins';
 
@@ -51,6 +53,10 @@ export const HallOfFamePage = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('tier');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [loadMoreInView, setLoadMoreInView] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
 
   const { data: rows, isLoading, error } = useAllBenders();
   const { data: stats } = useBenderStats();
@@ -123,6 +129,38 @@ export const HallOfFamePage = () => {
     return [...claimed, ...unclaimed];
   }, [allSlots, activeTab, search, sortBy]);
 
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [activeTab, search, sortBy]);
+
+  const displayedSlots = useMemo(
+    () => visibleSlots.slice(0, visibleCount),
+    [visibleSlots, visibleCount],
+  );
+
+  const hasMore = visibleCount < visibleSlots.length;
+  const remaining = Math.max(0, visibleSlots.length - visibleCount);
+
+  useEffect(() => {
+    const root = mainRef.current;
+    const target = loadMoreSentinelRef.current;
+    if (!root || !target || !hasMore) {
+      setLoadMoreInView(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        setLoadMoreInView(Boolean(entry?.isIntersecting));
+      },
+      { root, rootMargin: '120px', threshold: 0 },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, visibleCount, visibleSlots.length, isLoading]);
+
   return (
     <div className="h-screen bg-background flex flex-col noise-overlay relative overflow-hidden">
       {/* IDE Grid Background */}
@@ -141,7 +179,7 @@ export const HallOfFamePage = () => {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main ref={mainRef} className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Page header */}
             <div>
@@ -149,7 +187,9 @@ export const HallOfFamePage = () => {
                 <span className="text-syntax-keyword">const</span>{' '}
                 <span className="text-syntax-function">hallOfFame</span>{' '}
                 <span className="text-muted-foreground">=</span>{' '}
-                <span className="text-syntax-string">"1,200 ranks · one developer each · forever"</span>
+                <span className="text-syntax-string">
+                  {`"${TOTAL_SLOTS.toLocaleString()} ranks · one developer each · forever"`}
+                </span>
               </h1>
               <p className="text-sm text-muted-foreground mt-1 font-mono">
                 Claim your rank. Build your legacy.
@@ -237,20 +277,45 @@ export const HallOfFamePage = () => {
                 // No ranks match your search.
               </p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {showFounder && <FounderCard />}
-                {visibleSlots.map(slot =>
-                  slot.bender ? (
-                    <div key={slot.displayName} className="relative">
-                      <BenderCard bender={slot.bender} isPublished={slot.bender.isPublished} />
-                    </div>
-                  ) : (
-                    <UnclaimedCard
-                      key={slot.displayName}
-                      rankName={slot.displayName}
-                      discipline={slot.discipline}
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {showFounder && <FounderCard />}
+                  {displayedSlots.map(slot =>
+                    slot.bender ? (
+                      <div key={slot.displayName} className="relative">
+                        <BenderCard bender={slot.bender} isPublished={slot.bender.isPublished} />
+                      </div>
+                    ) : (
+                      <UnclaimedCard
+                        key={slot.displayName}
+                        rankName={slot.displayName}
+                        discipline={slot.discipline}
+                      />
+                    ),
+                  )}
+                </div>
+
+                {hasMore && (
+                  <>
+                    <div
+                      ref={loadMoreSentinelRef}
+                      className="h-px w-full shrink-0"
+                      aria-hidden
                     />
-                  )
+                    {loadMoreInView && (
+                      <div className="flex flex-col items-center gap-2 pb-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="font-mono text-sm"
+                          onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                        >
+                          Load more ({Math.min(PAGE_SIZE, remaining)} more
+                          {remaining > PAGE_SIZE ? ` · ${remaining} left` : ''})
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
