@@ -21,7 +21,7 @@ jobs:
         run: bun run test
 
       - name: compute-xp unit tests
-        run: echo "skipped: compute-xp removed from CI"
+        run: 'echo "skipped: compute-xp removed from CI"'
 
       - name: PR classifier tests
         run: bash .github/tests/test-pr-classifier.sh
