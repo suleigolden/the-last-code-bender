@@ -20,6 +20,7 @@ import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButto
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 import { supabase } from '@/lib/supabase';
 import { CodeBenderPlaceholder } from '../codebender-profile-placeholder/CodeBenderPlaceholder';
+import { JourneyStartBadge } from '@/components/skill/JourneyStartBadge';
 
 const DISCIPLINE_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -374,6 +375,14 @@ export const BenderProfilePage = () => {
                             </a>
                           </Button>
                         </div>
+                        {benderRow?.journey_started_at && (
+                          <div className="mt-2">
+                            <JourneyStartBadge
+                              journeyStartedAt={benderRow.journey_started_at}
+                              githubUsername={benderRow.github_login}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

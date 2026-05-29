@@ -94,7 +94,11 @@ export function ProfileWorkspacePage() {
         ) : (
           existingBender && (
             <div id="profile-workspace-editor" className="flex min-h-0 flex-1 flex-col scroll-mt-4">
-              <ProfileWorkspaceEditor benderId={existingBender.id} handle={existingBender.handle} />
+              <ProfileWorkspaceEditor
+                benderId={existingBender.id}
+                handle={existingBender.handle}
+                discipline={existingBender.discipline}
+              />
             </div>
           )
         )}

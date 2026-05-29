@@ -1,18 +1,149 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PenLine } from 'lucide-react';
+import { ChevronDown, Github, Lock, PenLine } from 'lucide-react';
 import { toast } from 'sonner';
-import { useUpdateOpenToWork } from '@/hooks/useBenders';
+import { useUpdateOpenToWork, useGitHubDataCache } from '@/hooks/useBenders';
 import { XPTimeline } from '@/components/rank/XPTimeline';
 import { XPProgress } from '@/components/rank/XPProgress';
 import { RankBadge } from '@/components/rank/RankBadge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import type { BenderRow } from '@/types/database';
 import { DashboardRegistrationForm } from './DashboardRegistrationForm';
 import { DashboardShowcaseSection } from './DashboardShowcaseSection';
+
+function formatTimeAgo(dateStr: string): string {
+  const ms = Date.now() - new Date(dateStr).getTime();
+  const hours = ms / (1000 * 60 * 60);
+  if (hours < 1) return 'just now';
+  if (hours < 24) {
+    const h = Math.floor(hours);
+    return `${h} hour${h === 1 ? '' : 's'} ago`;
+  }
+  const days = Math.floor(hours / 24);
+  return `${days} day${days === 1 ? '' : 's'} ago`;
+}
+
+function GitHubSyncCard({ handle }: { handle: string }) {
+  const [open, setOpen] = useState(false);
+  const { data: cacheRow, isLoading } = useGitHubDataCache(handle);
+
+  const cache = cacheRow?.github_data_cache ?? null;
+  const syncedAt = cacheRow?.github_synced_at ?? null;
+  const journeyAt = cacheRow?.journey_started_at ?? null;
+
+  const syncLabel = syncedAt ? `Synced ${formatTimeAgo(syncedAt)}` : 'Never synced';
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+        <div className="flex items-center gap-2">
+          <Github className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <span className="font-mono text-xs text-foreground">GitHub Profile Sync</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-muted-foreground">{syncLabel}</span>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
+              <ChevronDown
+                className={cn('h-3 w-3 transition-transform', open && 'rotate-180')}
+              />
+            </Button>
+          </CollapsibleTrigger>
+        </div>
+      </div>
+      <CollapsibleContent>
+        {isLoading ? (
+          <div className="space-y-2 rounded-b-md border border-t-0 border-border bg-background/40 px-3 py-3">
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="h-3 w-3/4" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+        ) : cache ? (
+          <div className="rounded-b-md border border-t-0 border-border bg-background/40 px-3 py-3 space-y-2 font-mono text-[11px]">
+            {journeyAt && (
+              <div className="flex items-center gap-2">
+                <Lock className="h-3 w-3 text-muted-foreground shrink-0" />
+                <span className="text-muted-foreground">Journey started </span>
+                <span className="text-foreground">
+                  {new Date(journeyAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Years on GitHub:</span>
+              <span className="text-foreground">{cache.years_on_github}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Repos analysed:</span>
+              <span className="text-foreground">{cache.public_repos_count} public repos</span>
+            </div>
+            {Object.keys(cache.top_languages).length > 0 && (
+              <div className="flex flex-wrap items-center gap-1">
+                <span className="text-muted-foreground mr-1">Top languages:</span>
+                {Object.entries(cache.top_languages)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 5)
+                  .map(([lang]) => (
+                    <Badge
+                      key={lang}
+                      variant="outline"
+                      className="text-[10px] px-1.5 py-0 font-mono h-4"
+                    >
+                      {lang}
+                    </Badge>
+                  ))}
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Pattern:</span>
+              <span className="text-foreground capitalize">
+                {cache.contribution_pattern.dominant_pattern}
+                {cache.contribution_pattern.dominant_pattern === 'builder' &&
+                  ' — high commit frequency'}
+                {cache.contribution_pattern.dominant_pattern === 'reviewer' &&
+                  ' — strong code reviewer'}
+                {cache.contribution_pattern.dominant_pattern === 'community' &&
+                  ' — active in issues'}
+                {cache.contribution_pattern.dominant_pattern === 'mixed' &&
+                  ' — balanced contributor'}
+              </span>
+            </div>
+            {cache.top_repos_by_stars.length > 0 && (
+              <div>
+                <p className="text-muted-foreground mb-1">Top repos:</p>
+                <ul className="space-y-0.5">
+                  {cache.top_repos_by_stars.slice(0, 3).map((repo) => (
+                    <li key={repo.name} className="flex items-center gap-1.5 text-foreground">
+                      <span className="text-muted-foreground">·</span>
+                      <span>{repo.name}</span>
+                      <span className="text-muted-foreground">⭐ {repo.stargazers_count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-b-md border border-t-0 border-border bg-background/40 px-3 py-3">
+            <p className="font-mono text-[11px] text-muted-foreground">
+              Generate your SKILL.md from the workspace to sync GitHub data.
+            </p>
+          </div>
+        )}
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
 
 function ProfileCard({
   bender,
@@ -126,6 +257,8 @@ function ProfileCard({
             <XPProgress tier={bender.rank_tier} xp={bender.xp} />
             <XPTimeline handle={bender.handle} />
           </div>
+
+          <GitHubSyncCard handle={bender.handle} />
         </CardContent>
       </Card>
 
