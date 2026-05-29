@@ -13,6 +13,7 @@ export const benderKeys = {
   handleAvailable: (handle: string) => ['benders', 'handleAvailable', handle] as const,
   hasClaimed: (githubLogin: string) => ['benders', 'hasClaimed', githubLogin] as const,
   search: (query: string) => ['benders', 'search', query] as const,
+  githubCache: (handle: string) => ['benders', 'github_cache', handle] as const,
 };
 
 export function useAllBenders() {
@@ -401,6 +402,30 @@ export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
     },
     staleTime: 1000 * 60,
   });
+}
+
+export function useGitHubDataCache(handle: string) {
+  return useQuery({
+    queryKey: benderKeys.githubCache(handle),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('benders')
+        .select('github_data_cache, github_synced_at, journey_started_at')
+        .eq('handle', handle)
+        .maybeSingle()
+      if (error) throw error
+      return data
+    },
+    enabled: !!handle,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useIsSyncStale(handle: string): boolean {
+  const { data } = useGitHubDataCache(handle)
+  if (!data?.github_synced_at) return true
+  const hoursSince = (Date.now() - new Date(data.github_synced_at).getTime()) / (1000 * 60 * 60)
+  return hoursSince > 24
 }
 
 export function useUpdateOpenToWork() {
