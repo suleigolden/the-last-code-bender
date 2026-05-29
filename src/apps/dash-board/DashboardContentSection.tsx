@@ -193,16 +193,18 @@ function ProfileCard({
             <span
               className={cn(
                 'w-2.5 h-2.5 rounded-full shrink-0 mt-1',
-                bender.skill_live ? 'bg-green-500' : 'bg-muted/70',
+                bender.skill_live || bender.cached_skill ? 'bg-green-500' : 'bg-muted/70',
               )}
             />
             <p
               className={cn(
                 'font-mono text-xs leading-snug break-words',
-                bender.skill_live ? 'text-green-400' : 'text-foreground',
+                bender.skill_live || bender.cached_skill ? 'text-green-400' : 'text-foreground',
               )}
             >
-              {bender.skill_live ? `SKILL.md live · @${bender.handle}` : 'Skill pending review'}
+              {bender.skill_live || bender.cached_skill
+                ? `SKILL.md live · @${bender.handle}`
+                : 'No skill yet — generate from GitHub'}
             </p>
           </div>
 

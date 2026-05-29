@@ -456,8 +456,8 @@ export const BenderProfilePage = () => {
                   {bender && (
                     <SkillCard
                       handle={bender.handle}
-                      xp={bender.xp}
-                      skillLive={bender.skill_live}
+                      skillLive={bender.skill_live || !!benderRow?.cached_skill}
+                      cachedSkill={benderRow?.cached_skill}
                     />
                   )}
                 </>

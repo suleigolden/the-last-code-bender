@@ -129,9 +129,17 @@ export interface BenderRow {
   demo_views: number;
   registered_at: string;
   last_active: string;
+  journey_started_at: string | null;
+  github_synced_at: string | null;
+  github_data_cache: GitHubDataCache | null;
   profile_url: string | null;
   avatar_url: string | null;
 }
+
+export type BenderGitHubCacheRow = Pick<
+  BenderRow,
+  'github_data_cache' | 'github_synced_at' | 'journey_started_at'
+>;
 
 export interface DemoViewRow {
   id: string;
@@ -190,14 +198,17 @@ export interface LeaderboardRow {
 }
 
 type TableDef<Row, Insert, Update> = {
-  Row: Row;
+  Row: Row & Record<string, unknown>;
   Insert: Insert;
   Update: Update;
   Relationships: [];
 };
 
+// Omit-derived Insert types are not assignable to Record<string, unknown> without this.
+type TableInsert<T> = T & Record<string, unknown>;
+
 type ViewDef<Row> = {
-  Row: Row;
+  Row: Row & Record<string, unknown>;
   Relationships: [];
 };
 
@@ -206,63 +217,81 @@ export interface Database {
     Tables: {
       bender_profile_snapshots: TableDef<
         BenderProfileSnapshotRow,
-        Omit<BenderProfileSnapshotRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        TableInsert<
+          Omit<BenderProfileSnapshotRow, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        >,
         Partial<Omit<BenderProfileSnapshotRow, 'id'>>
       >;
       bender_profile_workspace: TableDef<
         BenderProfileWorkspaceRow,
-        Omit<BenderProfileWorkspaceRow, 'updated_at'> & { updated_at?: string },
+        TableInsert<Omit<BenderProfileWorkspaceRow, 'updated_at'> & { updated_at?: string }>,
         Partial<Omit<BenderProfileWorkspaceRow, 'bender_id'>>
       >;
       benders: TableDef<
         BenderRow,
-        Omit<BenderRow, 'id' | 'registered_at' | 'last_active'> & {
-          id?: string;
-          registered_at?: string;
-          last_active?: string;
-        },
+        TableInsert<
+          Omit<
+            BenderRow,
+            'id' | 'registered_at' | 'last_active' | 'journey_started_at' | 'github_synced_at' | 'github_data_cache'
+          > & {
+            id?: string;
+            registered_at?: string;
+            last_active?: string;
+            journey_started_at?: string | null;
+            github_synced_at?: string | null;
+            github_data_cache?: GitHubDataCache | null;
+          }
+        >,
         Partial<Omit<BenderRow, 'id'>>
       >;
       xp_events: TableDef<
         XPEventRow,
-        Omit<XPEventRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        TableInsert<Omit<XPEventRow, 'id' | 'created_at'> & { id?: string; created_at?: string }>,
         Partial<Omit<XPEventRow, 'id'>>
       >;
       challenges: TableDef<
         ChallengeRow,
-        Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at'> & { id?: string; opens_at?: string; closes_at?: string },
+        TableInsert<
+          Omit<ChallengeRow, 'id' | 'opens_at' | 'closes_at'> & {
+            id?: string;
+            opens_at?: string;
+            closes_at?: string;
+          }
+        >,
         Partial<Omit<ChallengeRow, 'id'>>
       >;
       challenge_submissions: TableDef<
         ChallengeSubmissionRow,
-        Omit<
-          ChallengeSubmissionRow,
-          | 'id'
-          | 'submitted_at'
-          | 'score_total'
-          | 'score_breakdown'
-          | 'ai_feedback'
-          | 'placement'
-          | 'judged_at'
-        > & {
-          id?: string;
-          submitted_at?: string;
-          score_total?: number | null;
-          score_breakdown?: Record<string, number> | null;
-          ai_feedback?: string | null;
-          placement?: number | null;
-          judged_at?: string | null;
-        },
+        TableInsert<
+          Omit<
+            ChallengeSubmissionRow,
+            | 'id'
+            | 'submitted_at'
+            | 'score_total'
+            | 'score_breakdown'
+            | 'ai_feedback'
+            | 'placement'
+            | 'judged_at'
+          > & {
+            id?: string;
+            submitted_at?: string;
+            score_total?: number | null;
+            score_breakdown?: Record<string, number> | null;
+            ai_feedback?: string | null;
+            placement?: number | null;
+            judged_at?: string | null;
+          }
+        >,
         Partial<Omit<ChallengeSubmissionRow, 'id'>>
       >;
       users: TableDef<
         UserRow,
-        Omit<UserRow, 'id' | 'created_at'> & { id?: string; created_at?: string },
+        TableInsert<Omit<UserRow, 'id' | 'created_at'> & { id?: string; created_at?: string }>,
         Partial<Omit<UserRow, 'id'>>
       >;
       demo_views: TableDef<
         DemoViewRow,
-        Omit<DemoViewRow, 'id' | 'viewed_at'> & { id?: string; viewed_at?: string },
+        TableInsert<Omit<DemoViewRow, 'id' | 'viewed_at'> & { id?: string; viewed_at?: string }>,
         Partial<Omit<DemoViewRow, 'id'>>
       >;
     };

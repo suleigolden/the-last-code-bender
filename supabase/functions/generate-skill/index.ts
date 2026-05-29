@@ -331,7 +331,7 @@ One sentence: what coding with this skill feels like, based on their actual patt
       github_data_cache: githubDataCache,
       github_synced_at: now,
       cached_skill: generatedSkill,
-      skill_live: false, // requires review before going live
+      skill_live: true,
     })
     .eq('handle', handle)
 

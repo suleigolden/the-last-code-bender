@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import type { BenderRow, DemoType } from '@/types/database';
+import type { BenderRow, BenderGitHubCacheRow, DemoType, Discipline, RankTier } from '@/types/database';
 import type { RecruiterFilters } from '@/types/recruiter';
 import type { Bender, RegistryStats } from '@/types/registry';
 import { rowToBender } from '@/lib/bender-adapter';
@@ -31,7 +31,7 @@ export function useAllBenders() {
   });
 }
 
-export function useBendersByDiscipline(discipline: string) {
+export function useBendersByDiscipline(discipline: Discipline) {
   return useQuery({
     queryKey: benderKeys.byDiscipline(discipline),
     queryFn: async (): Promise<BenderRow[]> => {
@@ -121,7 +121,7 @@ export function useRegisterBender() {
         .limit(1);
       if (countError) throw countError;
 
-      const nextRank = existing && existing.length > 0 ? existing[0].rank + 1 : 1;
+      const nextRank = existing && existing.length > 0 ? existing[0]?.rank + 1 : 1;
 
       const rankTier =
         nextRank <= 50 ? 'Apprentice'
@@ -352,7 +352,7 @@ export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
         .eq('is_founder', false);
 
       if (filters.disciplines?.length) {
-        q = q.in('discipline', filters.disciplines as unknown as string[]);
+        q = q.in('discipline', filters.disciplines);
       }
 
       if (filters.openToWork === 'Open to work') {
@@ -362,7 +362,7 @@ export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
       }
 
       if (filters.minRank !== 'Any') {
-        const tiers =
+        const tiers: RankTier[] =
           filters.minRank === 'Journeyman+'
             ? ['Journeyman', 'Senior', 'Master']
             : filters.minRank === 'Senior+'
@@ -407,14 +407,14 @@ export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
 export function useGitHubDataCache(handle: string) {
   return useQuery({
     queryKey: benderKeys.githubCache(handle),
-    queryFn: async () => {
+    queryFn: async (): Promise<BenderGitHubCacheRow | null> => {
       const { data, error } = await supabase
         .from('benders')
         .select('github_data_cache, github_synced_at, journey_started_at')
         .eq('handle', handle)
         .maybeSingle()
       if (error) throw error
-      return data
+      return data as BenderGitHubCacheRow | null
     },
     enabled: !!handle,
     staleTime: 1000 * 60 * 5,
