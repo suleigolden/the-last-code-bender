@@ -428,6 +428,54 @@ export function useIsSyncStale(handle: string): boolean {
   return hoursSince > 24
 }
 
+/**
+ * Trigger GitHub-based SKILL.md generation via Edge Function.
+ * Fetches GitHub profile, generates SKILL.md, stores in workspace.
+ */
+export function useGenerateSkill() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      handle,
+      githubUsername,
+      discipline,
+      forceRefresh = false,
+    }: {
+      handle: string
+      githubUsername: string
+      discipline: string
+      forceRefresh?: boolean
+    }) => {
+      const { data, error } = await supabase.functions.invoke('generate-skill', {
+        body: {
+          handle,
+          github_username: githubUsername,
+          discipline,
+          force_refresh: forceRefresh,
+        },
+      })
+      if (error) throw error
+      return data as {
+        status: 'generated' | 'cached'
+        message: string
+        github_data?: {
+          journey_started: string
+          years_on_github: number
+          top_languages: string[]
+          repos_analysed: number
+        }
+      }
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) })
+      queryClient.invalidateQueries({
+        queryKey: ['benders', 'github_cache', variables.handle],
+      })
+    },
+  })
+}
+
 export function useUpdateOpenToWork() {
   const queryClient = useQueryClient();
 
