@@ -1,4 +1,5 @@
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import CodeMirror from '@uiw/react-codemirror';
 import { css as cssLang } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -37,6 +38,11 @@ import {
 } from '@/hooks/useProfileWorkspace';
 import { workspaceCodeMirrorChrome } from '@/components/profile/workspace-code-mirror-theme';
 import { SkillSection } from '@/components/profile/SkillSection';
+import { useAuth } from '@/contexts/AuthContext';
+import { useGitHubDataCache } from '@/hooks/useBenders';
+import { profileWorkspaceKeys } from '@/hooks/useProfileWorkspace';
+import { JourneyStartBadge } from '@/components/skill/JourneyStartBadge';
+import { GenerateSkillButton } from '@/components/skill/GenerateSkillButton';
 
 const codeMirrorTsxExtensions = [javascript({ jsx: true, typescript: true }), workspaceCodeMirrorChrome];
 const codeMirrorCssExtensions = [cssLang(), workspaceCodeMirrorChrome];
@@ -52,13 +58,23 @@ function fileTabLabel(path: ProfileWorkspacePath): string {
 interface ProfileWorkspaceEditorProps {
   benderId: string;
   handle: string;
+  discipline: string;
 }
 
-export function ProfileWorkspaceEditor({ benderId, handle }: ProfileWorkspaceEditorProps) {
+export function ProfileWorkspaceEditor({ benderId, handle, discipline }: ProfileWorkspaceEditorProps) {
   const { data: workspaceRow, isLoading } = useProfileWorkspace(benderId);
   const { data: snapshots = [] } = useProfileSnapshots(benderId);
   const { mutateAsync: saveWorkspace, isPending: saving } = useSaveProfileWorkspace();
   const { mutateAsync: loadSnapshot, isPending: loadingSnap } = useSnapshotFiles();
+
+  const queryClient = useQueryClient();
+  const { githubLogin } = useAuth();
+  const { data: cacheData } = useGitHubDataCache(handle);
+  const journeyAt = cacheData?.journey_started_at ?? null;
+
+  const handleSkillGenerated = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: profileWorkspaceKeys.workspace(benderId) });
+  }, [queryClient, benderId]);
 
   const [files, setFiles] = useState(() => getDefaultProfileWorkspaceFiles());
   const [activePath, setActivePath] = useState<ProfileWorkspacePath>('index.tsx');
@@ -145,6 +161,21 @@ export function ProfileWorkspaceEditor({ benderId, handle }: ProfileWorkspaceEdi
     <Card className="flex min-h-0 flex-1 flex-col overflow-hidden bg-ide-sidebar border-border">
       <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden p-4 pt-0">
      
+        {activePath === 'SKILL.md' && (
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-ide-sidebar px-4 py-3">
+            <JourneyStartBadge
+              journeyStartedAt={journeyAt}
+              githubUsername={githubLogin ?? ''}
+            />
+            <GenerateSkillButton
+              handle={handle}
+              githubUsername={githubLogin ?? ''}
+              discipline={discipline}
+              onGenerated={handleSkillGenerated}
+            />
+          </div>
+        )}
+
         <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1 rounded-md border border-border">
           <ResizablePanel defaultSize={45} minSize={28}>
             <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[#1e293b]">

@@ -74,6 +74,38 @@ export interface ChallengeSubmissionRow {
   judged_at: string | null;
 }
 
+export interface GitHubRepo {
+  name: string
+  description: string | null
+  language: string | null
+  stargazers_count: number
+  forks_count: number
+  pushed_at: string
+  topics: string[]
+  html_url: string
+  is_fork: boolean
+}
+
+export interface GitHubDataCache {
+  account_created_at: string
+  years_on_github: number
+  public_repos_count: number
+  followers: number
+  bio: string | null
+  top_languages: Record<string, number>
+  top_repos_by_stars: GitHubRepo[]
+  active_repos: GitHubRepo[]
+  all_topics: string[]
+  contribution_pattern: {
+    push_count: number
+    pr_review_count: number
+    issue_count: number
+    fork_count: number
+    dominant_pattern: 'builder' | 'reviewer' | 'community' | 'mixed'
+  }
+  fetched_at: string
+}
+
 export interface BenderRow {
   id: string;
   handle: string;

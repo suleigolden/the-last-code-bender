@@ -86,3 +86,21 @@ Then:
 2. Click **Continue with GitHub** — redirected to GitHub OAuth
 3. After authorising, land on `/dashboard` — registration form visible
 4. Visit `/hall-of-fame` — benders load live from Supabase
+
+---
+
+## Deploying the generate-skill Edge Function
+
+```bash
+supabase functions deploy generate-skill --no-verify-jwt
+```
+
+The function requires these secrets (set once per project):
+```bash
+supabase secrets set GITHUB_TOKEN=your_github_pat_with_models_read
+# The GITHUB_TOKEN needs: models:read permission for GitHub Models API
+# Get it at: github.com/settings/tokens
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` are automatically
+available inside Edge Functions — no setup needed.
