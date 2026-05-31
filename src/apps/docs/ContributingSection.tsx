@@ -45,7 +45,7 @@ export function ContributingSection() {
         </Step>
 
         <Step n={3} title="Open the Profile workspace">
-          <CodeBlock>{`Dashboard → “Start editing profile”\n/dashboard/workspace`}</CodeBlock>
+          <CodeBlock>{`Dashboard → "Start editing profile"\n/dashboard/workspace`}</CodeBlock>
         </Step>
 
         <Step n={4} title="Edit your profile sources">
@@ -62,11 +62,18 @@ export function ContributingSection() {
           </p>
         </Step>
 
-        <Step n={6} title="Publish your skill (optional)">
+        <Step n={6} title="Generate your Claude Code skill from GitHub (optional)">
           <p className="mb-2 text-muted-foreground">
-            Open the <span className="text-foreground">SKILL.md</span> tab and submit for AI review.
+            Open the <span className="text-foreground">SKILL.md</span> tab and click Generate from
+            GitHub. Your repos, languages, and contribution patterns are pulled automatically.
           </p>
-          <CodeBlock>{`Profile workspace → SKILL.md → “Submit for AI Review”`}</CodeBlock>
+          <CodeBlock>{`Profile workspace → SKILL.md → "Generate from GitHub"`}</CodeBlock>
+          <p className="mt-2 text-muted-foreground text-xs">
+            Once generated, go to the{' '}
+            <span className="text-foreground">Dashboard → Skill live toggle</span> to publish it.
+            Others can then install it with:
+          </p>
+          <CodeBlock>{'curl -fsSL "$SKILL_URL?handle=YourHandle" \\\n  --create-dirs -o ~/.claude/skills/YourHandle/SKILL.md\n\n# then invoke with\n/YourHandle'}</CodeBlock>
         </Step>
 
         <Step n={7} title="Add your demo / project showcase (optional)">

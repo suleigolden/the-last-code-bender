@@ -1,4 +1,4 @@
-import { Block, Cm, Fn, Kw, Mut, SectionHeader, Str } from './docs-shared';
+import { Block, Cm, CodeBlock, Fn, Kw, Mut, SectionHeader, Step, Str } from './docs-shared';
 
 export function SkillSection() {
   return (
@@ -11,7 +11,7 @@ export function SkillSection() {
             <Mut> {'{'}</Mut>
           </>
         }
-        subtitle="// How the Claude Code Skill system works on this platform."
+        subtitle="// Generate, publish, and install Claude Code skills from real GitHub data."
       />
 
       <Block title="what-is-a-skill.ts">
@@ -19,14 +19,39 @@ export function SkillSection() {
           <p className="text-muted-foreground leading-relaxed">
             <Cm>{'/**'}</Cm>
             <br />
-            <Cm>{' * A Claude Code Skill is a custom prompt or workflow you publish'}</Cm>
+            <Cm>{' * A Claude Code Skill is a SKILL.md file that encodes your coding'}</Cm>
             <br />
-            <Cm>{' * that other developers can install into their Claude Code CLI.'}</Cm>
+            <Cm>{' * style, stack, and philosophy. When another developer installs it,'}</Cm>
             <br />
-            <Cm>{' * When your skill is live, skill_live = true on your profile.'}</Cm>
+            <Cm>{' * Claude adopts your patterns for their session.'}</Cm>
+            <br />
+            <Cm>{' * Invoked with /handle in any Claude Code project.'}</Cm>
             <br />
             <Cm>{' */'}</Cm>
           </p>
+        </div>
+      </Block>
+
+      <Block title="generate-from-github.ts — auto-generate your SKILL.md">
+        <div className="space-y-3 text-sm font-mono">
+          <p className="text-muted-foreground">
+            <Cm>// Your skill is built from your real GitHub data — no manual writing needed.</Cm>
+          </p>
+          {[
+            ['Open workspace', 'Dashboard → Start editing profile → /dashboard/workspace'],
+            ['Go to SKILL.md tab', 'Click the SKILL.md file in the workspace sidebar'],
+            ['Click Generate from GitHub', 'Pulls your repos, languages, and contribution patterns'],
+            ['Review the output', 'The generated SKILL.md appears in the editor'],
+            ['Toggle skill live', 'Dashboard → Skill live toggle → flip on to publish'],
+          ].map(([step, desc], i) => (
+            <div key={step} className="flex gap-3">
+              <span className="text-syntax-number shrink-0">{i + 1}.</span>
+              <div>
+                <span className="text-foreground">{step}</span>
+                <span className="text-muted-foreground"> — {desc}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </Block>
 
@@ -39,8 +64,9 @@ export function SkillSection() {
               <span className="text-syntax-string">boolean</span>
             </div>
             <p className="text-muted-foreground text-xs">
-              Set to <span className="text-syntax-keyword">true</span> when your skill passes AI
-              review and is published. This shows a{' '}
+              Controls whether your skill is publicly installable. Toggle it on/off from the{' '}
+              <span className="text-foreground">Dashboard</span>. Defaults to{' '}
+              <span className="text-syntax-keyword">true</span> once a skill is generated. Shows a{' '}
               <span className="text-foreground">Skill Live</span> indicator in the Hall of Fame.
             </p>
           </div>
@@ -64,11 +90,41 @@ export function SkillSection() {
               <span className="text-syntax-string">string | null</span>
             </div>
             <p className="text-muted-foreground text-xs">
-              A URL to a live demo of your skill or project. Manage it from the{' '}
-              <span className="text-foreground">Dashboard</span> Showcase section; it appears as an
-              embedded iframe on your profile page.
+              A URL to a live demo of your project. Manage it from the{' '}
+              <span className="text-foreground">Dashboard</span> Showcase section.
             </p>
           </div>
+        </div>
+      </Block>
+
+      <Block title="install-a-skill.ts — use any CodeBender's skill">
+        <div className="space-y-4 text-sm font-mono">
+          <p className="text-muted-foreground">
+            <Cm>// Install any live skill into your Claude Code CLI:</Cm>
+          </p>
+          <Step n={1} title="Run in your terminal">
+          <CodeBlock>{'curl -fsSL "https://ueqtimpcwjwoqlhcyzyo.supabase.co/functions/v1/the-last-code-bender-skill?handle=TheLastCodeBender" \\\n  --create-dirs -o ~/.claude/skills/YouHandle/SKILL.md'}</CodeBlock>
+          <p className="mt-2 text-muted-foreground text-xs">
+
+              <h1>Example:</h1>
+              <CodeBlock>{'curl -fsSL "https://ueqtimpcwjwoqlhcyzyo.supabase.co/functions/v1/the-last-code-bender-skill?handle=TheLastCodeBender" \\\n  --create-dirs -o ~/.claude/skills/TheLastCodeBender/SKILL.md'}</CodeBlock>
+              <p className="mt-2 text-muted-foreground text-xs">
+                This will download the SKILL.md file to your ~/.claude/skills/TheLastCodeBender/ directory.
+              </p>
+              <p className="mt-2 text-muted-foreground text-xs">
+                You can then invoke the skill in your Claude Code session with:
+              </p>
+              <CodeBlock>{'/TheLastCodeBender'}</CodeBlock>
+              The exact curl command is also on every CodeBender&apos;s profile page under{' '}
+              <span className="text-foreground">// install this skill</span>.
+            </p>
+          </Step>
+          <Step n={2} title="Invoke in Claude Code">
+            <CodeBlock>{'/YourHandle\n\n// example\n/TheLastCodeBender'}</CodeBlock>
+            <p className="mt-2 text-muted-foreground text-xs">
+              Claude loads that developer&apos;s SKILL.md and codes in their style for the session.
+            </p>
+          </Step>
         </div>
       </Block>
 
@@ -92,28 +148,6 @@ export function SkillSection() {
               <div>
                 <span className="text-foreground text-xs">{action}</span>
                 <span className="text-muted-foreground text-xs ml-2">— {note}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Block>
-
-      <Block title="skill-workflow.ts — publishing your skill">
-        <div className="space-y-3 text-sm font-mono">
-          <p className="text-muted-foreground">
-            <Cm>// Steps to publish a Claude Code skill:</Cm>
-          </p>
-          {[
-            ['Build your skill', 'Create a .md prompt file or Claude Code workflow that solves a real developer problem'],
-            ['Add SKILL.md', 'Paste your skill into the SKILL.md tab in the Profile workspace'],
-            ['Submit for review', 'Click “Submit for AI Review” in the workspace UI'],
-            ['Iterate', 'Fix issues, resubmit, and publish when approved'],
-          ].map(([step, desc], i) => (
-            <div key={step} className="flex gap-3">
-              <span className="text-syntax-number shrink-0">{i + 1}.</span>
-              <div>
-                <span className="text-foreground">{step}</span>
-                <span className="text-muted-foreground"> — {desc}</span>
               </div>
             </div>
           ))}

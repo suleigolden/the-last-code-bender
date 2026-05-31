@@ -19,7 +19,7 @@ export function HomePage() {
   const featureCards = [
     {
       title: 'Hall of Fame',
-      description: 'Browse all 1,200 rank slots. Filter by discipline, rank, or activity.',
+      description: 'Browse all CodeBenders rank slots. Filter by discipline, rank, or activity.',
       href: '/hall-of-fame',
     },
     {
