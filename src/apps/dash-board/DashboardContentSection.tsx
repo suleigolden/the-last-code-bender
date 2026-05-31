@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDown, Github, Lock, PenLine } from 'lucide-react';
+import { ChevronDown, Github, Lock, PenLine, Zap } from 'lucide-react';
 import { toast } from 'sonner';
-import { useUpdateOpenToWork, useGitHubDataCache } from '@/hooks/useBenders';
+import { useUpdateOpenToWork, useUpdateSkillLive, useGitHubDataCache } from '@/hooks/useBenders';
 import { XPTimeline } from '@/components/rank/XPTimeline';
 import { XPProgress } from '@/components/rank/XPProgress';
 import { RankBadge } from '@/components/rank/RankBadge';
@@ -145,6 +145,70 @@ function GitHubSyncCard({ handle }: { handle: string }) {
   );
 }
 
+const SKILL_SECTIONS = ['Identity', 'Primary stack', 'Coding philosophy', 'Invocation note'];
+
+function parseSkillSections(md: string) {
+  return md
+    .split(/^## /m)
+    .filter(Boolean)
+    .map((chunk) => {
+      const nl = chunk.indexOf('\n');
+      return { title: chunk.slice(0, nl).trim(), content: chunk.slice(nl).trim() };
+    })
+    .filter((s) => SKILL_SECTIONS.includes(s.title));
+}
+
+function SkillSummaryCard({ cachedSkill }: { cachedSkill: string }) {
+  const [open, setOpen] = useState(false);
+  const sections = parseSkillSections(cachedSkill);
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+        <div className="flex items-center gap-2">
+          <Zap className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <span className="font-mono text-xs text-foreground">Skill Summary</span>
+        </div>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
+            <ChevronDown
+              className={cn('h-3 w-3 transition-transform', open && 'rotate-180')}
+            />
+          </Button>
+        </CollapsibleTrigger>
+      </div>
+      <CollapsibleContent>
+        <div className="rounded-b-md border border-t-0 border-border bg-background/40 divide-y divide-border/50">
+          {sections.map((s) => (
+            <div key={s.title} className="px-3 py-2.5">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function mb-1">
+                {s.title}
+              </p>
+              <div className="space-y-0.5">
+                {s.content.split('\n').map((line, i) => {
+                  const bullet = line.match(/^[-*]\s+(.+)/);
+                  if (bullet) {
+                    return (
+                      <p key={i} className="flex gap-2 font-mono text-[11px] text-foreground/80">
+                        <span className="text-syntax-function shrink-0">›</span>
+                        <span>{bullet[1]}</span>
+                      </p>
+                    );
+                  }
+                  if (!line.trim()) return null;
+                  return (
+                    <p key={i} className="font-mono text-[11px] text-foreground/80">{line}</p>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
 function ProfileCard({
   bender,
   githubLogin,
@@ -156,11 +220,17 @@ function ProfileCard({
 }) {
   const navigate = useNavigate();
   const { mutateAsync: updateOpenToWork, isPending: updatingOpenToWork } = useUpdateOpenToWork();
+  const { mutateAsync: updateSkillLive, isPending: updatingSkillLive } = useUpdateSkillLive();
   const [openToWork, setOpenToWork] = useState(bender.open_to_work);
+  const [skillLive, setSkillLive] = useState(bender.skill_live);
 
   useEffect(() => {
     setOpenToWork(bender.open_to_work);
   }, [bender.open_to_work]);
+
+  useEffect(() => {
+    setSkillLive(bender.skill_live);
+  }, [bender.skill_live]);
 
   return (
     <div className="space-y-4 min-w-0">
@@ -193,18 +263,20 @@ function ProfileCard({
             <span
               className={cn(
                 'w-2.5 h-2.5 rounded-full shrink-0 mt-1',
-                bender.skill_live || bender.cached_skill ? 'bg-green-500' : 'bg-muted/70',
+                skillLive ? 'bg-green-500' : bender.cached_skill ? 'bg-yellow-500' : 'bg-muted/70',
               )}
             />
             <p
               className={cn(
                 'font-mono text-xs leading-snug break-words',
-                bender.skill_live || bender.cached_skill ? 'text-green-400' : 'text-foreground',
+                skillLive ? 'text-green-400' : bender.cached_skill ? 'text-yellow-400' : 'text-foreground',
               )}
             >
-              {bender.skill_live || bender.cached_skill
-                ? `SKILL.md live · @${bender.handle}`
-                : 'No skill yet — generate from GitHub'}
+              {skillLive
+                ? `SKILL.md live · /${bender.handle}`
+                : bender.cached_skill
+                  ? 'Skill generated — toggle live to publish'
+                  : 'No skill yet — generate from GitHub'}
             </p>
           </div>
 
@@ -240,6 +312,40 @@ function ProfileCard({
             />
           </div>
 
+          {bender.cached_skill && (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-md border border-border/50 p-3 sm:p-0 sm:border-0">
+              <div className="space-y-1 min-w-0">
+                <p className="font-mono text-xs text-foreground">Skill live</p>
+                <p
+                  className={cn(
+                    'font-mono text-xs break-words',
+                    skillLive ? 'text-green-400' : 'text-foreground',
+                  )}
+                >
+                  {skillLive ? `Installable · /${bender.handle}` : 'Not published'}
+                </p>
+              </div>
+
+              <Switch
+                className="shrink-0 self-start sm:self-center"
+                checked={skillLive}
+                disabled={updatingSkillLive}
+                onCheckedChange={async (checked) => {
+                  const next = checked === true;
+                  setSkillLive(next);
+                  try {
+                    await updateSkillLive({ handle: bender.handle, skill_live: next });
+                    toast.success(next ? `/${bender.handle} is now installable` : 'Skill unpublished');
+                  } catch (e) {
+                    const message = e instanceof Error ? e.message : 'Update failed';
+                    setSkillLive(bender.skill_live);
+                    toast.error(message);
+                  }
+                }}
+              />
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2 sm:gap-4 font-mono text-center text-xs sm:text-sm">
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">{bender.xp}</p>
@@ -261,6 +367,7 @@ function ProfileCard({
           </div>
 
           <GitHubSyncCard handle={bender.handle} />
+          {bender.cached_skill && <SkillSummaryCard cachedSkill={bender.cached_skill} />}
         </CardContent>
       </Card>
 

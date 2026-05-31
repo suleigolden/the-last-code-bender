@@ -141,7 +141,7 @@ export function useRegisterBender() {
           rank_tier: rankTier as BenderRow['rank_tier'],
           xp: 0,
           skill_version: '1.0.0',
-          skill_live: false,
+          skill_live: true,
           open_to_work: false,
           challenge_wins: 0,
           demo_url: null,
@@ -474,6 +474,28 @@ export function useGenerateSkill() {
       })
     },
   })
+}
+
+export function useUpdateSkillLive() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ handle, skill_live }: { handle: string; skill_live: boolean }) => {
+      const { data, error } = await supabase
+        .from('benders')
+        .update({ skill_live })
+        .eq('handle', handle)
+        .select()
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) throw new Error('Update blocked — check Supabase RLS policy for skill_live');
+      return data;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: benderKeys.all });
+      queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) });
+    },
+  });
 }
 
 export function useUpdateOpenToWork() {
