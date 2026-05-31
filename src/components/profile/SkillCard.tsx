@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -64,8 +64,23 @@ function SectionContent({ content }: { content: string }) {
 
 export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) => {
   const [expanded, setExpanded] = useState(false);
+  const [installExpanded, setInstallExpanded] = useState(false);
 
   const sections = cachedSkill ? parseSections(cachedSkill) : [];
+
+  const serveSkillUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/the-last-code-bender-skill?handle=${handle}`;
+  const curlCommand = `curl -fsSL "${serveSkillUrl}" \\\n  --create-dirs -o ~/.claude/skills/${handle}/SKILL.md`;
+
+  const handleDownload = async () => {
+    const res = await fetch(serveSkillUrl);
+    const text = await res.text();
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'SKILL.md';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
 
   return (
     <Card className="mt-8 bg-ide-sidebar border-border">
@@ -76,17 +91,79 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
       </CardHeader>
       <CardContent className="space-y-4">
         {skillLive ? (
-          <div className="flex items-center gap-3">
-            <code className="flex-1 block bg-background rounded px-3 py-2 font-mono text-primary">
-              @{handle}
-            </code>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => navigator.clipboard.writeText(`@${handle}`)}
-            >
-              Copy
-            </Button>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <code className="flex-1 block bg-background rounded px-3 py-2 font-mono text-primary">
+                /{handle}
+              </code>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => navigator.clipboard.writeText(`/${handle}`)}
+              >
+                Copy
+              </Button>
+            </div>
+
+            <div className="border border-border rounded-md overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setInstallExpanded((v) => !v)}
+                className="w-full flex items-center justify-between px-3 py-2 bg-background/40 hover:bg-background/60 transition-colors"
+              >
+                <span className="font-mono text-xs text-muted-foreground">
+                  // install this skill
+                </span>
+                <ChevronDown
+                  className={cn(
+                    'h-3.5 w-3.5 text-muted-foreground transition-transform',
+                    installExpanded && 'rotate-180',
+                  )}
+                />
+              </button>
+
+              {installExpanded && (
+                <div className="px-3 py-3 space-y-3">
+                  <div className="space-y-1">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function">
+                      Step 1 — run in your terminal
+                    </p>
+                    <div className="relative">
+                      <pre className="bg-background rounded px-3 py-2 font-mono text-xs text-foreground/80 overflow-x-auto whitespace-pre-wrap break-all">
+                        {curlCommand}
+                      </pre>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="absolute top-1 right-1 h-6 px-2 text-[10px]"
+                        onClick={() => navigator.clipboard.writeText(curlCommand)}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function">
+                      Step 2 — invoke
+                    </p>
+                    <p className="font-mono text-xs text-foreground/80">
+                      Then use <code className="text-primary">/{handle}</code> in any Claude Code session.
+                    </p>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-2 font-mono text-xs"
+                    onClick={handleDownload}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download SKILL.md
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <p className="font-mono text-sm text-muted-foreground">
