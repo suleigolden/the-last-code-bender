@@ -73,6 +73,37 @@ A **Claude Code Skill** is a custom prompt or workflow you publish that others c
 
 **Publishing a skill:** Build the skill → add content in `SKILL.md` → Submit for AI Review → iterate until approved.
 
+### Generating a skill from GitHub
+
+1. Open your **Profile workspace** → `SKILL.md` tab.
+2. Click **Generate from GitHub** — this calls the `generate-skill` Edge Function, which pulls your public GitHub data (repos, languages, contribution patterns) and generates a personalized `SKILL.md`.
+3. Review the generated content in the editor.
+4. Click **Submit for AI Review** — the skill is reviewed and, once approved, `skill_live` is set to `true` on your profile.
+5. Your skill is now live and installable by anyone.
+
+### Installing a CodeBender skill in your own project
+
+Any live skill can be installed into your Claude Code CLI in two steps.
+
+**Step 1 — Install the skill** (run in your terminal):
+
+```bash
+curl -fsSL "https://ueqtimpcwjwoqlhcyzyo.supabase.co/functions/v1/the-last-code-bender-skill?handle=TheLastCodeBender" \
+  --create-dirs -o ~/.claude/skills/TheLastCodeBender/SKILL.md
+```
+
+Replace `TheLastCodeBender` with any handle that has a live skill. The curl command is also available on every CodeBender's profile page under **// install this skill**.
+
+**Step 2 — Invoke the skill** in a Claude Code session:
+
+```
+/TheLastCodeBender
+```
+
+Claude will load that developer's `SKILL.md` and code in their style — their stack, patterns, and preferences — for the session.
+
+> **Note:** `VITE_SUPABASE_URL` is the Project URL from your `.env` file or Supabase Dashboard → Project Settings → API → Project URL.
+
 ---
 
 ## Rules
