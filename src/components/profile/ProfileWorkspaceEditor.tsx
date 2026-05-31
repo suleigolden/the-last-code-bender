@@ -186,7 +186,7 @@ export function ProfileWorkspaceEditor({ benderId, handle, discipline }: Profile
                     type="button"
                     onClick={() => setActivePath(path)}
                     className={cn(
-                      'rounded px-2 py-1 font-mono text-[12px] transition-colors',
+                      'rounded px-2 py-1 font-mono text-[14px] transition-colors',
                       activePath === path
                         ? 'bg-sky-500/20 text-sky-300'
                         : 'text-slate-400 hover:text-slate-200',
@@ -202,7 +202,7 @@ export function ProfileWorkspaceEditor({ benderId, handle, discipline }: Profile
                     <FileCode2 className="h-4 w-4 shrink-0 text-rose-400" aria-hidden />
                     <span className="truncate">{activePath}</span>
                   </span>
-                  <span className="shrink-0 rounded bg-slate-600/50 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                  <span className="shrink-0 rounded bg-slate-600/50 px-2 py-0.5 font-mono text-[12px] font-semibold uppercase tracking-wide text-slate-400">
                     {activePath === 'styles.css' ? 'CSS' : 'TSX'}
                   </span>
                 </div>
@@ -257,7 +257,7 @@ export function ProfileWorkspaceEditor({ benderId, handle, discipline }: Profile
             Save
           </Button>
           {workspaceRow?.updated_at && (
-            <span className="font-mono text-[15px] text-muted-foreground self-center">
+            <span className="font-mono text-[18px] text-muted-foreground self-center">
               Last saved {new Date(workspaceRow.updated_at).toLocaleString()}
             </span>
           )}
@@ -275,25 +275,25 @@ export function ProfileWorkspaceEditor({ benderId, handle, discipline }: Profile
           <Accordion type="single" collapsible className="shrink-0 rounded-md border border-border bg-background/40 px-3 font-mono">
             <AccordionItem value="commit-history" className="border-0">
               <AccordionTrigger className="py-3 text-left font-mono text-xs text-foreground hover:no-underline [&[data-state=open]]:text-muted-foreground">
-                <span className="flex items-center gap-2 text-[15px]">
+                <span className="flex items-center gap-2 text-[18px]">
                   <History className="h-3.5 w-3.5 shrink-0 text-green-500" />
                   View commit history
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pb-3 pt-0">
-                <p className="mb-2 font-mono text-[15px] text-muted-foreground">
+                <p className="mb-2 font-mono text-[18px] text-muted-foreground">
                   Restore loads into the editor locally <span className="text-green-500">— save again to publish.</span>
                 </p>
                 <ScrollArea className="h-40 pr-2">
-                  <ul className="space-y-1.5 font-mono text-[10px]">
+                  <ul className="space-y-1.5 font-mono text-[12px]">
                     {snapshots.map((s) => (
                       <li key={s.id} className="flex items-center justify-between gap-2 border-b border-border pb-2">
-                        <span className="text-green-500 truncate text-[14px]">{s.commit_message}</span>
+                        <span className="text-green-500 truncate text-[17px]">{s.commit_message}</span>
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="h-6 px-2 shrink-0 font-mono text-[10px]"
+                          className="h-6 px-2 shrink-0 font-mono text-[12px]"
                           disabled={loadingSnap}
                           onClick={() => restore(s.id)}
                         >

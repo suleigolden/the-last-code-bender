@@ -59,11 +59,11 @@ export const TechCard = React.forwardRef<HTMLDivElement, TechCardProps>(
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20" />
           <div className="p-2.5 h-full flex flex-col justify-between relative z-10">
             <div>
-              <h4 className="text-[10px] font-black uppercase tracking-tighter text-white leading-tight mb-1.5 line-clamp-2">
+              <h4 className="text-[12px] font-black uppercase tracking-tighter text-white leading-tight mb-1.5 line-clamp-2">
                 {title}
               </h4>
             </div>
-            <p className="text-[7px] text-white/90 leading-tight line-clamp-3 font-medium">
+            <p className="text-[9px] text-white/90 leading-tight line-clamp-3 font-medium">
               {description}
             </p>
           </div>

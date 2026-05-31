@@ -31,9 +31,9 @@ export const FounderCard = () => {
           <Badge className="font-mono text-xs border-0 text-amber-400 bg-amber-500/15">Master</Badge>
           <Badge
             variant="outline"
-            className="font-mono text-[12px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-function"
+            className="font-mono text-[14px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-function"
           >
-            <span className="font-mono text-[12px] text-syntax-function">9999 XP</span>
+            <span className="font-mono text-[14px] text-syntax-function">9999 XP</span>
           </Badge>
         </div>
       </CardContent>

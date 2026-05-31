@@ -80,8 +80,8 @@ export function AboutSection() {
               { tier: 'Master', range: '151–200', color: 'text-primary bg-primary/15' },
             ].map((t) => (
               <div key={t.tier} className="p-2 bg-background border border-border rounded-md text-center">
-                <Badge className={cn('font-mono text-[10px] border-0 mb-1', t.color)}>{t.tier}</Badge>
-                <p className="text-[11px] text-muted-foreground">ranks {t.range}</p>
+                <Badge className={cn('font-mono text-[12px] border-0 mb-1', t.color)}>{t.tier}</Badge>
+                <p className="text-[13px] text-muted-foreground">ranks {t.range}</p>
               </div>
             ))}
           </div>
@@ -103,7 +103,7 @@ export function AboutSection() {
             <div key={tech} className="flex items-center gap-2">
               <Mut>{'  '}</Mut>
               <Str>"{tech}"</Str>
-              <span className="text-muted-foreground text-[11px]">// {cat}</span>
+              <span className="text-muted-foreground text-[13px]">// {cat}</span>
             </div>
           ))}
         </div>

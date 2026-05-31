@@ -12,7 +12,7 @@ const tierStyles: Record<RankTier, string> = {
 };
 
 const sizeStyles: Record<RankBadgeSize, string> = {
-  sm: 'text-[10px] px-2 py-0.5 leading-none',
+  sm: 'text-[12px] px-2 py-0.5 leading-none',
   md: 'text-xs px-2.5 py-0.5 leading-none',
   lg: 'text-sm px-3 py-1 leading-none',
 };

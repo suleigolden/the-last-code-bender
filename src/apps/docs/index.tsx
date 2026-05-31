@@ -40,7 +40,7 @@ export const DocsPage = () => {
           {/* Sidebar */}
           <aside className="w-52 shrink-0 bg-ide-sidebar border-r border-border overflow-y-auto hidden md:block">
             <div className="px-3 py-2 border-b border-border">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+              <span className="text-[12px] font-mono text-muted-foreground uppercase tracking-widest">
                 Documentation
               </span>
             </div>
@@ -70,7 +70,7 @@ export const DocsPage = () => {
                 key={id}
                 onClick={() => setActive(id)}
                 className={cn(
-                  'px-2 py-1 text-[10px] font-mono rounded whitespace-nowrap transition-colors',
+                  'px-2 py-1 text-[12px] font-mono rounded whitespace-nowrap transition-colors',
                   active === id
                     ? 'bg-background text-foreground'
                     : 'text-muted-foreground hover:text-foreground',

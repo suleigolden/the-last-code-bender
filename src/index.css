@@ -91,6 +91,8 @@
 
   html {
     scroll-behavior: smooth;
+    /* ~19% larger than default 16px — scales all rem-based Tailwind text utilities */
+    font-size: 118.75%;
   }
 
   body {

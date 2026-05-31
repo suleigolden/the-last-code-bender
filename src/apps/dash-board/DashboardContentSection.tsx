@@ -47,7 +47,7 @@ function GitHubSyncCard({ handle }: { handle: string }) {
           <span className="font-mono text-xs text-foreground">GitHub Profile Sync</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-muted-foreground">{syncLabel}</span>
+          <span className="font-mono text-[12px] text-muted-foreground">{syncLabel}</span>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
               <ChevronDown
@@ -65,7 +65,7 @@ function GitHubSyncCard({ handle }: { handle: string }) {
             <Skeleton className="h-3 w-1/3" />
           </div>
         ) : cache ? (
-          <div className="rounded-b-md border border-t-0 border-border bg-background/40 px-3 py-3 space-y-2 font-mono text-[11px]">
+          <div className="rounded-b-md border border-t-0 border-border bg-background/40 px-3 py-3 space-y-2 font-mono text-[13px]">
             {journeyAt && (
               <div className="flex items-center gap-2">
                 <Lock className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -97,7 +97,7 @@ function GitHubSyncCard({ handle }: { handle: string }) {
                     <Badge
                       key={lang}
                       variant="outline"
-                      className="text-[10px] px-1.5 py-0 font-mono h-4"
+                      className="text-[12px] px-1.5 py-0 font-mono h-4"
                     >
                       {lang}
                     </Badge>
@@ -135,7 +135,7 @@ function GitHubSyncCard({ handle }: { handle: string }) {
           </div>
         ) : (
           <div className="rounded-b-md border border-t-0 border-border bg-background/40 px-3 py-3">
-            <p className="font-mono text-[11px] text-muted-foreground">
+            <p className="font-mono text-[13px] text-muted-foreground">
               Generate your SKILL.md from the workspace to sync GitHub data.
             </p>
           </div>
@@ -181,7 +181,7 @@ function SkillSummaryCard({ cachedSkill }: { cachedSkill: string }) {
         <div className="rounded-b-md border border-t-0 border-border bg-background/40 divide-y divide-border/50">
           {sections.map((s) => (
             <div key={s.title} className="px-3 py-2.5">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function mb-1">
+              <p className="font-mono text-[12px] uppercase tracking-wider text-syntax-function mb-1">
                 {s.title}
               </p>
               <div className="space-y-0.5">
@@ -189,7 +189,7 @@ function SkillSummaryCard({ cachedSkill }: { cachedSkill: string }) {
                   const bullet = line.match(/^[-*]\s+(.+)/);
                   if (bullet) {
                     return (
-                      <p key={i} className="flex gap-2 font-mono text-[11px] text-foreground/80">
+                      <p key={i} className="flex gap-2 font-mono text-[13px] text-foreground/80">
                         <span className="text-syntax-function shrink-0">›</span>
                         <span>{bullet[1]}</span>
                       </p>
@@ -197,7 +197,7 @@ function SkillSummaryCard({ cachedSkill }: { cachedSkill: string }) {
                   }
                   if (!line.trim()) return null;
                   return (
-                    <p key={i} className="font-mono text-[11px] text-foreground/80">{line}</p>
+                    <p key={i} className="font-mono text-[13px] text-foreground/80">{line}</p>
                   );
                 })}
               </div>
@@ -349,15 +349,15 @@ function ProfileCard({
           <div className="grid grid-cols-3 gap-2 sm:gap-4 font-mono text-center text-xs sm:text-sm">
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">{bender.xp}</p>
-              <p className="text-foreground text-[10px] sm:text-xs truncate">XP</p>
+              <p className="text-foreground text-[12px] sm:text-xs truncate">XP</p>
             </div>
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">{bender.challenge_wins}</p>
-              <p className="text-foreground text-[10px] sm:text-xs truncate">Wins</p>
+              <p className="text-foreground text-[12px] sm:text-xs truncate">Wins</p>
             </div>
             <div className="min-w-0 px-0.5">
               <p className="text-lg sm:text-2xl font-bold text-foreground tabular-nums truncate">#{bender.rank}</p>
-              <p className="text-foreground text-[10px] sm:text-xs truncate">Rank</p>
+              <p className="text-foreground text-[12px] sm:text-xs truncate">Rank</p>
             </div>
           </div>
 
@@ -371,7 +371,7 @@ function ProfileCard({
         </CardContent>
       </Card>
 
-      <p className="font-mono text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+      <p className="font-mono text-[13px] sm:text-xs text-muted-foreground leading-relaxed">
         // Edit <span className="text-foreground/90">index.tsx</span>,{" "}
         <span className="text-foreground/90">SKILL.md</span>, and{" "}
         <span className="text-foreground/90">stack/stack.json</span> in the workspace; save with a

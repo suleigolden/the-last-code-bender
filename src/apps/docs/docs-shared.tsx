@@ -81,7 +81,7 @@ export function Step({
 export function DontItem({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3 py-3 border-b border-border last:border-0">
-      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-sm bg-destructive/15 border border-destructive/30 flex items-center justify-center text-[10px] font-bold text-destructive">
+      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-sm bg-destructive/15 border border-destructive/30 flex items-center justify-center text-[12px] font-bold text-destructive">
         ✕
       </span>
       <p className="text-sm font-mono text-muted-foreground leading-relaxed">{children}</p>
@@ -92,7 +92,7 @@ export function DontItem({ children }: { children: React.ReactNode }) {
 export function DoItem({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3 py-3 border-b border-border last:border-0">
-      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-sm bg-[hsl(95_60%_55%/0.15)] border border-[hsl(95_60%_55%/0.4)] flex items-center justify-center text-[10px] font-bold text-syntax-string">
+      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-sm bg-[hsl(95_60%_55%/0.15)] border border-[hsl(95_60%_55%/0.4)] flex items-center justify-center text-[12px] font-bold text-syntax-string">
         ✓
       </span>
       <p className="text-sm font-mono text-muted-foreground leading-relaxed">{children}</p>
@@ -103,12 +103,12 @@ export function DoItem({ children }: { children: React.ReactNode }) {
 export function DisciplineBadge({ keyName, color, label, desc }: { keyName: string; color: string; label: string; desc: string }) {
   return (
     <div className="flex items-start gap-3 p-3 bg-background border border-border rounded-md">
-      <Badge variant="outline" className={cn('font-mono text-[10px] px-1.5 shrink-0', color)}>
+      <Badge variant="outline" className={cn('font-mono text-[12px] px-1.5 shrink-0', color)}>
         {keyName}
       </Badge>
       <div>
         <p className="text-foreground text-xs font-semibold">{label}</p>
-        <p className="text-muted-foreground text-[11px] mt-0.5">{desc}</p>
+        <p className="text-muted-foreground text-[13px] mt-0.5">{desc}</p>
       </div>
     </div>
   );

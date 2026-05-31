@@ -125,7 +125,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
               {installExpanded && (
                 <div className="px-3 py-3 space-y-3">
                   <div className="space-y-1">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function">
+                    <p className="font-mono text-[12px] uppercase tracking-wider text-syntax-function">
                       Step 1 — run in your terminal
                     </p>
                     <div className="relative">
@@ -135,7 +135,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="absolute top-1 right-1 h-6 px-2 text-[10px]"
+                        className="absolute top-1 right-1 h-6 px-2 text-[12px]"
                         onClick={() => navigator.clipboard.writeText(curlCommand)}
                       >
                         Copy
@@ -144,7 +144,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
                   </div>
 
                   <div className="space-y-1">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function">
+                    <p className="font-mono text-[12px] uppercase tracking-wider text-syntax-function">
                       Step 2 — invoke
                     </p>
                     <p className="font-mono text-xs text-foreground/80">
@@ -195,7 +195,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
               <div className="divide-y divide-border/50">
                 {sections.map((section) => (
                   <div key={section.title} className="px-3 py-2.5">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-syntax-function mb-1.5">
+                    <p className="font-mono text-[12px] uppercase tracking-wider text-syntax-function mb-1.5">
                       {section.title}
                     </p>
                     <SectionContent content={section.content} />

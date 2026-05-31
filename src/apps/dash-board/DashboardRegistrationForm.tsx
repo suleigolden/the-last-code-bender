@@ -175,7 +175,7 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
   return (
     <>
       <div className="space-y-1">
-        <p className="font-mono text-[12px] text-syntax-comment">// register</p>
+        <p className="font-mono text-[14px] text-syntax-comment">// register</p>
         <p className="font-mono text-sm text-foreground break-words">
           Claim your permanent rank in the CodeBenders hierarchy.
         </p>
@@ -183,7 +183,7 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
         <div className="space-y-1.5">
-          <label className="font-mono text-[12px] text-foreground">Discipline</label>
+          <label className="font-mono text-[14px] text-foreground">Discipline</label>
           <Controller
             name="discipline"
             control={control}
@@ -209,13 +209,13 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
             )}
           />
           {errors.discipline && (
-            <p className="font-mono text-[12px] text-red-500">{errors.discipline.message}</p>
+            <p className="font-mono text-[14px] text-red-500">{errors.discipline.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-[12px] text-foreground">Handle prefix</label>
-          <p className="font-mono text-[12px] sm:text-[12px] text-foregroundleading-snug">
+          <label className="font-mono text-[14px] text-foreground">Handle prefix</label>
+          <p className="font-mono text-[14px] sm:text-[14px] text-foregroundleading-snug">
             Type only your unique prefix — we add the rank suffix automatically (e.g.{' '}
             <span className="text-syntax-keyword tabular-nums">
               MyHandle
@@ -232,27 +232,27 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
           />
           {discipline && suffix && fullHandle.length > 0 && (
             <div className="rounded-md border border-border bg-muted/20 px-3 py-2 space-y-0.5">
-              <p className="font-mono text-[12px] text-foregrounduppercase tracking-wide">
+              <p className="font-mono text-[14px] text-foregrounduppercase tracking-wide">
                 Full rank handle
               </p>
               <p className="font-mono text-sm text-cyan-400 break-all">{fullHandle}</p>
             </div>
           )}
           {!discipline && (
-            <p className="font-mono text-[12px] text-muted-foreground">// Select a discipline first</p>
+            <p className="font-mono text-[14px] text-muted-foreground">// Select a discipline first</p>
           )}
           {handleStatusText && (
-            <p className={cn('font-mono text-[12px]', handleStatusTextColor)}>
+            <p className={cn('font-mono text-[14px]', handleStatusTextColor)}>
               {handleStatusText}
             </p>
           )}
           {errors.handleBase && (
-            <p className="font-mono text-[12px] text-red-500">{errors.handleBase.message}</p>
+            <p className="font-mono text-[14px] text-red-500">{errors.handleBase.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-[12px] text-foreground">
+          <label className="font-mono text-[14px] text-foreground">
             Profile repo URL (GitHub)
           </label>
           <Input
@@ -261,18 +261,18 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
             className="font-mono text-sm min-w-0"
           />
           {errors.profile_url && (
-            <p className="font-mono text-[12px] text-red-500">{errors.profile_url.message}</p>
+            <p className="font-mono text-[14px] text-red-500">{errors.profile_url.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="font-mono text-[12px] text-foreground">GitHub identity</label>
+          <label className="font-mono text-[14px] text-foreground">GitHub identity</label>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 py-2 rounded-md border border-border bg-muted/30 min-w-0">
             {avatarUrl && (
               <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full shrink-0" />
             )}
             <span className="font-mono text-sm text-foreground break-all min-w-0">@{githubLogin}</span>
-            <Badge variant="outline" className="font-mono text-[12px] shrink-0 sm:ml-auto">
+            <Badge variant="outline" className="font-mono text-[14px] shrink-0 sm:ml-auto">
               verified
             </Badge>
           </div>
@@ -306,10 +306,10 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
 
       <Accordion type="single" collapsible className="font-mono w-full">
         <AccordionItem value="help" className="border-border">
-          <AccordionTrigger className="text-[12px] text-foreground font-mono hover:text-foreground text-left break-words">
+          <AccordionTrigger className="text-[14px] text-foreground font-mono hover:text-foreground text-left break-words">
             // Don&apos;t have a profile repo yet?
           </AccordionTrigger>
-          <AccordionContent className="text-[12px] text-foreground space-y-3 pb-4 break-words">
+          <AccordionContent className="text-[14px] text-foreground space-y-3 pb-4 break-words">
             <p>Create a public GitHub repo for your profile, then come back here.</p>
             <ol className="space-y-1 list-decimal list-inside">
               <li>Go to GitHub → New repository</li>
@@ -335,7 +335,7 @@ export function DashboardRegistrationForm({ githubLogin, avatarUrl }: DashboardR
         </AccordionItem>
       </Accordion>
 
-      <p className="text-center font-mono text-[12px] text-foreground pb-6 sm:pb-4">
+      <p className="text-center font-mono text-[14px] text-foreground pb-6 sm:pb-4">
         <Link to="/" className="hover:text-foreground transition-colors inline-block py-1">
           ← Back to home
         </Link>

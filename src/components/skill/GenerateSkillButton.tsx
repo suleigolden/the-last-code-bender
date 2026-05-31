@@ -82,7 +82,7 @@ export function GenerateSkillButton({
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
           Analysing your GitHub...
         </Button>
-        <p className="font-mono text-[10px] text-muted-foreground animate-pulse">
+        <p className="font-mono text-[12px] text-muted-foreground animate-pulse">
           {LOADING_MESSAGES[loadingMsgIdx]}
         </p>
       </div>
@@ -96,7 +96,7 @@ export function GenerateSkillButton({
         <p className="font-mono text-xs text-green-400">
           ✓ SKILL.md generated from your GitHub profile
         </p>
-        <p className="font-mono text-[10px] text-muted-foreground">
+        <p className="font-mono text-[12px] text-muted-foreground">
           Review it in the editor above, then click Submit for Review
         </p>
       </div>
@@ -119,11 +119,11 @@ export function GenerateSkillButton({
         >
           ✨ Generate from GitHub
         </Button>
-        <p className="font-mono text-[10px] text-muted-foreground">
+        <p className="font-mono text-[12px] text-muted-foreground">
           Analyse your GitHub profile and generate a SKILL.md draft
         </p>
         {errorMsg && (
-          <p className="font-mono text-[10px] text-destructive">
+          <p className="font-mono text-[12px] text-destructive">
             {errorMsg} —{' '}
             <button
               type="button"
@@ -149,11 +149,11 @@ export function GenerateSkillButton({
         >
           ↺ Update from GitHub
         </Button>
-        <p className="font-mono text-[10px] text-muted-foreground">
+        <p className="font-mono text-[12px] text-muted-foreground">
           Last synced {formatTimeAgo(synced_at)} — your GitHub may have changed
         </p>
         {errorMsg && (
-          <p className="font-mono text-[10px] text-destructive">
+          <p className="font-mono text-[12px] text-destructive">
             {errorMsg} —{' '}
             <button
               type="button"
@@ -178,16 +178,16 @@ export function GenerateSkillButton({
       >
         ↺ Regenerate from GitHub
       </Button>
-      <p className="font-mono text-[10px] text-muted-foreground">
+      <p className="font-mono text-[12px] text-muted-foreground">
         Last synced {formatTimeAgo(synced_at)} · {repoCount} repos analysed
       </p>
       {topLangs.length > 0 && (
-        <p className="font-mono text-[10px] text-muted-foreground">
+        <p className="font-mono text-[12px] text-muted-foreground">
           Top languages: {topLangs.join(', ')}
         </p>
       )}
       {errorMsg && (
-        <p className="font-mono text-[10px] text-destructive">
+        <p className="font-mono text-[12px] text-destructive">
           {errorMsg} —{' '}
           <button
             type="button"

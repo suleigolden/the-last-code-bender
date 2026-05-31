@@ -106,7 +106,7 @@ export function DashboardShowcaseSection({ bender }: DashboardShowcaseSectionPro
       <p className="font-mono text-sm text-syntax-comment">// showcase</p>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline" className="font-mono text-[10px] px-2 py-0 h-5 leading-none max-w-full truncate">
+        <Badge variant="outline" className="font-mono text-[12px] px-2 py-0 h-5 leading-none max-w-full truncate">
           {valuesToDemoTypeLabel(watch('demo_type'))}
         </Badge>
         <Button
@@ -121,7 +121,7 @@ export function DashboardShowcaseSection({ bender }: DashboardShowcaseSectionPro
           Preview
         </Button>
         {!canPreview && (
-          <span className="font-mono text-[11px] text-muted-foreground">
+          <span className="font-mono text-[13px] text-muted-foreground">
             Enter a valid https URL to preview
           </span>
         )}
@@ -169,7 +169,7 @@ export function DashboardShowcaseSection({ bender }: DashboardShowcaseSectionPro
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-[12px] text-foreground">Demo description</label>
+          <label className="font-mono text-[14px] text-foreground">Demo description</label>
           <Textarea
             {...register('demo_description')}
             placeholder="Short description of what the demo does"
@@ -179,7 +179,7 @@ export function DashboardShowcaseSection({ bender }: DashboardShowcaseSectionPro
         </div>
 
         <div className="space-y-1.5 min-w-0">
-          <label className="font-mono text-[12px] text-foreground">Demo type</label>
+          <label className="font-mono text-[14px] text-foreground">Demo type</label>
           <Select
             value={watch('demo_type')}
             onValueChange={(v) => setValue('demo_type', v as DemoType)}

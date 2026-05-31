@@ -13,6 +13,21 @@ export default {
       },
     },
     extend: {
+      fontSize: {
+        xs: ["0.8125rem", { lineHeight: "1.25rem" }],
+        sm: ["0.9375rem", { lineHeight: "1.375rem" }],
+        base: ["1.0625rem", { lineHeight: "1.625rem" }],
+        lg: ["1.1875rem", { lineHeight: "1.75rem" }],
+        xl: ["1.3125rem", { lineHeight: "1.875rem" }],
+        "2xl": ["1.5625rem", { lineHeight: "2rem" }],
+        "3xl": ["1.9375rem", { lineHeight: "2.25rem" }],
+        "4xl": ["2.3125rem", { lineHeight: "2.5rem" }],
+        "5xl": ["3.0625rem", { lineHeight: "1" }],
+        "6xl": ["3.8125rem", { lineHeight: "1" }],
+        "7xl": ["4.5625rem", { lineHeight: "1" }],
+        "8xl": ["6.0625rem", { lineHeight: "1" }],
+        "9xl": ["8.0625rem", { lineHeight: "1" }],
+      },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "Consolas", "monospace"],

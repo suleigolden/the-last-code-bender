@@ -32,6 +32,7 @@
 body {
   margin: 0;
   font-family: var(--pw-font-sans);
+  font-size: 118.75%;
   background: var(--pw-bg);
   color: var(--pw-text);
   line-height: 1.6;
