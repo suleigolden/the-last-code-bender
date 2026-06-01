@@ -8,10 +8,10 @@ import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
   { label: 'Hall of Fame', href: '/hall-of-fame' },
-  { label: 'Challenges', href: '/challenges' },
-  { label: 'Stack Radar', href: '/stack-radar' },
   { label: 'Recruit', href: '/recruit' },
-  { label: 'Compat', href: '/compat' },
+  // { label: 'Challenges', href: '/challenges' }, coming soon
+  { label: 'Stack Radar', href: '/stack-radar' },
+  // { label: 'Compat', href: '/compat' }, coming soon
   { label: 'Docs', href: '/docs' },
 ];
 
