@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { HALL_CARD_CLASS, HALL_CARD_CONTENT_CLASS } from './hall-card-styles';
+import { cn } from '@/lib/utils';
 
 export const FounderCard = () => {
   const navigate = useNavigate();
   return (
     <Card
-      className="bg-amber-500/10 border-amber-500/30 hover:border-amber-500/60 transition-colors cursor-pointer"
+      className={cn(
+        HALL_CARD_CLASS,
+        'bg-amber-500/10 border-amber-500/30 hover:border-amber-500/60 transition-colors cursor-pointer',
+      )}
       role="button"
       tabIndex={0}
       onClick={() => navigate('/benders/founder/TheLastCodeBender')}
@@ -17,8 +22,8 @@ export const FounderCard = () => {
         }
       }}
     >
-      <CardContent className="p-4 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
+      <CardContent className={HALL_CARD_CONTENT_CLASS}>
+        <div className="flex items-center gap-3 flex-1">
           <div className="w-10 h-10 rounded-full border-2 border-amber-500/60 flex items-center justify-center font-mono font-bold text-sm text-amber-400 shrink-0">
             T
           </div>
@@ -27,7 +32,7 @@ export const FounderCard = () => {
             <p className="font-mono text-xs text-amber-400">★ Founder</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="mt-auto flex items-center gap-2 flex-wrap">
           <Badge className="font-mono text-xs border-0 text-amber-400 bg-amber-500/15">Master</Badge>
           <Badge
             variant="outline"

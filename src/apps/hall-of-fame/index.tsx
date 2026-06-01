@@ -8,18 +8,29 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { BenderCard } from '@/components/hall/BenderCard';
+import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
 import { FounderCard } from '@/components/hall/FounderCard';
 import { useAllBenders, useBenderStats } from '@/hooks/useBenders';
 import { rowToBender } from '@/lib/bender-adapter';
+import {
+  getUnclaimedRankSlots,
+  HALL_DISCIPLINES,
+} from '@/lib/code-bender-names';
+import type { Bender } from '@/types/registry';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
 const FOUNDER_HANDLE = 'TheLastCodeBender';
 
-const DISCIPLINES = ['All', 'Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps', 'QA'];
+const DISCIPLINES = ['All', ...HALL_DISCIPLINES] as const;
+const MIN_UNCLAIMED_PER_DISCIPLINE = 50;
 const PAGE_SIZE = 40;
 
 type SortBy = 'tier' | 'xp' | 'recent' | 'wins';
+
+type HallGridItem =
+  | { kind: 'bender'; bender: Bender }
+  | { kind: 'unclaimed'; rankName: string; discipline: string };
 
 const TIER_ORDER: Record<string, number> = {
   TheLastCodeBender: 0,
@@ -36,6 +47,29 @@ const STAT_CARDS = [
   { key: 'rankSlots', label: 'Rank Slots', value: 'Unlimited' },
 ] as const;
 
+function sortBenders(benders: Bender[], sortBy: SortBy): Bender[] {
+  const sorted = [...benders];
+  if (sortBy === 'xp') {
+    sorted.sort((a, b) => b.xp - a.xp);
+  } else if (sortBy === 'recent') {
+    sorted.sort(
+      (a, b) => new Date(b.last_active).getTime() - new Date(a.last_active).getTime(),
+    );
+  } else if (sortBy === 'wins') {
+    sorted.sort((a, b) => b.challenge_wins - a.challenge_wins);
+  } else {
+    sorted.sort(
+      (a, b) =>
+        (TIER_ORDER[a.rank] ?? 99) - (TIER_ORDER[b.rank] ?? 99) || b.xp - a.xp,
+    );
+  }
+  return sorted;
+}
+
+function matchesSearch(text: string, query: string): boolean {
+  return text.toLowerCase().includes(query);
+}
+
 export const HallOfFamePage = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
@@ -50,9 +84,14 @@ export const HallOfFamePage = () => {
 
   const registry = useMemo(() => (rows ?? []).map(rowToBender), [rows]);
 
+  const claimedHandles = useMemo(
+    () => new Set(registry.map(b => b.handle.toLowerCase())),
+    [registry],
+  );
+
   const showFounder =
     activeTab === 'All' &&
-    (!search.trim() || FOUNDER_HANDLE.toLowerCase().includes(search.toLowerCase()));
+    (!search.trim() || matchesSearch(FOUNDER_HANDLE, search.trim()));
 
   const statValues: Record<string, number | string | undefined> = {
     totalBenders: stats?.totalBenders,
@@ -66,53 +105,64 @@ export const HallOfFamePage = () => {
     return registry.filter(b => b.discipline === activeTab);
   }, [registry, activeTab]);
 
-  const visibleBenders = useMemo(() => {
-    let list =
+  const gridItems = useMemo((): HallGridItem[] => {
+    const q = search.trim().toLowerCase();
+    const disciplines =
+      activeTab === 'All' ? [...HALL_DISCIPLINES] : [activeTab];
+
+    let claimed =
       activeTab === 'All' ? registry : registry.filter(b => b.discipline === activeTab);
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
+    if (q) {
+      claimed = claimed.filter(
         b =>
-          b.handle.toLowerCase().includes(q) ||
-          b.github.toLowerCase().includes(q) ||
-          b.discipline.toLowerCase().includes(q),
+          matchesSearch(b.handle, q) ||
+          matchesSearch(b.github, q) ||
+          matchesSearch(b.discipline, q),
       );
     }
 
-    const sorted = [...list];
+    const items: HallGridItem[] = sortBenders(claimed, sortBy).map(bender => ({
+      kind: 'bender',
+      bender,
+    }));
 
-    if (sortBy === 'xp') {
-      sorted.sort((a, b) => b.xp - a.xp);
-    } else if (sortBy === 'recent') {
-      sorted.sort(
-        (a, b) =>
-          new Date(b.last_active).getTime() - new Date(a.last_active).getTime(),
+    for (const discipline of disciplines) {
+      const unclaimed = getUnclaimedRankSlots(
+        discipline,
+        claimedHandles,
+        MIN_UNCLAIMED_PER_DISCIPLINE,
       );
-    } else if (sortBy === 'wins') {
-      sorted.sort((a, b) => b.challenge_wins - a.challenge_wins);
-    } else {
-      sorted.sort(
-        (a, b) =>
-          (TIER_ORDER[a.rank] ?? 99) - (TIER_ORDER[b.rank] ?? 99) ||
-          b.xp - a.xp,
-      );
+      for (const slot of unclaimed) {
+        if (
+          q &&
+          !matchesSearch(slot.rankName, q) &&
+          !matchesSearch(slot.discipline, q)
+        ) {
+          continue;
+        }
+        items.push({
+          kind: 'unclaimed',
+          rankName: slot.rankName,
+          discipline: slot.discipline,
+        });
+      }
     }
 
-    return sorted;
-  }, [registry, activeTab, search, sortBy]);
+    return items;
+  }, [registry, activeTab, search, sortBy, claimedHandles]);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [activeTab, search, sortBy]);
 
-  const displayedBenders = useMemo(
-    () => visibleBenders.slice(0, visibleCount),
-    [visibleBenders, visibleCount],
+  const displayedItems = useMemo(
+    () => gridItems.slice(0, visibleCount),
+    [gridItems, visibleCount],
   );
 
-  const hasMore = visibleCount < visibleBenders.length;
-  const remaining = Math.max(0, visibleBenders.length - visibleCount);
+  const hasMore = visibleCount < gridItems.length;
+  const remaining = Math.max(0, gridItems.length - visibleCount);
 
   useEffect(() => {
     const root = mainRef.current;
@@ -132,7 +182,7 @@ export const HallOfFamePage = () => {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasMore, visibleCount, visibleBenders.length, isLoading]);
+  }, [hasMore, visibleCount, gridItems.length, isLoading]);
 
   return (
     <div className="h-screen bg-background flex flex-col noise-overlay relative overflow-hidden">
@@ -212,7 +262,7 @@ export const HallOfFamePage = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search benders..."
+                  placeholder="Search ranks or benders..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="pl-9 font-mono text-sm"
@@ -231,25 +281,34 @@ export const HallOfFamePage = () => {
             )}
 
             {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
                 {Array.from({ length: 24 }).map((_, i) => (
-                  <Skeleton key={i} className="h-32" />
+                  <Skeleton key={i} className="h-[152px]" />
                 ))}
               </div>
-            ) : visibleBenders.length === 0 ? (
+            ) : gridItems.length === 0 ? (
               <p className="font-mono text-sm text-muted-foreground">
-                // No benders match your filters yet — ranks are unlimited, claim yours from the
-                dashboard.
+                // No ranks match your search.
               </p>
             ) : (
               <div className="space-y-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {showFounder && <FounderCard />}
-                  {displayedBenders.map(bender => (
-                    <div key={bender.handle} className="relative">
-                      <BenderCard bender={bender} isPublished={bender.isPublished} />
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
+                  {showFounder && (
+                    <div className="h-full">
+                      <FounderCard />
                     </div>
-                  ))}
+                  )}
+                  {displayedItems.map(item =>
+                    item.kind === 'bender' ? (
+                      <div key={`bender-${item.bender.handle}`} className="h-full">
+                        <BenderCard bender={item.bender} isPublished={item.bender.isPublished} />
+                      </div>
+                    ) : (
+                      <div key={`unclaimed-${item.discipline}-${item.rankName}`} className="h-full">
+                        <UnclaimedCard rankName={item.rankName} discipline={item.discipline} />
+                      </div>
+                    ),
+                  )}
                 </div>
 
                 {hasMore && (

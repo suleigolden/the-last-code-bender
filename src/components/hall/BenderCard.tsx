@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { Bender } from '@/types/registry';
 import { UnclaimedCard } from './UnclaimedCard';
+import { HALL_CARD_CLASS, HALL_CARD_CONTENT_CLASS } from './hall-card-styles';
 
 const DISCIPLINE_AVATAR_COLORS: Record<string, string> = {
   Frontend: 'text-syntax-keyword border-syntax-keyword',
@@ -66,14 +67,17 @@ export const BenderCard = ({ bender, isPublished = true }: BenderCardProps) => {
 
   return (
     <Card
-      className="bg-ide-sidebar border-border hover:border-primary/40 transition-colors cursor-pointer"
+      className={cn(
+        HALL_CARD_CLASS,
+        'bg-ide-sidebar border-border hover:border-primary/40 transition-colors cursor-pointer',
+      )}
       role="button"
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
-      <CardContent className="p-4 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
+      <CardContent className={HALL_CARD_CONTENT_CLASS}>
+        <div className="flex items-center gap-3 flex-1">
           <div
             className={cn(
               'w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm shrink-0',
@@ -87,22 +91,26 @@ export const BenderCard = ({ bender, isPublished = true }: BenderCardProps) => {
             <p className={cn('font-mono text-xs', disciplineColor)}>{bender?.discipline}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge className={cn('font-mono text-xs border-0', rankColor)}>{bender?.rank}</Badge>
-          <span className="font-mono text-xs text-muted-foreground">{bender?.xp} XP</span>
+        <div className="mt-auto space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className={cn('font-mono text-xs border-0', rankColor)}>{bender?.rank}</Badge>
+            <span className="font-mono text-xs text-muted-foreground">{bender?.xp} XP</span>
+          </div>
+          {bender?.challenge_wins > 0 && (
+            <div className="flex items-center gap-1.5 font-mono text-xs text-syntax-function">
+              <Trophy className="w-3 h-3" />
+              <span>
+                {bender?.challenge_wins} {bender?.challenge_wins === 1 ? 'win' : 'wins'}
+              </span>
+            </div>
+          )}
+          {bender?.open_to_work && (
+            <div className="flex items-center gap-1.5 font-mono text-xs text-syntax-string">
+              <span className="w-1.5 h-1.5 rounded-full bg-syntax-string inline-block" />
+              Open to work
+            </div>
+          )}
         </div>
-        {bender?.challenge_wins > 0 && (
-          <div className="flex items-center gap-1.5 font-mono text-xs text-syntax-function">
-            <Trophy className="w-3 h-3" />
-            <span>{bender?.challenge_wins} {bender?.challenge_wins === 1 ? 'win' : 'wins'}</span>
-          </div>
-        )}
-        {bender?.open_to_work && (
-          <div className="flex items-center gap-1.5 font-mono text-xs text-syntax-string">
-            <span className="w-1.5 h-1.5 rounded-full bg-syntax-string inline-block" />
-            Open to work
-          </div>
-        )}
       </CardContent>
     </Card>
   );

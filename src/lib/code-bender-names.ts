@@ -87,3 +87,42 @@ export function getBendingSpecializationsWithRanks(): Array<BendingSpecializatio
 export function getSpecializationLabelForBender(normalizedId: string): string | undefined {
   return codeBenderSpecializationLabel[normalizedId];
 }
+
+/** Discipline label → rank name suffix (e.g. Frontend → FrontendBender). */
+export const DISCIPLINE_RANK_SUFFIX: Record<string, string> = {
+  Frontend: 'FrontendBender',
+  Backend: 'BackendBender',
+  FullStack: 'FullStackBender',
+  Security: 'SecurityBender',
+  AI: 'AIBender',
+  DevOps: 'DevOpsBender',
+  QA: 'QABender',
+};
+
+export const HALL_DISCIPLINES = Object.keys(DISCIPLINE_RANK_SUFFIX) as Array<
+  keyof typeof DISCIPLINE_RANK_SUFFIX
+>;
+
+export type UnclaimedRankSlot = {
+  rankName: string;
+  discipline: string;
+};
+
+/** First N ordinal rank names for a discipline that are not yet claimed (by exact handle). */
+export function getUnclaimedRankSlots(
+  discipline: string,
+  claimedHandles: ReadonlySet<string>,
+  minimum = 50,
+): UnclaimedRankSlot[] {
+  const suffix = DISCIPLINE_RANK_SUFFIX[discipline];
+  if (!suffix) return [];
+
+  const unclaimed: UnclaimedRankSlot[] = [];
+  for (let n = 1; n <= RANKS_PER_SPECIALIZATION && unclaimed.length < minimum; n++) {
+    const rankName = getOrdinal(n) + suffix;
+    if (!claimedHandles.has(rankName.toLowerCase())) {
+      unclaimed.push({ rankName, discipline });
+    }
+  }
+  return unclaimed;
+}
