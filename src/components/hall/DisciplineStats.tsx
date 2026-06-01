@@ -3,10 +3,9 @@ import type { Bender } from '@/types/registry';
 interface DisciplineStatsProps {
   discipline: string;
   benders: Bender[];
-  totalSlots: number;
 }
 
-export const DisciplineStats = ({ discipline, benders, totalSlots }: DisciplineStatsProps) => {
+export const DisciplineStats = ({ discipline, benders }: DisciplineStatsProps) => {
   const skillsLive = benders.filter(b => b.skill_live).length;
 
   return (
@@ -15,9 +14,7 @@ export const DisciplineStats = ({ discipline, benders, totalSlots }: DisciplineS
       <span className="text-syntax-function">{discipline}</span>
       {': '}
       <span className="text-foreground">{benders.length}</span>
-      {' / '}
-      <span className="text-foreground">{totalSlots}</span>
-      {' ranks claimed · '}
+      {' ranks claimed · unlimited slots · '}
       <span className="text-foreground">{skillsLive}</span>
       {' skills live'}
     </div>

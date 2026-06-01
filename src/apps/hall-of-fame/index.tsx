@@ -8,45 +8,32 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IDEStatusBar } from '@/components/ide/IDEStatusBar';
 import { BenderCard } from '@/components/hall/BenderCard';
-import { UnclaimedCard } from '@/components/hall/UnclaimedCard';
 import { DisciplineStats } from '@/components/hall/DisciplineStats';
 import { FounderCard } from '@/components/hall/FounderCard';
 import { useAllBenders, useBenderStats } from '@/hooks/useBenders';
 import { rowToBender } from '@/lib/bender-adapter';
-import { getBendingSpecializationsWithRanks } from '@/lib/code-bender-names';
-import type { Bender } from '@/types/registry';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
 
 const FOUNDER_HANDLE = 'TheLastCodeBender';
 
-const SPEC_ID_TO_DISCIPLINE: Record<string, string> = {
-  'frontend-bender': 'Frontend',
-  'backend-bender': 'Backend',
-  'fullstack-bender': 'FullStack',
-  'security-bender': 'Security',
-  'ai-bender': 'AI',
-  'devops-bender': 'DevOps',
-  'qa-bender': 'QA',
-};
-
 const DISCIPLINES = ['All', 'Frontend', 'Backend', 'FullStack', 'Security', 'AI', 'DevOps', 'QA'];
-const TOTAL_SLOTS = 1400;
-const SLOTS_PER_DISCIPLINE = 200;
 const PAGE_SIZE = 40;
 
 type SortBy = 'tier' | 'xp' | 'recent' | 'wins';
 
-type RankedSlot = {
-  displayName: string;
-  discipline: string;
-  bender: Bender | null;
+const TIER_ORDER: Record<string, number> = {
+  TheLastCodeBender: 0,
+  Master: 1,
+  Senior: 2,
+  Journeyman: 3,
+  Apprentice: 4,
 };
 
 const STAT_CARDS = [
   { key: 'totalBenders', label: 'Total Benders' },
   { key: 'skillsLive', label: 'Skills Live' },
   { key: 'openToWork', label: 'Open to Work' },
-  { key: 'slotsRemaining', label: 'Slots Remaining' },
+  { key: 'rankSlots', label: 'Rank Slots', value: 'Unlimited' },
 ] as const;
 
 export const HallOfFamePage = () => {
@@ -61,85 +48,71 @@ export const HallOfFamePage = () => {
   const { data: rows, isLoading, error } = useAllBenders();
   const { data: stats } = useBenderStats();
 
-  // Convert live rows to Bender shape used by all existing components
   const registry = useMemo(() => (rows ?? []).map(rowToBender), [rows]);
 
   const showFounder =
     activeTab === 'All' &&
     (!search.trim() || FOUNDER_HANDLE.toLowerCase().includes(search.toLowerCase()));
 
-  const statValues: Record<string, number | undefined> = {
+  const statValues: Record<string, number | string | undefined> = {
     totalBenders: stats?.totalBenders,
     skillsLive: stats?.skillsLive,
     openToWork: stats?.openToWork,
-    slotsRemaining: stats !== undefined ? TOTAL_SLOTS - stats.totalBenders : undefined,
+    rankSlots: 'Unlimited',
   };
 
-  // O(1) lookup map keyed by handle lowercase
-  const benderMap = useMemo(
-    () => new Map(registry.map(b => [b.handle.toLowerCase(), b])),
-    [registry],
-  );
-
-  // All 1200 slots — built once when benderMap stabilises
-  const allSlots = useMemo((): RankedSlot[] => {
-    const specs = getBendingSpecializationsWithRanks();
-    const slots: RankedSlot[] = [];
-    for (const spec of specs) {
-      const discipline = SPEC_ID_TO_DISCIPLINE[spec.id] ?? spec.label;
-      for (const benderRank of spec.benders) {
-        const bender = benderMap.get(benderRank.displayName.toLowerCase()) ?? null;
-        slots.push({ displayName: benderRank.displayName, discipline, bender });
-      }
-    }
-    return slots;
-  }, [benderMap]);
-
-  // Benders for the active discipline tab (drives DisciplineStats)
   const disciplineBenders = useMemo(() => {
     if (activeTab === 'All') return registry;
     return registry.filter(b => b.discipline === activeTab);
   }, [registry, activeTab]);
 
-  // Filter → search → sort pipeline
-  const visibleSlots = useMemo(() => {
-    let slots = activeTab === 'All' ? allSlots : allSlots.filter(s => s.discipline === activeTab);
+  const visibleBenders = useMemo(() => {
+    let list =
+      activeTab === 'All' ? registry : registry.filter(b => b.discipline === activeTab);
 
     if (search.trim()) {
       const q = search.toLowerCase();
-      slots = slots.filter(s => s.displayName.toLowerCase().includes(q));
+      list = list.filter(
+        b =>
+          b.handle.toLowerCase().includes(q) ||
+          b.github.toLowerCase().includes(q) ||
+          b.discipline.toLowerCase().includes(q),
+      );
     }
 
-    const claimed = slots.filter(s => s.bender !== null);
-    const unclaimed = slots.filter(s => s.bender === null);
+    const sorted = [...list];
 
     if (sortBy === 'xp') {
-      claimed.sort((a, b) => b.bender!.xp - a.bender!.xp);
+      sorted.sort((a, b) => b.xp - a.xp);
     } else if (sortBy === 'recent') {
-      claimed.sort(
+      sorted.sort(
         (a, b) =>
-          new Date(b.bender!.last_active).getTime() -
-          new Date(a.bender!.last_active).getTime(),
+          new Date(b.last_active).getTime() - new Date(a.last_active).getTime(),
       );
     } else if (sortBy === 'wins') {
-      claimed.sort((a, b) => b.bender!.challenge_wins - a.bender!.challenge_wins);
+      sorted.sort((a, b) => b.challenge_wins - a.challenge_wins);
+    } else {
+      sorted.sort(
+        (a, b) =>
+          (TIER_ORDER[a.rank] ?? 99) - (TIER_ORDER[b.rank] ?? 99) ||
+          b.xp - a.xp,
+      );
     }
-    // 'tier' sort: no-op; preserves original tier position within each group
 
-    return [...claimed, ...unclaimed];
-  }, [allSlots, activeTab, search, sortBy]);
+    return sorted;
+  }, [registry, activeTab, search, sortBy]);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [activeTab, search, sortBy]);
 
-  const displayedSlots = useMemo(
-    () => visibleSlots.slice(0, visibleCount),
-    [visibleSlots, visibleCount],
+  const displayedBenders = useMemo(
+    () => visibleBenders.slice(0, visibleCount),
+    [visibleBenders, visibleCount],
   );
 
-  const hasMore = visibleCount < visibleSlots.length;
-  const remaining = Math.max(0, visibleSlots.length - visibleCount);
+  const hasMore = visibleCount < visibleBenders.length;
+  const remaining = Math.max(0, visibleBenders.length - visibleCount);
 
   useEffect(() => {
     const root = mainRef.current;
@@ -150,7 +123,7 @@ export const HallOfFamePage = () => {
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const [entry] = entries;
         setLoadMoreInView(Boolean(entry?.isIntersecting));
       },
@@ -159,15 +132,13 @@ export const HallOfFamePage = () => {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasMore, visibleCount, visibleSlots.length, isLoading]);
+  }, [hasMore, visibleCount, visibleBenders.length, isLoading]);
 
   return (
     <div className="h-screen bg-background flex flex-col noise-overlay relative overflow-hidden">
-      {/* IDE Grid Background */}
       <div className="fixed inset-0 ide-grid-bg pointer-events-none opacity-30" />
 
       <div className="flex flex-1 flex-col relative z-10 h-full overflow-hidden">
-        {/* IDE Tab Bar */}
         <div className="flex items-center bg-ide-tabbar border-b border-border px-2 shrink-0">
           <div className="hidden lg:flex items-center gap-1.5 mr-4 pl-2">
             <IDEWindowControls url="/" />
@@ -178,17 +149,15 @@ export const HallOfFamePage = () => {
           </div>
         </div>
 
-        {/* Main Content */}
         <main ref={mainRef} className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Page header */}
             <div>
               <h1 className="text-2xl font-mono font-bold text-foreground">
                 <span className="text-syntax-keyword">const</span>{' '}
                 <span className="text-syntax-function">hallOfFame</span>{' '}
                 <span className="text-muted-foreground">=</span>{' '}
                 <span className="text-syntax-string">
-                  {`"${TOTAL_SLOTS.toLocaleString()} ranks · one developer each · forever"`}
+                  &quot;Unlimited ranks · every discipline · one developer each · forever&quot;
                 </span>
               </h1>
               <p className="text-sm text-muted-foreground mt-1 font-mono">
@@ -196,17 +165,20 @@ export const HallOfFamePage = () => {
               </p>
             </div>
 
-            {/* Stats row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {STAT_CARDS.map(({ key, label }) => (
+              {STAT_CARDS.map(({ key, label, ...rest }) => (
                 <Card key={key} className="bg-ide-sidebar border-border">
                   <CardContent className="p-4">
                     <p className="font-mono text-xs text-muted-foreground mb-1">{label}</p>
-                    {statValues[key] === undefined ? (
+                    {'value' in rest ? (
+                      <p className="font-mono text-2xl font-bold text-foreground">{rest.value}</p>
+                    ) : statValues[key] === undefined ? (
                       <Skeleton className="h-7 w-16" />
                     ) : (
                       <p className="font-mono text-2xl font-bold text-foreground">
-                        {statValues[key]!.toLocaleString()}
+                        {typeof statValues[key] === 'number'
+                          ? statValues[key]!.toLocaleString()
+                          : statValues[key]}
                       </p>
                     )}
                   </CardContent>
@@ -214,7 +186,6 @@ export const HallOfFamePage = () => {
               ))}
             </div>
 
-            {/* Filters */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 flex-wrap">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 min-w-0">
@@ -241,7 +212,7 @@ export const HallOfFamePage = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search ranks..."
+                  placeholder="Search benders..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="pl-9 font-mono text-sm"
@@ -249,50 +220,36 @@ export const HallOfFamePage = () => {
               </div>
             </div>
 
-            {/* DisciplineStats strip */}
             {activeTab !== 'All' && !isLoading && (
-              <DisciplineStats
-                discipline={activeTab}
-                benders={disciplineBenders}
-                totalSlots={SLOTS_PER_DISCIPLINE}
-              />
+              <DisciplineStats discipline={activeTab} benders={disciplineBenders} />
             )}
 
-            {/* Error state */}
             {error && (
               <p className="font-mono text-sm text-red-500">
                 // Error loading benders: {error.message}
               </p>
             )}
 
-            {/* Grid */}
             {isLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {Array.from({ length: 24 }).map((_, i) => (
                   <Skeleton key={i} className="h-32" />
                 ))}
               </div>
-            ) : visibleSlots.length === 0 ? (
+            ) : visibleBenders.length === 0 ? (
               <p className="font-mono text-sm text-muted-foreground">
-                // No ranks match your search.
+                // No benders match your filters yet — ranks are unlimited, claim yours from the
+                dashboard.
               </p>
             ) : (
               <div className="space-y-6">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {showFounder && <FounderCard />}
-                  {displayedSlots.map(slot =>
-                    slot.bender ? (
-                      <div key={slot.displayName} className="relative">
-                        <BenderCard bender={slot.bender} isPublished={slot.bender.isPublished} />
-                      </div>
-                    ) : (
-                      <UnclaimedCard
-                        key={slot.displayName}
-                        rankName={slot.displayName}
-                        discipline={slot.discipline}
-                      />
-                    ),
-                  )}
+                  {displayedBenders.map(bender => (
+                    <div key={bender.handle} className="relative">
+                      <BenderCard bender={bender} isPublished={bender.isPublished} />
+                    </div>
+                  ))}
                 </div>
 
                 {hasMore && (
@@ -308,7 +265,7 @@ export const HallOfFamePage = () => {
                           type="button"
                           variant="outline"
                           className="font-mono text-sm"
-                          onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                          onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
                         >
                           Load more ({Math.min(PAGE_SIZE, remaining)} more
                           {remaining > PAGE_SIZE ? ` · ${remaining} left` : ''})
