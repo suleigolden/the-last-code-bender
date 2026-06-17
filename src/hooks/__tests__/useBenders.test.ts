@@ -3,24 +3,15 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createElement, type ReactNode } from 'react';
 
-// ── Mock supabase ──────────────────────────────────────────────────────────────
-const mockSelect = vi.fn().mockReturnThis();
-const mockEq = vi.fn().mockReturnThis();
-const mockMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
-const mockOrder = vi.fn().mockReturnThis();
-const mockLimit = vi.fn().mockReturnThis();
-
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: mockSelect,
-      eq: mockEq,
-      maybeSingle: mockMaybeSingle,
-      order: mockOrder,
-      limit: mockLimit,
-      ilike: vi.fn().mockReturnThis(),
-    })),
+// ── Mock api-client ─────────────────────────────────────────────────────────
+vi.mock('@/lib/api-client', () => ({
+  api: {
+    get: vi.fn().mockResolvedValue([]),
+    post: vi.fn().mockResolvedValue({}),
+    patch: vi.fn().mockResolvedValue({}),
+    put: vi.fn().mockResolvedValue({}),
   },
+  decodeJwtPayload: vi.fn().mockReturnValue(null),
 }));
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -62,7 +53,8 @@ describe('useHasClaimedRank', () => {
   });
 
   it('returns null when no bender is found for a given github login', async () => {
-    mockMaybeSingle.mockResolvedValueOnce({ data: null, error: null });
+    const { api } = await import('@/lib/api-client');
+    vi.mocked(api.get).mockResolvedValueOnce([]);
 
     const { useHasClaimedRank } = await import('../useBenders');
     const { result } = renderHook(() => useHasClaimedRank('someuser'), {

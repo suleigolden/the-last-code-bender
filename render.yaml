@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: thelastcodebender-api
+    env: node
+    rootDir: api
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: node dist/main
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: thelastcodebender-db
+          property: connectionString
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: FRONTEND_URL
+        value: https://thelastcodebender.com
+      - key: GITHUB_CALLBACK_URL
+        value: https://thelastcodebender-api.onrender.com/api/auth/github/callback
+
+  - type: web
+    name: thelastcodebender-frontend
+    env: static
+    buildCommand: bun install && bun run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://thelastcodebender-api.onrender.com
+
+databases:
+  - name: thelastcodebender-db
+    plan: free

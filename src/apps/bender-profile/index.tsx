@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import type { StackData } from '@/types/profile';
 import { ForkRepositoryButton } from '@/apps/action-buttons/ ForkRepositoryButton';
 import { IDEWindowControls } from '@/components/ide/IDEWindowControls';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api-client';
 import { CodeBenderPlaceholder } from '../codebender-profile-placeholder/CodeBenderPlaceholder';
 import { JourneyStartBadge } from '@/components/skill/JourneyStartBadge';
 
@@ -163,15 +163,9 @@ export const BenderProfilePage = () => {
       localStorage.setItem(storageKey, '1');
 
       // Fire-and-forget view tracking (deduped per browser+handle via localStorage).
-      // NOTE: Supabase client typing can resolve table inserts as `never` if the
-      // local `Database` type drifts from the generated schema shape.
-      // Runtime behavior is correct; keep this non-blocking.
-      void (supabase as unknown as { from: (t: string) => { insert: (v: unknown) => unknown } })
-        .from('demo_views')
-        .insert({
-          handle: benderRow.handle,
-          viewer_ip: hashString(fingerprint),
-        });
+      void api.post(`/api/benders/${benderRow.handle}/demo-views`, {
+        viewer_ip: hashString(fingerprint),
+      });
     } catch {
       // Ignore view tracking failures (private browsing, storage disabled, etc.)
     }

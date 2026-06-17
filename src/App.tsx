@@ -14,6 +14,7 @@ import { DocsPage } from "./apps/docs";
 import { Layout } from "@/components/layout/Layout";
 import { HomePage } from "./apps/landing-page";
 import { LoginPage } from "./apps/auth";
+import { AuthCallbackPage } from "./apps/auth/callback";
 import { Dashboard } from "./apps/dash-board";
 import { ProfileWorkspacePage } from "./apps/profile-workspace";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -32,6 +33,7 @@ const App = () => (
           <Routes>
             {/* Full-screen pages — no Layout */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/dashboard" element={
               <RequireAuth><Dashboard /></RequireAuth>
             } />

@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  github_login String   @unique
+  github_id    BigInt   @unique
+  avatar_url   String?
+  name         String?
+  email        String?
+  created_at   DateTime @default(now())
+  last_sign_in DateTime @default(now())
+
+  @@map("users")
+}
+
+model Bender {
+  id                 String    @id @default(uuid())
+  handle             String    @unique
+  github             String
+  github_login       String    @unique
+  discipline         String
+  rank               Int
+  rank_tier          String    @default("Apprentice")
+  xp                 Int       @default(0)
+  skill_version      String    @default("1.0.0")
+  cached_skill       String?
+  skill_live         Boolean   @default(false)
+  open_to_work       Boolean   @default(false)
+  challenge_wins     Int       @default(0)
+  is_founder         Boolean   @default(false)
+  community_vote     Boolean   @default(false)
+  cached_stack       Json?
+  demo_url           String?
+  demo_description   String?
+  demo_type          String?
+  demo_views         Int       @default(0)
+  profile_url        String?
+  avatar_url         String?
+  registered_at      DateTime  @default(now())
+  last_active        DateTime  @default(now())
+  journey_started_at DateTime?
+  github_synced_at   DateTime?
+  github_data_cache  Json?
+
+  xp_events XpEvent[]
+  workspace BenderProfileWorkspace?
+  snapshots BenderProfileSnapshot[]
+
+  @@unique([discipline, rank])
+  @@map("benders")
+}
+
+model XpEvent {
+  id         String   @id @default(uuid())
+  bender_id  String
+  handle     String
+  event_type String
+  xp_awarded Int
+  metadata   Json?
+  created_at DateTime @default(now())
+
+  bender Bender @relation(fields: [bender_id], references: [id], onDelete: Cascade)
+
+  @@map("xp_events")
+}
+
+model Challenge {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  type        String
+  discipline  String?
+  spec        String
+  constraints String?
+  scoring     Json     @default("{\"correctness\":40,\"performance\":30,\"style\":30}")
+  opens_at    DateTime
+  closes_at   DateTime
+  xp_winner   Int      @default(100)
+  xp_submit   Int      @default(10)
+
+  submissions ChallengeSubmission[]
+
+  @@map("challenges")
+}
+
+model ChallengeSubmission {
+  id              String    @id @default(uuid())
+  challenge_id    String
+  challenge_slug  String
+  handle          String
+  github          String
+  content         String
+  language        String?
+  score_total     Int?
+  score_breakdown Json?
+  ai_feedback     String?
+  placement       Int?
+  submitted_at    DateTime  @default(now())
+  judged_at       DateTime?
+
+  challenge Challenge @relation(fields: [challenge_id], references: [id], onDelete: Cascade)
+
+  @@unique([challenge_id, handle])
+  @@map("challenge_submissions")
+}
+
+model BenderProfileWorkspace {
+  bender_id  String   @id
+  files      Json     @default("{}")
+  updated_at DateTime @default(now())
+
+  bender Bender @relation(fields: [bender_id], references: [id], onDelete: Cascade)
+
+  @@map("bender_profile_workspace")
+}
+
+model BenderProfileSnapshot {
+  id             String   @id @default(uuid())
+  bender_id      String
+  commit_message String
+  files          Json
+  created_at     DateTime @default(now())
+
+  bender Bender @relation(fields: [bender_id], references: [id], onDelete: Cascade)
+
+  @@map("bender_profile_snapshots")
+}
+
+model DemoView {
+  id        String   @id @default(uuid())
+  handle    String
+  viewed_at DateTime @default(now())
+  viewer_ip String?
+
+  @@map("demo_views")
+}

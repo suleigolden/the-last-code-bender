@@ -1,62 +1,85 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
+import { decodeJwtPayload } from '@/lib/api-client';
+
+export interface AuthUser {
+  id: string;
+  github_login: string;
+  avatar_url: string | null;
+  email: string | null;
+}
 
 interface AuthContextValue {
-  session: Session | null;
-  user: User | null;
+  user: AuthUser | null;
   githubLogin: string | null;
   avatarUrl: string | null;
   isLoading: boolean;
-  signInWithGitHub: () => Promise<void>;
-  signOut: () => Promise<void>;
+  signInWithGitHub: () => void;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3000';
+const TOKEN_KEY = 'auth_token';
+
+function readUserFromStorage(): AuthUser | null {
+  try {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return null;
+    const payload = decodeJwtPayload(token);
+    if (!payload) return null;
+    // Check expiry
+    if (payload.exp && typeof payload.exp === 'number' && payload.exp * 1000 < Date.now()) {
+      localStorage.removeItem(TOKEN_KEY);
+      return null;
+    }
+    return {
+      id: payload.sub as string,
+      github_login: payload.github_login as string,
+      avatar_url: (payload.avatar_url as string | null) ?? null,
+      email: (payload.email as string | null) ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsLoading(false);
-    });
+    setUser(readUserFromStorage());
+    setIsLoading(false);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    // Listen for storage changes (other tabs signing in/out)
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === TOKEN_KEY) {
+        setUser(readUserFromStorage());
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  const signInWithGitHub = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    });
+  const signInWithGitHub = () => {
+    window.location.href = `${API_URL}/api/auth/github`;
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signOut = () => {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      // ignore
+    }
+    setUser(null);
   };
 
-  const user = session?.user ?? null;
-  const githubLogin =
-    (user?.user_metadata?.user_name as string | undefined) ??
-    (user?.user_metadata?.preferred_username as string | undefined) ??
-    null;
-  const avatarUrl =
-    (user?.user_metadata?.avatar_url as string | undefined) ?? null;
+  const githubLogin = user?.github_login ?? null;
+  const avatarUrl = user?.avatar_url ?? null;
 
   return (
-    <AuthContext.Provider
-      value={{ session, user, githubLogin, avatarUrl, isLoading, signInWithGitHub, signOut }}
-    >
+    <AuthContext.Provider value={{ user, githubLogin, avatarUrl, isLoading, signInWithGitHub, signOut }}>
       {children}
     </AuthContext.Provider>
   );

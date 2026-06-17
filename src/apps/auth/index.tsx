@@ -18,16 +18,16 @@ function GitHubIcon() {
 }
 
 export function LoginPage() {
-  const { session, signInWithGitHub } = useAuth();
+  const { user, signInWithGitHub } = useAuth();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  if (session) {
+  if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     setIsRedirecting(true);
-    await signInWithGitHub();
+    signInWithGitHub();
     // Note: page will redirect — no need to reset state
   };
 

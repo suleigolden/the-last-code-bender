@@ -10,9 +10,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
-import { useChallenges, useMySubmissions, useLeaderboard, useHasClaimedRank } from '@/hooks/useBenders';
+import { useChallenges, useMySubmissions, useLeaderboard, useHasClaimedRank, useSubmitChallenge } from '@/hooks/useBenders';
 import { useProfileWorkspace } from '@/hooks/useProfileWorkspace';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 import { Progress } from '@/components/ui/progress';
@@ -97,12 +96,12 @@ export const ChallengesPage = () => {
   }, [leaderboardRows]);
 
   const { refetch } = useMySubmissions(githubLogin ?? '');
+  const submitChallenge = useSubmitChallenge();
 
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<ChallengeWithActiveRow | null>(null);
   const [language, setLanguage] = useState<(typeof LANGUAGE_OPTIONS)[number]>('typescript');
   const [content, setContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [judgeResult, setJudgeResult] = useState<JudgeResult | null>(null);
 
   const openForChallenge = (c: ChallengeWithActiveRow) => {
@@ -120,50 +119,29 @@ export const ChallengesPage = () => {
       return;
     }
 
-    setIsSubmitting(true);
     setJudgeResult(null);
 
     try {
-      // Insert submission row first (RLS enforces ownership via github field)
-      const { data: inserted, error: insertError } = await supabase
-        .from('challenge_submissions')
-        .insert({
-          challenge_id: selected.id,
-          challenge_slug: selected.slug,
-          handle: githubLogin,
-          github: githubLogin,
-          content: content,
-          language,
-        })
-        .select('id')
-        .single();
-
-      if (insertError) throw insertError;
-      if (!inserted?.id) throw new Error('Failed to create submission');
-
-      const { data: judged, error: invokeError } = await supabase.functions.invoke('judge-challenge', {
-        body: {
-          submission_id: inserted.id,
-          handle: githubLogin,
-          content,
-          challenge_slug: selected.slug,
-          stack: stackParsed ?? stackJson,
-        },
+      const result = await submitChallenge.mutateAsync({
+        challenge_id: selected.id,
+        challenge_slug: selected.slug,
+        handle: githubLogin,
+        github: githubLogin,
+        content,
+        language,
+        stack: stackParsed ?? stackJson,
       });
 
-      if (invokeError) throw invokeError;
+      const judged = result as { approved: boolean; score: JudgeResult['score']; feedback: JudgeResult['feedback'] };
+      if (judged.approved) {
+        setJudgeResult({ approved: true, score: judged.score, feedback: judged.feedback });
+      }
 
-      const result = judged as JudgeResult;
-      setJudgeResult(result);
-
-      // Refresh submissions list (placement/feedback)
       refetch();
       toast.success('Submission judged.');
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Submit failed';
       toast.error(message);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -376,7 +354,7 @@ export const ChallengesPage = () => {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="min-h-[200px]"
-                disabled={isSubmitting}
+                disabled={submitChallenge.isPending}
               />
 
               {judgeResult && (
@@ -408,15 +386,15 @@ export const ChallengesPage = () => {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" className="font-mono" onClick={() => setOpen(false)} disabled={isSubmitting}>
+              <Button variant="outline" className="font-mono" onClick={() => setOpen(false)} disabled={submitChallenge.isPending}>
                 Cancel
               </Button>
-              <Button className="font-mono" disabled={!selected || isSubmitting || !githubLogin} onClick={handleSubmit}>
-                {isSubmitting ? 'Judging…' : 'Submit entry'}
+              <Button className="font-mono" disabled={!selected || submitChallenge.isPending || !githubLogin} onClick={handleSubmit}>
+                {submitChallenge.isPending ? 'Judging…' : 'Submit entry'}
               </Button>
             </DialogFooter>
 
-            {isSubmitting && (
+            {submitChallenge.isPending && (
               <div className="mt-2">
                 <Progress value={50} className="h-1.5" />
               </div>

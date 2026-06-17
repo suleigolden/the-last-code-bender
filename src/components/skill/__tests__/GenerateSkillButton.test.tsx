@@ -15,14 +15,14 @@ vi.mock('@/hooks/useBenders', () => ({
   useIsSyncStale: () => true,
 }))
 
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: null }),
-    })),
+vi.mock('@/lib/api-client', () => ({
+  api: {
+    get: vi.fn().mockResolvedValue(null),
+    post: vi.fn().mockResolvedValue({}),
+    patch: vi.fn().mockResolvedValue({}),
+    put: vi.fn().mockResolvedValue({}),
   },
+  decodeJwtPayload: vi.fn().mockReturnValue(null),
 }))
 
 beforeEach(() => {

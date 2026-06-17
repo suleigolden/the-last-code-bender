@@ -6,7 +6,6 @@ import { LoginPage } from '../index';
 // ── Mock AuthContext ───────────────────────────────────────────────────────────
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
-    session: null,
     user: null,
     githubLogin: null,
     avatarUrl: null,

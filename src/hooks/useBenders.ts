@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import type { BenderRow, BenderGitHubCacheRow, DemoType, Discipline, RankTier } from '@/types/database';
+import { api } from '@/lib/api-client';
+import type { BenderRow, BenderGitHubCacheRow, DemoType, Discipline } from '@/types/database';
 import type { RecruiterFilters } from '@/types/recruiter';
 import type { Bender, RegistryStats } from '@/types/registry';
 import { rowToBender } from '@/lib/bender-adapter';
@@ -19,14 +19,7 @@ export const benderKeys = {
 export function useAllBenders() {
   return useQuery({
     queryKey: benderKeys.all,
-    queryFn: async (): Promise<BenderRow[]> => {
-      const { data, error } = await supabase
-        .from('benders')
-        .select('*')
-        .order('rank', { ascending: true });
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get<BenderRow[]>('/api/benders'),
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -34,15 +27,7 @@ export function useAllBenders() {
 export function useBendersByDiscipline(discipline: Discipline) {
   return useQuery({
     queryKey: benderKeys.byDiscipline(discipline),
-    queryFn: async (): Promise<BenderRow[]> => {
-      const { data, error } = await supabase
-        .from('benders')
-        .select('*')
-        .eq('discipline', discipline)
-        .order('rank', { ascending: true });
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get<BenderRow[]>(`/api/benders/by-discipline/${discipline}`),
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -51,13 +36,11 @@ export function useBenderByHandle(handle: string) {
   return useQuery({
     queryKey: benderKeys.byHandle(handle),
     queryFn: async (): Promise<BenderRow | null> => {
-      const { data, error } = await supabase
-        .from('benders')
-        .select('*')
-        .eq('handle', handle)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      try {
+        return await api.get<BenderRow>(`/api/benders/${handle}`);
+      } catch {
+        return null;
+      }
     },
     enabled: Boolean(handle),
     staleTime: 5 * 60 * 1000,
@@ -68,13 +51,8 @@ export function useHandleAvailable(handle: string) {
   return useQuery({
     queryKey: benderKeys.handleAvailable(handle),
     queryFn: async (): Promise<boolean> => {
-      const { data, error } = await supabase
-        .from('benders')
-        .select('handle')
-        .eq('handle', handle)
-        .maybeSingle();
-      if (error) throw error;
-      return data === null;
+      const data = await api.get<{ available: boolean }>(`/api/benders/${handle}/available`);
+      return data.available;
     },
     enabled: handle.length >= 3,
     staleTime: 30 * 1000,
@@ -86,13 +64,9 @@ export function useHasClaimedRank(githubLogin: string | null) {
     queryKey: benderKeys.hasClaimed(githubLogin ?? ''),
     queryFn: async (): Promise<BenderRow | null> => {
       if (!githubLogin) return null;
-      const { data, error } = await supabase
-        .from('benders')
-        .select('*')
-        .eq('github_login', githubLogin)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
+      // find bender whose github_login matches
+      const all = await api.get<BenderRow[]>('/api/benders');
+      return all.find((b) => b.github_login === githubLogin) ?? null;
     },
     enabled: Boolean(githubLogin),
     staleTime: 60 * 1000,
@@ -111,52 +85,8 @@ interface RegisterBenderInput {
 export function useRegisterBender() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: RegisterBenderInput): Promise<BenderRow> => {
-      // Determine the next available rank for this discipline
-      const { data: existing, error: countError } = await supabase
-        .from('benders')
-        .select('rank')
-        .eq('discipline', input.discipline)
-        .order('rank', { ascending: false })
-        .limit(1);
-      if (countError) throw countError;
-
-      const nextRank = existing && existing.length > 0 ? existing[0]?.rank + 1 : 1;
-
-      const rankTier =
-        nextRank <= 50 ? 'Apprentice'
-        : nextRank <= 100 ? 'Journeyman'
-        : nextRank <= 150 ? 'Senior'
-        : nextRank <= 199 ? 'Master'
-        : 'TheLastCodeBender';
-
-      const { data, error } = await supabase
-        .from('benders')
-        .insert({
-          handle: input.handle,
-          github: input.github,
-          github_login: input.github_login,
-          discipline: input.discipline,
-          rank: nextRank,
-          rank_tier: rankTier as BenderRow['rank_tier'],
-          xp: 0,
-          skill_version: '1.0.0',
-          skill_live: true,
-          open_to_work: false,
-          challenge_wins: 0,
-          demo_url: null,
-          demo_description: null,
-          demo_type: null,
-          demo_views: 0,
-          profile_url: input.profile_url,
-          avatar_url: input.avatar_url,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: (input: RegisterBenderInput) =>
+      api.post<BenderRow>('/api/benders', input),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: benderKeys.all });
       queryClient.invalidateQueries({ queryKey: benderKeys.byDiscipline(data.discipline) });
@@ -165,14 +95,14 @@ export function useRegisterBender() {
   });
 }
 
-/** Supabase-backed drop-in replacement for the old static useRegistry() hook. */
+/** Drop-in replacement for the old static useRegistry() hook. */
 export function useBenderList(): { data: Bender[]; isLoading: boolean; error: Error | null } {
   const { data: rows, isLoading, error } = useAllBenders();
   const data = useMemo(() => (rows ?? []).map(rowToBender), [rows]);
   return { data, isLoading, error };
 }
 
-/** Supabase-backed drop-in replacement for the old static useRegistryStats() hook. */
+/** Drop-in replacement for the old static useRegistryStats() hook. */
 export function useBenderStats(): {
   data: RegistryStats | undefined;
   isLoading: boolean;
@@ -201,16 +131,7 @@ export function useBenderStats(): {
 export function useSearchBenders(query: string) {
   return useQuery({
     queryKey: benderKeys.search(query),
-    queryFn: async (): Promise<BenderRow[]> => {
-      const { data, error } = await supabase
-        .from('benders')
-        .select('*')
-        .ilike('handle', `%${query}%`)
-        .order('xp', { ascending: false })
-        .limit(20);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get<BenderRow[]>(`/api/benders/search?q=${encodeURIComponent(query)}`),
     enabled: query.length >= 2,
     staleTime: 30 * 1000,
   });
@@ -220,16 +141,7 @@ export function useSearchBenders(query: string) {
 export function useXPEvents(handle: string) {
   return useQuery({
     queryKey: ['xp_events', handle],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('xp_events')
-        .select('*')
-        .eq('handle', handle)
-        .order('created_at', { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get(`/api/xp/${handle}`),
     enabled: !!handle,
     staleTime: 1000 * 60,
   });
@@ -239,14 +151,7 @@ export function useXPEvents(handle: string) {
 export function useLeaderboard() {
   return useQuery({
     queryKey: ['leaderboard'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('leaderboard') // the DB view
-        .select('*')
-        .limit(100);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get('/api/leaderboard'),
     staleTime: 1000 * 60 * 2,
   });
 }
@@ -255,14 +160,7 @@ export function useLeaderboard() {
 export function useChallenges() {
   return useQuery({
     queryKey: ['challenges'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('challenges_with_active')
-        .select('*')
-        .order('opens_at', { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get('/api/challenges'),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -270,17 +168,27 @@ export function useChallenges() {
 export function useMySubmissions(handle: string) {
   return useQuery({
     queryKey: ['submissions', handle],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('challenge_submissions')
-        .select('*')
-        .eq('handle', handle)
-        .order('submitted_at', { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => api.get(`/api/challenges/submissions/${handle}`),
     enabled: !!handle,
     staleTime: 1000 * 60,
+  });
+}
+
+export function useSubmitChallenge() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: {
+      challenge_id: string;
+      challenge_slug: string;
+      handle: string;
+      github: string;
+      content: string;
+      language?: string;
+      stack?: unknown;
+    }) => api.post('/api/challenges/submit', body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['submissions', variables.handle] });
+    },
   });
 }
 
@@ -300,38 +208,11 @@ export function useUpdateDemo() {
       demo_description?: string;
       demo_type?: DemoType;
     }) => {
-      const { data: current, error: currentError } = await supabase
-        .from('benders')
-        .select('demo_url')
-        .eq('handle', handle)
-        .maybeSingle();
-      if (currentError) throw currentError;
-
-      const wasNull = !current?.demo_url;
-
-      const { data, error } = await supabase
-        .from('benders')
-        .update({
-          demo_url,
-          demo_description: demo_description ?? null,
-          demo_type: demo_type ?? null,
-        })
-        .eq('handle', handle)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      if (wasNull && demo_url) {
-        await supabase.rpc('award_xp', {
-          p_handle: handle,
-          p_event_type: 'showcase_deployed',
-          p_xp: 20,
-          p_metadata: { demo_url },
-        });
-      }
-
-      return data;
+      return api.patch<BenderRow>(`/api/benders/${handle}/demo`, {
+        demo_url,
+        demo_description,
+        demo_type,
+      });
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(data.handle) });
@@ -340,65 +221,19 @@ export function useUpdateDemo() {
   });
 }
 
-// ── Recruiter (Supabase server-side filtering) ─────────────
+// ── Recruiter ─────────────────────────────────────────────
 export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
   return useQuery({
     queryKey: ['recruiter', filters, query],
-    queryFn: async (): Promise<BenderRow[]> => {
-      let q = supabase
-        .from('benders')
-        .select('*')
-        // Never show founder in recruiter
-        .eq('is_founder', false);
-
-      if (filters.disciplines?.length) {
-        q = q.in('discipline', filters.disciplines);
-      }
-
-      if (filters.openToWork === 'Open to work') {
-        q = q.eq('open_to_work', true);
-      } else if (filters.openToWork === 'Not looking') {
-        q = q.eq('open_to_work', false);
-      }
-
-      if (filters.minRank !== 'Any') {
-        const tiers: RankTier[] =
-          filters.minRank === 'Journeyman+'
-            ? ['Journeyman', 'Senior', 'Master']
-            : filters.minRank === 'Senior+'
-              ? ['Senior', 'Master']
-              : ['Master'];
-        if (tiers.length) q = q.in('rank_tier', tiers);
-      }
-
-      const requiredTechs = filters.mustHaveStack
-        .split(',')
-        .map((t) => t.trim().toLowerCase())
-        .filter(Boolean);
-
-      // Best-effort server-side filtering using cached_stack languages.
-      // Requires cached_stack to exist in the DB.
-      if (requiredTechs.length > 0) {
-        q = q.contains('cached_stack', { languages: requiredTechs });
-      }
-
-      if (query && query.length >= 2) {
-        q = q.or(`handle.ilike.%${query}%,github.ilike.%${query}%`);
-      }
-
-      if (filters.sortBy === 'Most XP') {
-        q = q.order('xp', { ascending: false });
-      } else if (filters.sortBy === 'Most recent') {
-        q = q.order('last_active', { ascending: false });
-      } else if (filters.sortBy === 'Most challenge wins') {
-        q = q.order('challenge_wins', { ascending: false });
-      }
-
-      q = q.limit(50);
-
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (filters.disciplines?.length) params.set('disciplines', filters.disciplines.join(','));
+      if (filters.openToWork) params.set('openToWork', filters.openToWork);
+      if (filters.minRank) params.set('minRank', filters.minRank);
+      if (filters.mustHaveStack) params.set('mustHaveStack', filters.mustHaveStack);
+      if (filters.sortBy) params.set('sortBy', filters.sortBy);
+      if (query && query.length >= 2) params.set('q', query);
+      return api.get<BenderRow[]>(`/api/benders/recruiter?${params.toString()}`);
     },
     staleTime: 1000 * 60,
   });
@@ -407,90 +242,62 @@ export function useRecruiterSearch(filters: RecruiterFilters, query: string) {
 export function useGitHubDataCache(handle: string) {
   return useQuery({
     queryKey: benderKeys.githubCache(handle),
-    queryFn: async (): Promise<BenderGitHubCacheRow | null> => {
-      const { data, error } = await supabase
-        .from('benders')
-        .select('github_data_cache, github_synced_at, journey_started_at')
-        .eq('handle', handle)
-        .maybeSingle()
-      if (error) throw error
-      return data as BenderGitHubCacheRow | null
-    },
+    queryFn: () => api.get<BenderGitHubCacheRow>(`/api/benders/${handle}`),
     enabled: !!handle,
     staleTime: 1000 * 60 * 5,
-  })
+  });
 }
 
 export function useIsSyncStale(handle: string): boolean {
-  const { data } = useGitHubDataCache(handle)
-  if (!data?.github_synced_at) return true
-  const hoursSince = (Date.now() - new Date(data.github_synced_at).getTime()) / (1000 * 60 * 60)
-  return hoursSince > 24
+  const { data } = useGitHubDataCache(handle);
+  if (!data?.github_synced_at) return true;
+  const hoursSince = (Date.now() - new Date(data.github_synced_at).getTime()) / (1000 * 60 * 60);
+  return hoursSince > 24;
 }
 
 /**
- * Trigger GitHub-based SKILL.md generation via Edge Function.
- * Fetches GitHub profile, generates SKILL.md, stores in workspace.
+ * Trigger GitHub-based SKILL.md generation via API.
  */
 export function useGenerateSkill() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      handle,
-      githubUsername,
-      discipline,
-      forceRefresh = false,
-    }: {
-      handle: string
-      githubUsername: string
-      discipline: string
-      forceRefresh?: boolean
-    }) => {
-      const { data, error } = await supabase.functions.invoke('generate-skill', {
-        body: {
-          handle,
-          github_username: githubUsername,
-          discipline,
-          force_refresh: forceRefresh,
-        },
-      })
-      if (error) throw error
-      return data as {
-        status: 'generated' | 'cached'
-        message: string
+    mutationFn: (input: {
+      handle: string;
+      githubUsername: string;
+      discipline: string;
+      forceRefresh?: boolean;
+    }) =>
+      api.post<{
+        status: 'generated' | 'cached';
+        message: string;
         github_data?: {
-          journey_started: string
-          years_on_github: number
-          top_languages: string[]
-          repos_analysed: number
-        }
-      }
-    },
+          journey_started: string;
+          years_on_github: number;
+          top_languages: string[];
+          repos_analysed: number;
+        };
+      }>('/api/skills/generate', {
+        handle: input.handle,
+        github_username: input.githubUsername,
+        discipline: input.discipline,
+        force_refresh: input.forceRefresh,
+      }),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) })
+      queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) });
       queryClient.invalidateQueries({
         queryKey: ['benders', 'github_cache', variables.handle],
-      })
+      });
     },
-  })
+  });
 }
 
 export function useUpdateSkillLive() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ handle, skill_live }: { handle: string; skill_live: boolean }) => {
-      const { data, error } = await supabase
-        .from('benders')
-        .update({ skill_live })
-        .eq('handle', handle)
-        .select()
-        .maybeSingle();
-      if (error) throw error;
-      if (!data) throw new Error('Update blocked — check Supabase RLS policy for skill_live');
-      return data;
-    },
+    mutationFn: ({ handle, skill_live }: { handle: string; skill_live: boolean }) =>
+      api.patch<BenderRow>(`/api/skills/${handle}/live`, { skill_live }),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: benderKeys.all });
       queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) });
@@ -502,16 +309,8 @@ export function useUpdateOpenToWork() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ handle, open_to_work }: { handle: string; open_to_work: boolean }) => {
-      const { data, error } = await supabase
-        .from('benders')
-        .update({ open_to_work })
-        .eq('handle', handle)
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: ({ handle, open_to_work }: { handle: string; open_to_work: boolean }) =>
+      api.patch<BenderRow>(`/api/benders/${handle}/open-to-work`, { open_to_work }),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: benderKeys.all });
       queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(variables.handle) });
