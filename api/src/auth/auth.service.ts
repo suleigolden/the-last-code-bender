@@ -17,6 +17,13 @@ export interface JwtPayload {
   email: string | null;
 }
 
+export interface AuthUser {
+  id: string;
+  github_login: string;
+  avatar_url: string | null;
+  email: string | null;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
