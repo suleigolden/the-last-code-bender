@@ -222,7 +222,6 @@ This date is locked.
       headers: {
         Authorization: `Bearer ${githubToken}`,
         'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2026-03-10',
       },
       body: JSON.stringify({
         model: 'openai/gpt-4o-mini',
@@ -232,9 +231,20 @@ This date is locked.
       }),
     });
 
+    if (!modelRes.ok) {
+      const errText = await modelRes.text();
+      throw new Error(`GitHub Models API error ${modelRes.status}: ${errText}`);
+    }
+
     const modelData = (await modelRes.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
+      error?: { message?: string };
     };
+
+    if (modelData.error) {
+      throw new Error(`GitHub Models API error: ${modelData.error.message ?? JSON.stringify(modelData.error)}`);
+    }
+
     const generatedSkill = modelData?.choices?.[0]?.message?.content?.trim() ?? '';
 
     if (!generatedSkill) throw new Error('Generation returned empty content');
@@ -310,7 +320,6 @@ Or exactly one sentence starting with the failed check name in caps.`;
       headers: {
         Authorization: `Bearer ${githubToken}`,
         'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2026-03-10',
       },
       body: JSON.stringify({
         model: 'openai/gpt-4o-mini',
@@ -320,9 +329,20 @@ Or exactly one sentence starting with the failed check name in caps.`;
       }),
     });
 
+    if (!modelRes.ok) {
+      const errText = await modelRes.text();
+      throw new Error(`GitHub Models API error ${modelRes.status}: ${errText}`);
+    }
+
     const modelData = (await modelRes.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
+      error?: { message?: string };
     };
+
+    if (modelData.error) {
+      throw new Error(`GitHub Models API error: ${modelData.error.message ?? JSON.stringify(modelData.error)}`);
+    }
+
     const verdict = modelData?.choices?.[0]?.message?.content?.trim() ?? '';
     const approved = verdict.toLowerCase() === 'approve';
 

@@ -113,7 +113,6 @@ Respond ONLY with a JSON object (no markdown) in this exact format:
       headers: {
         Authorization: `Bearer ${githubToken}`,
         'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2026-03-10',
       },
       body: JSON.stringify({
         model: 'openai/gpt-4o-mini',
@@ -123,9 +122,20 @@ Respond ONLY with a JSON object (no markdown) in this exact format:
       }),
     });
 
+    if (!modelRes.ok) {
+      const errText = await modelRes.text();
+      return { approved: false, error: `GitHub Models API error ${modelRes.status}: ${errText}`, submission };
+    }
+
     const modelData = (await modelRes.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
+      error?: { message?: string };
     };
+
+    if (modelData.error) {
+      return { approved: false, error: `GitHub Models API error: ${modelData.error.message ?? JSON.stringify(modelData.error)}`, submission };
+    }
+
     const rawText = modelData?.choices?.[0]?.message?.content?.trim() ?? '';
     const parsed = extractJson(rawText);
 
