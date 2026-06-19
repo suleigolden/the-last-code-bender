@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AwardXpService } from '../common/award-xp.service';
+import { chatCompletion } from '../common/github-models';
 
 const GITHUB_API = 'https://api.github.com';
-const GITHUB_MODELS_ENDPOINT = 'https://models.github.ai/inference/chat/completions';
 
 @Injectable()
 export class SkillsService {
@@ -217,37 +217,10 @@ ${journeyFormatted}
 This date is locked.
 ## Invocation note`;
 
-    const modelRes = await fetch(GITHUB_MODELS_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${githubToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
-        messages: [{ role: 'user', content: generationPrompt }],
-        max_tokens: 1200,
-        temperature: 0.3,
-      }),
+    const generatedSkill = await chatCompletion(generationPrompt, {
+      max_tokens: 1200,
+      temperature: 0.3,
     });
-
-    if (!modelRes.ok) {
-      const errText = await modelRes.text();
-      throw new Error(`GitHub Models API error ${modelRes.status}: ${errText}`);
-    }
-
-    const modelData = (await modelRes.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-      error?: { message?: string };
-    };
-
-    if (modelData.error) {
-      throw new Error(`GitHub Models API error: ${modelData.error.message ?? JSON.stringify(modelData.error)}`);
-    }
-
-    const generatedSkill = modelData?.choices?.[0]?.message?.content?.trim() ?? '';
-
-    if (!generatedSkill) throw new Error('Generation returned empty content');
 
     const now = new Date();
 
@@ -295,9 +268,6 @@ This date is locked.
     skill_content: string;
     stack_content?: string;
   }) {
-    const githubToken = process.env.GITHUB_TOKEN;
-    if (!githubToken) throw new Error('Missing GITHUB_TOKEN');
-
     const reviewPrompt = `You are reviewing a SKILL.md for TheLastCodeBender platform.
 This becomes a live Claude Code skill developers invoke as @${input.handle}.
 
@@ -315,35 +285,10 @@ Check:
 Respond with exactly: approve
 Or exactly one sentence starting with the failed check name in caps.`;
 
-    const modelRes = await fetch(GITHUB_MODELS_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${githubToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
-        messages: [{ role: 'user', content: reviewPrompt }],
-        max_tokens: 150,
-        temperature: 0.1,
-      }),
+    const verdict = await chatCompletion(reviewPrompt, {
+      max_tokens: 150,
+      temperature: 0.1,
     });
-
-    if (!modelRes.ok) {
-      const errText = await modelRes.text();
-      throw new Error(`GitHub Models API error ${modelRes.status}: ${errText}`);
-    }
-
-    const modelData = (await modelRes.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-      error?: { message?: string };
-    };
-
-    if (modelData.error) {
-      throw new Error(`GitHub Models API error: ${modelData.error.message ?? JSON.stringify(modelData.error)}`);
-    }
-
-    const verdict = modelData?.choices?.[0]?.message?.content?.trim() ?? '';
     const approved = verdict.toLowerCase() === 'approve';
 
     if (approved) {
