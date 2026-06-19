@@ -1,5 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { joinUrl } from '../common/join-url';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthService } from './auth.service';
 import type { Request, Response } from 'express';
@@ -25,7 +26,7 @@ export class AuthController {
     };
     const token = this.authService.generateJwt(user);
     const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:3004';
-    res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+    res.redirect(`${joinUrl(frontendUrl, '/auth/callback')}?token=${token}`);
   }
 
   @Get('me')

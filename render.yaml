@@ -28,6 +28,10 @@ services:
     env: static
     buildCommand: bun install && bun run build
     staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://the-last-code-bender-api.onrender.com
