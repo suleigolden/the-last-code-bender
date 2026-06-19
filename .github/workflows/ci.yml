@@ -28,12 +28,8 @@ jobs:
             echo "FAIL: .env.example is missing"
             exit 1
           fi
-          if ! grep -q "^VITE_SUPABASE_URL=" ".env.example"; then
-            echo "FAIL: .env.example is missing VITE_SUPABASE_URL"
-            exit 1
-          fi
-          if ! grep -q "^VITE_SUPABASE_ANON_KEY=" ".env.example"; then
-            echo "FAIL: .env.example is missing VITE_SUPABASE_ANON_KEY"
+          if ! grep -q "^VITE_API_URL=" ".env.example"; then
+            echo "FAIL: .env.example is missing VITE_API_URL"
             exit 1
           fi
 
