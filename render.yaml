@@ -21,7 +21,7 @@ services:
       - key: FRONTEND_URL
         value: https://thelastcodebender.com
       - key: GITHUB_CALLBACK_URL
-        value: https://thelastcodebender-api.onrender.com/api/auth/github/callback
+        value: https://the-last-code-bender-api.onrender.com/api/auth/github/callback
 
   - type: web
     name: thelastcodebender-frontend
@@ -30,7 +30,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://thelastcodebender-api.onrender.com
+        value: https://the-last-code-bender-api.onrender.com
 
 databases:
   - name: thelastcodebender-db
