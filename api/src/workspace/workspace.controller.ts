@@ -7,7 +7,6 @@ export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}
 
   @Get(':benderId')
-  @UseGuards(JwtAuthGuard)
   async getWorkspace(@Param('benderId') benderId: string) {
     return this.workspaceService.getWorkspace(benderId);
   }
