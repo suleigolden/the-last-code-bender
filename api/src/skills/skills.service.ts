@@ -318,6 +318,11 @@ Or exactly one sentence starting with the failed check name in caps.`;
     });
     if (!bender?.cached_skill || !bender.skill_live) return null;
 
+    await this.prisma.bender.update({
+      where: { handle },
+      data: { skill_downloads: { increment: 1 } },
+    });
+
     const identityMatch = bender.cached_skill.match(/## Identity\n+([\s\S]+?)(?=\n## |$)/);
     const description =
       identityMatch?.[1]?.split('\n').find((l) => l.trim())?.trim() ??

@@ -127,6 +127,7 @@ export interface BenderRow {
   demo_description?: string | null;
   demo_type?: DemoType | null;
   demo_views: number;
+  skill_downloads: number;
   registered_at: string;
   last_active: string;
   journey_started_at: string | null;

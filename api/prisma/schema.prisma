@@ -41,6 +41,7 @@ model Bender {
   demo_description   String?
   demo_type          String?
   demo_views         Int       @default(0)
+  skill_downloads    Int       @default(0)
   profile_url        String?
   avatar_url         String?
   registered_at      DateTime  @default(now())

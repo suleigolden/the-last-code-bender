@@ -12,7 +12,7 @@ const baseBender: Bender = {
   handle: 'testbender', github: 'testbender', discipline: 'Frontend',
   rank: 'Apprentice', xp: 0, skill_version: null, skill_live: false,
   open_to_work: false, challenge_wins: 0, community_vote: false,
-  demo_url: null, demo_views: 0, joined: TODAY, last_active: TODAY,
+  demo_url: null, demo_views: 0, skill_downloads: 0, joined: TODAY, last_active: TODAY,
   cached_stack: null,
 };
 

@@ -21,6 +21,7 @@ export function rowToBender(row: BenderRow): Bender {
     cached_stack: row.cached_stack ?? null,
     demo_url: row.demo_url,
     demo_views: row.demo_views,
+    skill_downloads: row.skill_downloads,
     joined: row.registered_at,
     last_active: row.last_active,
     isPublished: true,

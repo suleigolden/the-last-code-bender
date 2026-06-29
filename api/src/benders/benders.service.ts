@@ -139,6 +139,7 @@ export class BendersService {
         demo_description: null,
         demo_type: null,
         demo_views: 0,
+        skill_downloads: 0,
         profile_url: input.profile_url,
         avatar_url: input.avatar_url,
       },

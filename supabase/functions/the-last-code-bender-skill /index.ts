@@ -28,7 +28,7 @@ serve(async (req) => {
 
   const { data } = await supabase
     .from('benders')
-    .select('cached_skill')
+    .select('cached_skill, skill_downloads')
     .eq('handle', handle)
     .eq('skill_live', true)
     .maybeSingle()
@@ -36,6 +36,11 @@ serve(async (req) => {
   if (!data?.cached_skill) {
     return new Response('Not found', { status: 404, headers: corsHeaders })
   }
+
+  void supabase
+    .from('benders')
+    .update({ skill_downloads: (data.skill_downloads ?? 0) + 1 })
+    .eq('handle', handle)
 
   const identityMatch = data.cached_skill.match(/## Identity\n+([\s\S]+?)(?=\n## |$)/)
   const description =

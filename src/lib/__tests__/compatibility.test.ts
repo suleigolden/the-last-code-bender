@@ -6,7 +6,7 @@ import type { StackData } from '@/types/profile';
 const mkBender = (handle: string, disc = 'Frontend'): Bender => ({
   handle, github: handle, discipline: disc, rank: 'Apprentice', xp: 0,
   skill_version: null, skill_live: false, open_to_work: false,
-  challenge_wins: 0, community_vote: false, demo_url: null, demo_views: 0,
+  challenge_wins: 0, community_vote: false, demo_url: null, demo_views: 0, skill_downloads: 0,
   joined: '2024-01-01', last_active: '2024-01-01',
 });
 

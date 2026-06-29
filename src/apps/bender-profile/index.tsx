@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FileCode2, FolderTree, Github } from 'lucide-react';
+import { FileCode2, FolderTree, Github, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -247,6 +247,12 @@ export const BenderProfilePage = () => {
       githubLogin.toLowerCase() === benderRow.github_login.toLowerCase(),
   );
 
+  const skillDownloads = benderRow?.skill_downloads ?? 0;
+
+  const scrollToSkills = () => {
+    document.getElementById('bender-skills')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   if (handle === 'codebender-profile-placeholder') {
     return <Navigate to="/hall-of-fame" replace />;
   }
@@ -377,6 +383,26 @@ export const BenderProfilePage = () => {
                             />
                           </div>
                         )}
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {bender.skill_live && (
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-[14px] px-1.5 py-0 h-5 leading-none text-syntax-string border-syntax-string gap-1"
+                            >
+                              <Download className="w-3 h-3" />
+                              {skillDownloads} skill{skillDownloads === 1 ? '' : 's'} downloaded
+                            </Badge>
+                          )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="font-mono text-[14px] h-7"
+                            onClick={scrollToSkills}
+                          >
+                            Bender Skills
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -448,11 +474,13 @@ export const BenderProfilePage = () => {
 
                   {/* Skill Card */}
                   {bender && (
-                    <SkillCard
-                      handle={bender.handle}
-                      skillLive={bender.skill_live || !!benderRow?.cached_skill}
-                      cachedSkill={benderRow?.cached_skill}
-                    />
+                    <div id="bender-skills" className="scroll-mt-4">
+                      <SkillCard
+                        handle={bender.handle}
+                        skillLive={bender.skill_live || !!benderRow?.cached_skill}
+                        cachedSkill={benderRow?.cached_skill}
+                      />
+                    </div>
                   )}
                 </>
               )}

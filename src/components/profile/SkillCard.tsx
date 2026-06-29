@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { benderKeys } from '@/hooks/useBenders';
 
 interface SkillCardProps {
   handle: string;
@@ -63,6 +65,7 @@ function SectionContent({ content }: { content: string }) {
 }
 
 export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) => {
+  const queryClient = useQueryClient();
   const [expanded, setExpanded] = useState(false);
   const [installExpanded, setInstallExpanded] = useState(false);
 
@@ -80,6 +83,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
     a.download = 'SKILL.md';
     a.click();
     URL.revokeObjectURL(a.href);
+    void queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(handle) });
   };
 
   return (

@@ -12,6 +12,7 @@ export interface Bender {
   cached_stack: unknown | null;
   demo_url: string | null;
   demo_views: number;
+  skill_downloads: number;
   joined: string;
   last_active: string;
   isPublished: boolean;
