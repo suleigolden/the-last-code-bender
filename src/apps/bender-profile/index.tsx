@@ -360,7 +360,7 @@ export const BenderProfilePage = () => {
                             className="gap-1 px-0 h-7 font-mono text-[14px]"
                           >
                             <a
-                              href={`https://github.com/${bender.github}`}
+                              href={`${bender.github}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
