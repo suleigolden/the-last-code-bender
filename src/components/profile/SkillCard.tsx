@@ -74,17 +74,17 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
   const serveSkillUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/the-last-code-bender-skill?handle=${handle}`;
   const curlCommand = `curl -fsSL "${serveSkillUrl}" \\\n  --create-dirs -o ~/.claude/skills/${handle}/SKILL.md`;
 
-  const handleDownload = async () => {
-    const res = await fetch(serveSkillUrl);
-    const text = await res.text();
-    const blob = new Blob([text], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'SKILL.md';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    void queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(handle) });
-  };
+  // const handleDownload = async () => {
+  //   const res = await fetch(serveSkillUrl);
+  //   const text = await res.text();
+  //   const blob = new Blob([text], { type: 'text/plain' });
+  //   const a = document.createElement('a');
+  //   a.href = URL.createObjectURL(blob);
+  //   a.download = 'SKILL.md';
+  //   a.click();
+  //   URL.revokeObjectURL(a.href);
+  //   void queryClient.invalidateQueries({ queryKey: benderKeys.byHandle(handle) });
+  // };
 
   return (
     <Card className="mt-8 bg-ide-sidebar border-border">
@@ -155,8 +155,8 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
                       Then use <code className="text-primary">/{handle}</code> in any Claude Code session.
                     </p>
                   </div>
-
-                  <Button
+                  {/* disabled for now, user should use curl command to install the skill */}
+                  {/* <Button
                     size="sm"
                     variant="outline"
                     className="gap-2 font-mono text-xs"
@@ -164,7 +164,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
                   >
                     <Download className="h-3.5 w-3.5" />
                     Download SKILL.md
-                  </Button>
+                  </Button> */}
                 </div>
               )}
             </div>
