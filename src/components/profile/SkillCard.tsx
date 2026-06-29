@@ -71,7 +71,7 @@ export const SkillCard = ({ handle, skillLive, cachedSkill }: SkillCardProps) =>
 
   const sections = cachedSkill ? parseSections(cachedSkill) : [];
 
-  const serveSkillUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/the-last-code-bender-skill?handle=${handle}`;
+  const serveSkillUrl = `https://the-last-code-bender-api.onrender.com/api/skills/${handle}`;
   const curlCommand = `curl -fsSL "${serveSkillUrl}" \\\n  --create-dirs -o ~/.claude/skills/${handle}/SKILL.md`;
 
   // const handleDownload = async () => {

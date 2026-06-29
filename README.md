@@ -88,7 +88,7 @@ Any live skill can be installed into your Claude Code CLI in two steps.
 **Step 1 — Install the skill** (run in your terminal):
 
 ```bash
-curl -fsSL "https://ueqtimpcwjwoqlhcyzyo.supabase.co/functions/v1/the-last-code-bender-skill?handle=TheLastCodeBender" \
+curl -fsSL "https://the-last-code-bender-api.onrender.com/api/skills/TheLastCodeBender" \
   --create-dirs -o ~/.claude/skills/TheLastCodeBender/SKILL.md
 ```
 

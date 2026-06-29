@@ -103,11 +103,11 @@ export function SkillSection() {
             <Cm>// Install any live skill into your Claude Code CLI:</Cm>
           </p>
           <Step n={1} title="Run in your terminal">
-          <CodeBlock>{'curl -fsSL "https://ueqtimpcwjwoqlhcyzyo.supabase.co/functions/v1/the-last-code-bender-skill?handle=TheLastCodeBender" \\\n  --create-dirs -o ~/.claude/skills/YouHandle/SKILL.md'}</CodeBlock>
+          <CodeBlock>{'curl -fsSL "https://the-last-code-bender-api.onrender.com/api/skills/{YourHandle}" \\\n  --create-dirs -o ~/.claude/skills/{YourHandle}/SKILL.md'}</CodeBlock>
           <p className="mt-2 text-muted-foreground text-xs">
 
               <h1>Example:</h1>
-              <CodeBlock>{'curl -fsSL "https://ueqtimpcwjwoqlhcyzyo.supabase.co/functions/v1/the-last-code-bender-skill?handle=TheLastCodeBender" \\\n  --create-dirs -o ~/.claude/skills/TheLastCodeBender/SKILL.md'}</CodeBlock>
+              <CodeBlock>{'curl -fsSL "https://the-last-code-bender-api.onrender.com/api/skills/TheLastCodeBender" \\\n  --create-dirs -o ~/.claude/skills/TheLastCodeBender/SKILL.md'}</CodeBlock>
               <p className="mt-2 text-muted-foreground text-xs">
                 This will download the SKILL.md file to your ~/.claude/skills/TheLastCodeBender/ directory.
               </p>
