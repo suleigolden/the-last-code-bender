@@ -44,6 +44,7 @@ export function useBenderByHandle(handle: string) {
     },
     enabled: Boolean(handle),
     staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 
