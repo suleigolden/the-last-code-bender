@@ -43,7 +43,7 @@ export function useBenderByHandle(handle: string) {
       }
     },
     enabled: Boolean(handle),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 
