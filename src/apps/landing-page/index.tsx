@@ -12,12 +12,18 @@ export function HomePage() {
       {/* Hero */}
       <section className="px-4 pt-16 pb-12 sm:pt-20 sm:pb-16 text-center">
         <div className="max-w-2xl mx-auto space-y-5">
+          <div className="flex items-center justify-center gap-2 font-mono text-sm text-cyan-400">
+            <Terminal className="w-4 h-4 shrink-0" />
+            <span>// turn your GitHub profile into a Claude Code skill</span>
+          </div>
           <h1 className="font-mono text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
             The<span className="text-cyan-400">Last</span>CodeBender
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
-            Open-source developer legacy. Claim your rank, build your profile, and share your
-            craft with the world.
+            Claim your rank. Your GitHub profile becomes a{' '}
+            <span className="text-foreground font-semibold">Claude Code Skill</span> — anyone in
+            the world can install it, invoke your handle, and have Claude write code exactly the
+            way you do.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Button size="lg" className="font-mono w-full sm:w-auto" asChild>
@@ -62,7 +68,7 @@ export function HomePage() {
             <span>// your-profile-as-a-skill</span>
           </div>
           <h2 className="font-mono text-xl sm:text-2xl font-bold text-foreground">
-            Turn your profile into a Claude Code skill
+            Turn your GitHub profile into a Claude Code skill
           </h2>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
             Publish your SKILL.md and let others install you as an agent in their Claude Code
