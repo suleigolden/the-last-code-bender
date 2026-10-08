@@ -10,9 +10,8 @@
 
 ## About
 
-**The Last Code Bender** is a developer legacy project: **1,400 unique ranks** — one developer per rank, forever. You claim a rank from the **Dashboard**, then build your public profile in the **Profile workspace**. Once claimed, a rank is yours permanently.
+**The Last Code Bender** is a developer legacy project: **unlimited ranks** — one developer per rank, forever. You claim a rank from the **Dashboard**, then build your public profile in the **Profile workspace**. Once claimed, a rank is yours permanently.
 
-- **Ranks per discipline:** 200  
 - **Disciplines (7):**
   - **Frontend Bender** — UI, React, CSS
   - **Backend Bender** — APIs, databases, servers
@@ -22,7 +21,9 @@
   - **DevOps Bender** — infra, CI/CD, cloud
   - **QA Bender** — testing, quality, reliability
 
-**Rank tiers** (per discipline): Apprentice (ranks 1–50), Journeyman (51–100), Senior (101–150), Master (151–200). Rank 1 is the most prestigious — first to claim wins it.
+**Rank tiers** (per discipline): Apprentice (ranks 1–50), Journeyman (51–100), Senior (101–150), Master (151+). Rank 1 is the most prestigious — first to claim wins it.
+
+Every registered developer (CodeBender) profile is a **Claude Code Skill** generated directly from their GitHub profile. Anyone in the world can install it and invoke it in their Claude Code CLI — and Claude will write code exactly as that developer does: their stack, their architecture patterns, their conventions, all derived from their real GitHub work.
 
 XP grows through workspace activity, skill reviews, challenges, and showcase publishing.
 
@@ -53,7 +54,11 @@ Primary workflow: **Dashboard → Profile workspace → Save → Publish.**
 
 ## Skills & XP
 
-A **Claude Code Skill** is a custom prompt or workflow you publish that others can install into their Claude Code CLI. When your skill is live, **`skill_live`** is true on your profile (e.g. **Skill Live** in the Hall of Fame).
+A **Claude Code Skill** is a personalized AI coding assistant generated from your public GitHub profile. TheLastCodeBender analyzes your repositories, programming languages, contribution patterns, and completed projects to produce a `SKILL.md` — a structured prompt that captures precisely how you write code.
+
+Once your skill is published, any developer in the world can install it into their Claude Code CLI and invoke it by your handle. Claude will then behave as you would: applying your preferred stack, following your architectural patterns, and reflecting the coding style and decisions evident across your GitHub history. Your skill is a living representation of your engineering identity.
+
+When your skill is live, **`skill_live`** is true on your profile (e.g. **Skill Live** in the Hall of Fame).
 
 | Field | Meaning |
 |--------|---------|
@@ -65,10 +70,10 @@ A **Claude Code Skill** is a custom prompt or workflow you publish that others c
 
 | Action | XP |
 |--------|-----|
-| Workspace save (with commit message) | +10 |
-| Skill approved (`SKILL.md` AI review) | +50 |
+| Workspace save (with commit message) | +10,000 |
+| Skill approved (`SKILL.md` AI review) | +5,000 |
 | Challenge submit | +10 |
-| Challenge win | +100 |
+| Challenge win | +10,000 |
 | Showcase published (first demo URL) | +20 |
 
 **Publishing a skill:** Build the skill → add content in `SKILL.md` → Submit for AI Review → iterate until approved.
@@ -76,10 +81,10 @@ A **Claude Code Skill** is a custom prompt or workflow you publish that others c
 ### Generating a skill from GitHub
 
 1. Open your **Profile workspace** → `SKILL.md` tab.
-2. Click **Generate from GitHub** — this calls the `generate-skill` Edge Function, which pulls your public GitHub data (repos, languages, contribution patterns) and generates a personalized `SKILL.md`.
-3. Review the generated content in the editor.
-4. Click **Submit for AI Review** — the skill is reviewed and, once approved, `skill_live` is set to `true` on your profile.
-5. Your skill is now live and installable by anyone.
+2. Click **Generate from GitHub** — this calls the `generate-skill` Edge Function, which fetches your public GitHub data (repositories, languages, contribution patterns, and project history) and generates a personalized `SKILL.md` that reflects your real engineering work.
+3. Review and refine the generated content in the editor.
+4. Click **Submit for AI Review** — the skill is evaluated and, once approved, `skill_live` is set to `true` on your profile.
+5. Your skill is now live and installable by any developer in the world.
 
 ### Installing a CodeBender skill in your own project
 
@@ -100,7 +105,7 @@ Replace `TheLastCodeBender` with any handle that has a live skill. The curl comm
 /TheLastCodeBender
 ```
 
-Claude will load that developer's `SKILL.md` and code in their style — their stack, patterns, and preferences — for the session.
+Claude will load that developer's `SKILL.md` and write code in their style for the session — applying their stack, architecture patterns, conventions, and preferences as reflected in their GitHub profile and completed projects.
 
 > **Note:** `VITE_SUPABASE_URL` is the Project URL from your `.env` file or Supabase Dashboard → Project Settings → API → Project URL.
 
