@@ -99,13 +99,13 @@ curl -fsSL "https://the-last-code-bender-api.onrender.com/api/skills/TheLastCode
 
 Replace `TheLastCodeBender` with any handle that has a live skill. The curl command is also available on every CodeBender's profile page under **// install this skill**.
 
-**Step 2 — Invoke the skill** in a Claude Code session:
+**Step 2 — Ask the CodeBender** in a Claude Code session:
 
 ```
-/TheLastCodeBender
+/TheLastCodeBender Who is TheLastCodeBender?
 ```
 
-Claude will load that developer's `SKILL.md` and write code in their style for the session — applying their stack, architecture patterns, conventions, and preferences as reflected in their GitHub profile and completed projects.
+Claude will display everything about that developer — their stack, projects, and coding style — and you can continue the session working in their profile. From that point on, Claude writes code exactly as that developer does, applying their architecture patterns, conventions, and preferences as reflected in their GitHub profile and completed projects.
 
 > **Note:** `VITE_SUPABASE_URL` is the Project URL from your `.env` file or Supabase Dashboard → Project Settings → API → Project URL.
 
