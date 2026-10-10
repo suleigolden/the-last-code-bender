@@ -83,16 +83,18 @@ export function HomePage() {
             </pre>
           </div>
           <p className="font-mono text-xs sm:text-sm text-muted-foreground">
-            Then in Claude Code, ask the CodeBender:
+            Then in Claude Code, call the CodeBender:
           </p>
           <div className="rounded-lg border border-border bg-background overflow-hidden">
             <pre className="p-3 sm:p-4 overflow-x-auto text-[11px] sm:text-xs font-mono text-cyan-400/90 leading-relaxed whitespace-pre">
-              {`/${EXAMPLE_HANDLE} Who is ${EXAMPLE_HANDLE}?`}
+              {`/${EXAMPLE_HANDLE}`}
             </pre>
           </div>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Claude will display everything about that developer — their stack, projects, and
-            coding style — and you can continue the session working in their profile.
+            To check if it works, ask Claude:{' '}
+            <span className="font-mono text-foreground/80">"Who is {EXAMPLE_HANDLE}?"</span> —
+            Claude will display everything about that developer and you can continue the session
+            working in their profile.
           </p>
           <p className="text-muted-foreground text-sm leading-relaxed">
             Generate your skill from GitHub in the profile workspace, toggle it live on the
