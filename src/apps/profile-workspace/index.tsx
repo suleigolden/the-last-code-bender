@@ -20,10 +20,10 @@ export function ProfileWorkspacePage() {
   }
 
   return (
-    <div className="flex h-dvh min-h-0 w-full flex-col overflow-hidden bg-background noise-overlay">
+    <div className="flex min-h-dvh w-full flex-col bg-background noise-overlay">
       <div className="fixed inset-0 ide-grid-bg pointer-events-none opacity-20" />
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+      <div className="relative z-10 flex flex-1 flex-col px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="flex w-full shrink-0 flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" className="font-mono text-[18px] gap-1" asChild>
@@ -93,7 +93,7 @@ export function ProfileWorkspacePage() {
           </p>
         ) : (
           existingBender && (
-            <div id="profile-workspace-editor" className="flex min-h-0 flex-1 flex-col scroll-mt-4">
+            <div id="profile-workspace-editor" className="flex h-[calc(100dvh-2rem)] min-h-[640px] flex-col scroll-mt-4">
               <ProfileWorkspaceEditor
                 benderId={existingBender.id}
                 handle={existingBender.handle}
